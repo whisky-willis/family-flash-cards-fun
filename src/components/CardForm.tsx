@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface CardFormProps {
@@ -100,20 +99,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, isEditing = fal
 
       <div>
         <Label htmlFor="relationship">Relationship</Label>
-        <Select value={formData.relationship} onValueChange={(value) => setFormData({ ...formData, relationship: value })}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select relationship" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="parent">Parent</SelectItem>
-            <SelectItem value="grandparent">Grandparent</SelectItem>
-            <SelectItem value="sibling">Sibling</SelectItem>
-            <SelectItem value="aunt-uncle">Aunt/Uncle</SelectItem>
-            <SelectItem value="cousin">Cousin</SelectItem>
-            <SelectItem value="friend">Family Friend</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
+        <Input
+          id="relationship"
+          value={formData.relationship}
+          onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+          placeholder="e.g., Daddy, Mommy, Nanna, Grandpa, Uncle Tom"
+        />
       </div>
 
       <div>
