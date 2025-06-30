@@ -33,7 +33,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="py-24 px-6 lg:px-8 relative bg-gradient-to-br from-gray-50 to-white">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
           style={{
             backgroundImage: `url('/lovable-uploads/bdad9bb5-4472-4c86-9470-88aad0fc2cd9.png')`
           }}
