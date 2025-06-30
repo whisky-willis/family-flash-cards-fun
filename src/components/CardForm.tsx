@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,18 +25,21 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     ...initialData
   });
 
+  // Only update form data when we're switching to edit mode or resetting
   useEffect(() => {
-    setFormData({
-      name: '',
-      photo: '',
-      dateOfBirth: '',
-      favoriteColor: '',
-      hobbies: '',
-      funFact: '',
-      relationship: '',
-      ...initialData
-    });
-  }, [initialData]);
+    if (isEditing || Object.keys(initialData).length === 0) {
+      setFormData({
+        name: '',
+        photo: '',
+        dateOfBirth: '',
+        favoriteColor: '',
+        hobbies: '',
+        funFact: '',
+        relationship: '',
+        ...initialData
+      });
+    }
+  }, [isEditing]); // Only depend on isEditing, not initialData
 
   // Call onChange whenever formData changes, but only if onChange exists
   useEffect(() => {
