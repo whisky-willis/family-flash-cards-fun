@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,8 +30,14 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-24 px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-24 px-6 lg:px-8 relative bg-gradient-to-br from-gray-50 to-white">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1721322800607-8c38375eef04?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+          }}
+        />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <h1 className="text-6xl lg:text-7xl font-light text-black mb-8 tracking-tight leading-tight">
             Help George learn about
             <span className="block font-normal">family & friends</span>
