@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +35,7 @@ const Index = () => {
         <div 
           className="absolute inset-0 bg-cover bg-top bg-no-repeat opacity-30"
           style={{
-            backgroundImage: `url('/lovable-uploads/bdad9bb5-4472-4c86-9470-88aad0fc2cd9.png')`
+            backgroundImage: `url('/lovable-uploads/38ef78d9-ed91-4669-9853-b2edf0a11427.png')`
           }}
         />
         <div className="max-w-4xl mx-auto text-center relative z-10">
