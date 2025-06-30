@@ -36,11 +36,13 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           {/* Photo Section */}
           <div className="text-center mb-4">
             {card.photo ? (
-              <img 
-                src={card.photo} 
-                alt={card.name}
-                className="w-32 h-32 object-cover rounded-full mx-auto border-4 border-white shadow-md"
-              />
+              <div className="px-4">
+                <img 
+                  src={card.photo} 
+                  alt={card.name}
+                  className="w-full h-32 object-cover rounded-lg border-4 border-white shadow-md"
+                />
+              </div>
             ) : (
               <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto border-4 border-white shadow-md flex items-center justify-center">
                 <Users className="h-12 w-12 text-gray-400" />
