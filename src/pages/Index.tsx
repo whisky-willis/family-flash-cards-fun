@@ -34,7 +34,7 @@ const Index = () => {
       <section className="py-24 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-6xl lg:text-7xl font-light text-black mb-8 tracking-tight leading-tight">
-            Help your child learn about
+            Help George learn about
             <span className="block font-normal">family & friends</span>
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
