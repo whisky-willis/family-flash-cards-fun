@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,9 +27,9 @@ const CreateCards = () => {
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleFormChange = (updatedCard: Partial<FamilyCard>) => {
+  const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
-  };
+  }, []);
 
   const handleAddCard = (card: Omit<FamilyCard, 'id'>) => {
     const newCard = {

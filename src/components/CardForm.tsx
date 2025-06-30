@@ -39,12 +39,10 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     });
   }, [initialData]);
 
-  // Call onChange whenever formData changes
+  // Call onChange whenever formData changes, but only if onChange exists
   useEffect(() => {
-    if (onChange) {
-      onChange(formData);
-    }
-  }, [formData, onChange]);
+    onChange?.(formData);
+  }, [formData]); // Removed onChange from dependencies to prevent infinite loop
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
