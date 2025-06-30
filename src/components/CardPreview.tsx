@@ -13,7 +13,10 @@ interface CardPreviewProps {
 }
 
 export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: CardPreviewProps) => {
-  if (!card.name) {
+  // Check if card has any meaningful data
+  const hasData = card.name && card.name.trim().length > 0;
+
+  if (!hasData) {
     return (
       <div className="w-full max-w-sm mx-auto">
         <Card className="bg-gradient-to-br from-pink-100 to-blue-100 border-2 border-dashed border-gray-300">
@@ -52,7 +55,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
 
           {/* Attributes */}
           <div className="space-y-2 text-sm">
-            {card.relationship && (
+            {card.relationship && card.relationship.trim() && (
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-gray-600">Relationship:</span>
                 <span className="text-gray-800 capitalize">{card.relationship}</span>
@@ -68,21 +71,21 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
               </div>
             )}
             
-            {card.favoriteColor && (
+            {card.favoriteColor && card.favoriteColor.trim() && (
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-gray-600">Favorite Color:</span>
                 <span className="text-gray-800">{card.favoriteColor}</span>
               </div>
             )}
             
-            {card.hobbies && (
+            {card.hobbies && card.hobbies.trim() && (
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-gray-600">Hobbies:</span>
                 <span className="text-gray-800 text-right">{card.hobbies}</span>
               </div>
             )}
             
-            {card.funFact && (
+            {card.funFact && card.funFact.trim() && (
               <div className="mt-3 p-3 bg-white/50 rounded-lg">
                 <span className="font-semibold text-gray-600 block mb-1">Fun Fact:</span>
                 <p className="text-gray-800 text-xs leading-relaxed">{card.funFact}</p>

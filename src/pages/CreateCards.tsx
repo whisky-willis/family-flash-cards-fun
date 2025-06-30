@@ -28,6 +28,10 @@ const CreateCards = () => {
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
 
+  const handleFormChange = (updatedCard: Partial<FamilyCard>) => {
+    setCurrentCard(updatedCard);
+  };
+
   const handleAddCard = (card: Omit<FamilyCard, 'id'>) => {
     const newCard = {
       ...card,
@@ -134,6 +138,7 @@ const CreateCards = () => {
                     setCurrentCard({});
                     setIsEditing(false);
                   }}
+                  onChange={handleFormChange}
                   isEditing={isEditing}
                 />
               </CardContent>

@@ -10,10 +10,11 @@ interface CardFormProps {
   initialData?: Partial<FamilyCard>;
   onSubmit: (card: Omit<FamilyCard, 'id'>) => void;
   onCancel?: () => void;
+  onChange?: (card: Partial<FamilyCard>) => void;
   isEditing?: boolean;
 }
 
-export const CardForm = ({ initialData = {}, onSubmit, onCancel, isEditing = false }: CardFormProps) => {
+export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEditing = false }: CardFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     photo: '',
@@ -37,6 +38,13 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, isEditing = fal
       ...initialData
     });
   }, [initialData]);
+
+  // Call onChange whenever formData changes
+  useEffect(() => {
+    if (onChange) {
+      onChange(formData);
+    }
+  }, [formData, onChange]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
