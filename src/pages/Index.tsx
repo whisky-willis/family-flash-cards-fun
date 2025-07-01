@@ -110,7 +110,7 @@ const Index = () => {
             </p>
           </div>
           
-          <Carousel className="max-w-5xl mx-auto mb-16">
+          <Carousel opts={{ slidesToScroll: 1 }} className="max-w-5xl mx-auto mb-16">
             <CarouselContent>
               <CarouselItem className="md:basis-1/2 lg:basis-1/2">
                 <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
