@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Cycling Names</title>
+</head>
+<body>
+    <h1 id="title">Help <span id="name">George</span> learn about family & friends</h1>
+    
+    <script>
+        const names = ['George', 'Maggie', 'Tom'];
+        let currentNameIndex = 0;
+        
+        function updateName() {
+            document.getElementById('name').textContent = names[currentNameIndex];
+            currentNameIndex = (currentNameIndex + 1) % names.length;
+        }
+        
+        // Update every 2 seconds
+        setInterval(updateName, 2000);
+        
+        // Test it immediately
+        console.log('Starting name cycling test...');
+        console.log('Names:', names);
+    </script>
+</body>
+</html>
