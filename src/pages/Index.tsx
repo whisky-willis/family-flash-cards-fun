@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -125,99 +126,111 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <Brain className="h-6 w-6 text-blue-600" />
-                  <CardTitle className="text-xl text-black font-medium">Boosts Academic Performance</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                  Children who engage in family storytelling show higher language and literacy skills that last through 
-                  elementary school, with benefits extending 7 years down the line.
-                </CardDescription>
-                <a 
-                  href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
-                >
-                  Source: Duke University Family Life Project
-                </a>
-              </CardContent>
-            </Card>
+          <Carousel className="max-w-5xl mx-auto mb-16">
+            <CarouselContent>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
+                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Brain className="h-6 w-6 text-blue-600" />
+                      <CardTitle className="text-xl text-black font-medium">Boosts Academic Performance</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
+                      Children who engage in family storytelling show higher language and literacy skills that last through 
+                      elementary school, with benefits extending 7 years down the line.
+                    </CardDescription>
+                    <a 
+                      href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                    >
+                      Source: Duke University Family Life Project
+                    </a>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
 
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <Smile className="h-6 w-6 text-pink-600" />
-                  <CardTitle className="text-xl text-black font-medium">Builds Emotional Intelligence</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                  Develops empathy, self-awareness, and social skills that lead to better relationships and reduced 
-                  anxiety - core foundations for lifelong success.
-                </CardDescription>
-                <a 
-                  href="https://casel.org/fundamentals-of-sel/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
-                >
-                  Source: CASEL Research
-                </a>
-              </CardContent>
-            </Card>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
+                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Smile className="h-6 w-6 text-pink-600" />
+                      <CardTitle className="text-xl text-black font-medium">Builds Emotional Intelligence</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
+                      Develops empathy, self-awareness, and social skills that lead to better relationships and reduced 
+                      anxiety - core foundations for lifelong success.
+                    </CardDescription>
+                    <a 
+                      href="https://casel.org/fundamentals-of-sel/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                    >
+                      Source: CASEL Research
+                    </a>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
 
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <UserCheck className="h-6 w-6 text-green-600" />
-                  <CardTitle className="text-xl text-black font-medium">Strengthens Identity & Self-Esteem</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                  Research shows kids who know more about their families have stronger self-control, higher confidence, 
-                  and believe their families function better.
-                </CardDescription>
-                <a 
-                  href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
-                >
-                  Source: Emory University Study
-                </a>
-              </CardContent>
-            </Card>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
+                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <UserCheck className="h-6 w-6 text-green-600" />
+                      <CardTitle className="text-xl text-black font-medium">Strengthens Identity & Self-Esteem</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
+                      Research shows kids who know more about their families have stronger self-control, higher confidence, 
+                      and believe their families function better.
+                    </CardDescription>
+                    <a 
+                      href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                    >
+                      Source: Emory University Study
+                    </a>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
 
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <Target className="h-6 w-6 text-purple-600" />
-                  <CardTitle className="text-xl text-black font-medium">Develops Critical Thinking</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                  Encourages children to ask questions, understand different perspectives, and make connections - 
-                  essential skills for school and life.
-                </CardDescription>
-                <a 
-                  href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
-                >
-                  Source: Brain Imaging Studies
-                </a>
-              </CardContent>
-            </Card>
-          </div>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
+                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Target className="h-6 w-6 text-purple-600" />
+                      <CardTitle className="text-xl text-black font-medium">Develops Critical Thinking</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
+                      Encourages children to ask questions, understand different perspectives, and make connections - 
+                      essential skills for school and life.
+                    </CardDescription>
+                    <a 
+                      href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                    >
+                      Source: Brain Imaging Studies
+                    </a>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
 
           <div className="text-center">
             <Card className="border-0 shadow-lg bg-white/90 backdrop-blur-sm max-w-4xl mx-auto">
