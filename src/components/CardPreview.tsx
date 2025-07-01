@@ -40,7 +40,8 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                 <img 
                   src={card.photo} 
                   alt={card.name}
-                  className="w-full h-32 object-cover rounded-lg border-4 border-white shadow-md"
+                  className="w-full object-cover rounded-lg border-4 border-white shadow-md"
+                  style={{ height: '180px' }}
                 />
               </div>
             ) : (
