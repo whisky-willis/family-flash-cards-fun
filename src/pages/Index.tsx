@@ -66,58 +66,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-light text-black mb-6 tracking-tight">
-              Why choose FamilyCards?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light">
-              Create lasting memories while helping your little ones learn about their loved ones
-            </p>
-          </div>
-          
-          <div className="grid lg:grid-cols-3 gap-12">
-            <Card className="border-0 shadow-none bg-transparent">
-              <CardHeader className="text-center pb-6">
-                <Image className="h-8 w-8 text-black mx-auto mb-6" />
-                <CardTitle className="text-2xl text-black font-light">Personal Photos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-600 text-center text-base leading-relaxed">
-                  Upload your favorite family photos to create truly personalized cards that your child will love
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-transparent">
-              <CardHeader className="text-center pb-6">
-                <Users className="h-8 w-8 text-black mx-auto mb-6" />
-                <CardTitle className="text-2xl text-black font-light">Family Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-600 text-center text-base leading-relaxed">
-                  Add names, birthdays, favorite colors, hobbies, and fun facts to make learning interactive
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-transparent">
-              <CardHeader className="text-center pb-6">
-                <Heart className="h-8 w-8 text-black mx-auto mb-6" />
-                <CardTitle className="text-2xl text-black font-light">High Quality</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-gray-600 text-center text-base leading-relaxed">
-                  Professional printing on durable cardstock, perfect for little hands to explore safely
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* How It Works */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
