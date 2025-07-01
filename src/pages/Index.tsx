@@ -191,27 +191,29 @@ const Index = () => {
                   </CardContent>
                 </Card>
               </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
+                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Heart className="h-6 w-6 text-red-500" />
+                      <CardTitle className="text-xl text-black font-medium">Creates Lasting Family Bonds</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
+                      Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
+                    </CardDescription>
+                    <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
+                      Source: NAEYC Research
+                    </a>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-
-          <div className="text-center">
-            <Card className="border-0 shadow-lg bg-white/90 backdrop-blur-sm max-w-4xl mx-auto">
-              <CardContent className="p-8">
-                <div className="flex items-center justify-center space-x-3 mb-4">
-                  <Heart className="h-6 w-6 text-red-500" />
-                  <CardTitle className="text-2xl text-black font-medium">Creates Lasting Family Bonds</CardTitle>
-                </div>
-                <CardDescription className="text-gray-700 text-lg leading-relaxed mb-4">
-                  Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
-                </CardDescription>
-                <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                  Source: NAEYC Research
-                </a>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </section>
 
