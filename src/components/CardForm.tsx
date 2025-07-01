@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface CardFormProps {
@@ -22,6 +23,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     hobbies: '',
     funFact: '',
     relationship: '',
+    imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
 
@@ -36,6 +38,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         hobbies: '',
         funFact: '',
         relationship: '',
+        imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
     }
@@ -61,6 +64,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         hobbies: '',
         funFact: '',
         relationship: '',
+        imagePosition: { x: 0, y: 0, scale: 1 },
       });
     }
   };
@@ -70,10 +74,18 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData({ ...formData, photo: e.target?.result as string });
+        setFormData({ 
+          ...formData, 
+          photo: e.target?.result as string,
+          imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
+        });
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handlePositionChange = (position: { x: number; y: number; scale: number }) => {
+    setFormData({ ...formData, imagePosition: position });
   };
 
   return (
@@ -99,8 +111,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
         />
         {formData.photo && (
-          <div className="mt-2">
-            <img src={formData.photo} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
+          <div className="mt-3">
+            <Label className="text-sm text-gray-600 mb-2 block">Adjust Image Position</Label>
+            <ImagePositionAdjuster
+              imageSrc={formData.photo}
+              alt={formData.name || "Preview"}
+              onPositionChange={handlePositionChange}
+              initialPosition={formData.imagePosition}
+            />
           </div>
         )}
       </div>

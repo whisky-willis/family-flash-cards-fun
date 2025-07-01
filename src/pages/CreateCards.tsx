@@ -18,6 +18,7 @@ export interface FamilyCard {
   hobbies: string;
   funFact: string;
   relationship: string;
+  imagePosition?: { x: number; y: number; scale: number };
 }
 
 const CreateCards = () => {
