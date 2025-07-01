@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -6,6 +6,19 @@ import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCh
 import { useNavigate } from "react-router-dom";
 const Index = () => {
   const navigate = useNavigate();
+  
+  // State for cycling names
+  const names = ['George', 'Maggie', 'Tom'];
+  const [currentNameIndex, setCurrentNameIndex] = useState(0);
+  
+  // Effect to cycle through names every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentNameIndex((prevIndex) => (prevIndex + 1) % names.length);
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, [names.length]);
   return <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm">
@@ -34,7 +47,7 @@ const Index = () => {
       }} />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h1 className="text-6xl lg:text-7xl font-light text-black mb-8 tracking-tight leading-tight">
-            Help George learn about
+            Help {names[currentNameIndex]} learn about
             <span className="block font-normal">family & friends</span>
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
