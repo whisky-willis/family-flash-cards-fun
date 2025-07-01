@@ -1,13 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Heart, Users, Image as ImageIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/context/CartContext";
 
 export interface FamilyCard {
   id: string;
@@ -23,7 +22,7 @@ export interface FamilyCard {
 const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [cards, setCards] = useState<FamilyCard[]>([]);
+  const { cards, addCard, updateCard, deleteCard } = useCart();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
 
@@ -36,7 +35,7 @@ const CreateCards = () => {
       ...card,
       id: Date.now().toString(),
     };
-    setCards([...cards, newCard]);
+    addCard(newCard);
     setCurrentCard({});
     toast({
       title: "Card Added!",
@@ -50,11 +49,8 @@ const CreateCards = () => {
   };
 
   const handleUpdateCard = (updatedCard: Omit<FamilyCard, 'id'>) => {
-    setCards(cards.map(card => 
-      card.id === currentCard.id 
-        ? { ...updatedCard, id: card.id }
-        : card
-    ));
+    const fullUpdatedCard = { ...updatedCard, id: currentCard.id as string };
+    updateCard(fullUpdatedCard);
     setCurrentCard({});
     setIsEditing(false);
     toast({
@@ -64,7 +60,7 @@ const CreateCards = () => {
   };
 
   const handleDeleteCard = (cardId: string) => {
-    setCards(cards.filter(card => card.id !== cardId));
+    deleteCard(cardId);
     toast({
       title: "Card Removed",
       description: "The card has been removed from your collection.",
@@ -80,7 +76,7 @@ const CreateCards = () => {
       });
       return;
     }
-    navigate('/order', { state: { cards } });
+    navigate('/order');
   };
 
   return (

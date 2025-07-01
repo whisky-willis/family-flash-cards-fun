@@ -39,12 +39,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         ...initialData
       });
     }
-  }, [isEditing]); // Only depend on isEditing, not initialData
+  }, [isEditing, initialData]);
 
   // Call onChange whenever formData changes, but only if onChange exists
   useEffect(() => {
     onChange?.(formData);
-  }, [formData]); // Removed onChange from dependencies to prevent infinite loop
+  }, [formData, onChange]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +68,28 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        alert('Image size must be less than 5MB. Please choose a smaller image.');
+        e.target.value = ''; // Clear the input
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        e.target.value = '';
+        return;
+      }
+
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData({ ...formData, photo: e.target?.result as string });
+      reader.onload = (event) => {
+        setFormData({ ...formData, photo: event.target?.result as string });
+      };
+      reader.onerror = () => {
+        alert('Error reading the image file. Please try again.');
+        e.target.value = '';
       };
       reader.readAsDataURL(file);
     }

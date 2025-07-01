@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,12 @@ import { Heart, Users } from "lucide-react";
 import { FamilyCard } from "@/pages/CreateCards";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/context/CartContext";
 
 const OrderSummary = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const cards = location.state?.cards as FamilyCard[] || [];
+  const { cards, clearCart } = useCart();
   
   const [orderDetails, setOrderDetails] = useState({
     name: '',
@@ -40,6 +40,14 @@ const OrderSummary = () => {
     });
     // Here you would integrate with a payment processor like Stripe
     console.log('Order details:', { orderDetails, cards, totalCost });
+    
+    // Clear cart after successful order
+    clearCart();
+    
+    // Redirect to home page after a delay
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
   };
 
   if (cards.length === 0) {
