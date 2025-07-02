@@ -144,7 +144,7 @@ const Index = () => {
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group">
+                <div className="group p-2">
                   <div className="bg-art-yellow p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">🧠</div>
@@ -164,7 +164,7 @@ const Index = () => {
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group">
+                <div className="group p-2">
                   <div className="bg-art-pink p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">❤️</div>
@@ -184,7 +184,7 @@ const Index = () => {
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group">
+                <div className="group p-2">
                   <div className="bg-art-green p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">🌟</div>
@@ -204,7 +204,7 @@ const Index = () => {
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group">
+                <div className="group p-2">
                   <div className="bg-art-blue p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">🤝</div>
@@ -224,7 +224,7 @@ const Index = () => {
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group">
+                <div className="group p-2">
                   <div className="bg-art-orange p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">🎯</div>
