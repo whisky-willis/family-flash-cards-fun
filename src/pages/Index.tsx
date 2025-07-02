@@ -48,33 +48,42 @@ const Index = () => {
         </div>
       </nav>
 
-      {/* Hero Section - Exact Art Center style with organic blobs */}
+      {/* Hero Section - Lava lamp blob style */}
       <section className="relative h-screen px-6 lg:px-8 z-10 overflow-hidden">
-        {/* Large organic blob shapes - exact Art Center style */}
+        {/* Organic lava lamp blob shapes */}
         <div className="absolute inset-0">
           {/* Pink blob - top left */}
-          <div className="absolute top-0 left-0 w-[600px] h-[500px] bg-art-pink opacity-90" style={{
-            clipPath: 'polygon(20% 0%, 80% 10%, 100% 50%, 85% 90%, 30% 100%, 0% 70%, 5% 30%)'
+          <div className="absolute top-0 left-0 w-[500px] h-[400px] bg-art-pink opacity-90 transform -translate-x-1/4 -translate-y-1/4" style={{
+            borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%'
           }}></div>
           
           {/* Yellow blob - center large */}
-          <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-95 transform -translate-x-1/2 -translate-y-1/2" style={{
-            clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
+          <div className="absolute top-1/2 left-1/2 w-[700px] h-[600px] bg-art-yellow opacity-95 transform -translate-x-1/2 -translate-y-1/2 rotate-12" style={{
+            borderRadius: '40% 60% 70% 30% / 40% 40% 60% 60%'
           }}></div>
           
           {/* Green blob - top right */}
-          <div className="absolute top-0 right-0 w-[550px] h-[600px] bg-art-green opacity-90" style={{
-            clipPath: 'polygon(15% 0%, 85% 0%, 100% 40%, 95% 80%, 60% 100%, 20% 85%, 0% 50%, 10% 20%)'
+          <div className="absolute top-0 right-0 w-[450px] h-[500px] bg-art-green opacity-90 transform translate-x-1/4 -translate-y-1/6 -rotate-12" style={{
+            borderRadius: '70% 30% 30% 70% / 30% 30% 70% 70%'
           }}></div>
           
           {/* Red/Orange blob - bottom left */}
-          <div className="absolute bottom-0 left-0 w-[500px] h-[400px] bg-art-red opacity-85" style={{
-            clipPath: 'polygon(30% 0%, 80% 15%, 100% 60%, 75% 100%, 0% 100%, 0% 40%, 15% 10%)'
+          <div className="absolute bottom-0 left-0 w-[400px] h-[350px] bg-art-red opacity-85 transform -translate-x-1/6 translate-y-1/4 rotate-45" style={{
+            borderRadius: '50% 50% 80% 20% / 25% 75% 25% 75%'
           }}></div>
           
           {/* Blue blob - bottom right */}
-          <div className="absolute bottom-0 right-0 w-[450px] h-[350px] bg-art-blue opacity-85" style={{
-            clipPath: 'polygon(40% 0%, 100% 0%, 100% 70%, 80% 100%, 20% 90%, 10% 50%, 25% 15%)'
+          <div className="absolute bottom-0 right-0 w-[380px] h-[320px] bg-art-blue opacity-85 transform translate-x-1/5 translate-y-1/6 -rotate-30" style={{
+            borderRadius: '80% 20% 40% 60% / 60% 40% 60% 40%'
+          }}></div>
+          
+          {/* Additional small blobs for lava lamp effect */}
+          <div className="absolute top-1/4 left-1/3 w-[150px] h-[120px] bg-art-orange opacity-70 transform rotate-45" style={{
+            borderRadius: '70% 30% 50% 50% / 30% 30% 70% 70%'
+          }}></div>
+          
+          <div className="absolute bottom-1/3 right-1/3 w-[120px] h-[140px] bg-art-pink opacity-60 transform -rotate-30" style={{
+            borderRadius: '40% 60% 60% 40% / 70% 30% 70% 30%'
           }}></div>
         </div>
 
