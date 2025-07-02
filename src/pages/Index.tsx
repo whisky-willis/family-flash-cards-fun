@@ -16,9 +16,6 @@ const Index = () => {
               <span className="text-2xl font-semibold text-black tracking-tight">FamilyCards</span>
             </div>
             <div className="flex items-center space-x-8">
-              <Button variant="ghost" onClick={() => navigate('/create')} className="text-gray-700 hover:text-black">
-                Create Cards
-              </Button>
               <Button onClick={() => navigate('/create')} className="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-sm">
                 Create Cards
               </Button>
