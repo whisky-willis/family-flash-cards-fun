@@ -10,6 +10,7 @@ import { Heart, Users } from "lucide-react";
 import { FamilyCard } from "@/pages/CreateCards";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
+import kindredLogo from "@/assets/kindred-cards-logo.png";
 
 const OrderSummary = () => {
   const location = useLocation();
@@ -60,8 +61,8 @@ const OrderSummary = () => {
       <nav className="bg-white/80 backdrop-blur-sm border-b border-pink-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-pink-500" />
+            <div className="flex items-center space-x-3">
+              <img src={kindredLogo} alt="Kindred Cards" className="h-10 w-10" />
               <span className="text-2xl font-bold text-gray-800">Kindred Cards</span>
             </div>
             <Button variant="ghost" onClick={() => navigate('/create')}>

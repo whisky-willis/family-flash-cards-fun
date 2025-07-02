@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import kindredLogo from "@/assets/kindred-cards-logo.png";
 const Index = () => {
   const navigate = useNavigate();
   const names = ['George', 'Baileigh', 'Nick', 'Maggie'];
@@ -52,8 +53,8 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-6 w-6 text-art-pink" />
+              <div className="flex items-center space-x-3">
+                <img src={kindredLogo} alt="Kindred Cards" className="h-8 w-8" />
                 <span className="text-xl font-bold text-foreground tracking-tight">Kindred Cards</span>
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
@@ -349,8 +350,8 @@ const Index = () => {
       <footer className="relative bg-background border-t border-border py-16 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Heart className="h-6 w-6 text-art-pink" />
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <img src={kindredLogo} alt="Kindred Cards" className="h-8 w-8" />
               <span className="text-2xl font-black text-foreground tracking-tight">Kindred Cards</span>
             </div>
             <p className="text-muted-foreground font-medium text-lg">
