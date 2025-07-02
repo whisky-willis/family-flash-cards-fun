@@ -54,7 +54,7 @@ const Index = () => {
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-2">
                 <Heart className="h-6 w-6 text-art-pink" />
-                <span className="text-xl font-bold text-foreground tracking-tight">FamilyCards</span>
+                <span className="text-xl font-bold text-foreground tracking-tight">Kindred Cards</span>
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
@@ -351,7 +351,7 @@ const Index = () => {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Heart className="h-6 w-6 text-art-pink" />
-              <span className="text-2xl font-black text-foreground tracking-tight">FamilyCards</span>
+              <span className="text-2xl font-black text-foreground tracking-tight">Kindred Cards</span>
             </div>
             <p className="text-muted-foreground font-medium text-lg">
               Creating memories, one card at a time

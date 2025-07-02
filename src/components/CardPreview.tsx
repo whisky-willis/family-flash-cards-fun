@@ -129,7 +129,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
       <div className="text-center mt-2">
         <div className="flex items-center justify-center space-x-1 text-xs text-muted-foreground font-medium">
           <Heart className="h-3 w-3 text-art-pink" />
-          <span>FamilyCards</span>
+          <span>Kindred Cards</span>
         </div>
       </div>
     </div>
