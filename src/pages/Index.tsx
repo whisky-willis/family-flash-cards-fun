@@ -145,7 +145,7 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group">
-                  <div className="bg-art-yellow p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                  <div className="bg-art-yellow p-8 rounded-3xl h-80 flex flex-col hover:scale-105 transition-transform duration-300">
                     <div className="text-4xl mb-4">🧠</div>
                     <h3 className="text-2xl font-black text-foreground mb-4">Boosts Academic Performance</h3>
                     <p className="text-foreground/80 font-medium mb-4 flex-grow">
@@ -163,7 +163,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group">
-                  <div className="bg-art-pink p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                  <div className="bg-art-pink p-8 rounded-3xl h-80 flex flex-col hover:scale-105 transition-transform duration-300">
                     <div className="text-4xl mb-4">❤️</div>
                     <h3 className="text-2xl font-black text-foreground mb-4">Builds Emotional Intelligence</h3>
                     <p className="text-foreground/80 font-medium mb-4 flex-grow">
@@ -181,7 +181,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group">
-                  <div className="bg-art-green p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                  <div className="bg-art-green p-8 rounded-3xl h-80 flex flex-col hover:scale-105 transition-transform duration-300">
                     <div className="text-4xl mb-4">🌟</div>
                     <h3 className="text-2xl font-black text-foreground mb-4">Strengthens Identity & Self-Esteem</h3>
                     <p className="text-foreground/80 font-medium mb-4 flex-grow">
@@ -199,7 +199,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group">
-                  <div className="bg-art-blue p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                  <div className="bg-art-blue p-8 rounded-3xl h-80 flex flex-col hover:scale-105 transition-transform duration-300">
                     <div className="text-4xl mb-4">🤝</div>
                     <h3 className="text-2xl font-black text-foreground mb-4">Creates Lasting Family Bonds</h3>
                     <p className="text-foreground/80 font-medium mb-4 flex-grow">
@@ -217,7 +217,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group">
-                  <div className="bg-art-orange p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                  <div className="bg-art-orange p-8 rounded-3xl h-80 flex flex-col hover:scale-105 transition-transform duration-300">
                     <div className="text-4xl mb-4">🎯</div>
                     <h3 className="text-2xl font-black text-foreground mb-4">Develops Critical Thinking</h3>
                     <p className="text-foreground/80 font-medium mb-4 flex-grow">
