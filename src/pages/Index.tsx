@@ -6,239 +6,224 @@ import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCh
 import { useNavigate } from "react-router-dom";
 const Index = () => {
   const navigate = useNavigate();
-  return <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur-sm">
+  return <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Organic background shapes inspired by Art Center */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-art-pink rounded-full mix-blend-multiply filter blur-xl opacity-70 -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-1/4 right-0 w-80 h-80 bg-art-yellow rounded-full mix-blend-multiply filter blur-xl opacity-70 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-art-green rounded-full mix-blend-multiply filter blur-xl opacity-70 translate-y-1/3"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-art-blue rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+        <div className="absolute top-1/2 left-1/2 w-56 h-56 bg-art-orange rounded-full mix-blend-multiply filter blur-xl opacity-70 -translate-x-1/2 -translate-y-1/2"></div>
+      </div>
+
+      {/* Top banner */}
+      <div className="bg-primary text-primary-foreground text-center py-2 text-sm font-medium relative z-10">
+        Now available: Create custom family learning cards!
+      </div>
+
+      {/* Navigation - Art Center style */}
+      <nav className="bg-background/90 backdrop-blur-sm sticky top-0 z-50 border-b border-border/20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-3">
-              <Heart className="h-7 w-7 text-accent" />
-              <span className="text-2xl font-semibold text-foreground tracking-tight">FamilyCards</span>
-            </div>
+          <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <Button onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-sm">
+              <div className="flex items-center space-x-2">
+                <Heart className="h-6 w-6 text-art-pink" />
+                <span className="text-xl font-bold text-foreground tracking-tight">FamilyCards</span>
+              </div>
+              <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer">Examples</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium uppercase tracking-wide">
                 Create Cards
               </Button>
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
+                0
+              </div>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="py-24 px-6 lg:px-8 relative bg-gradient-to-br from-secondary/10 to-accent/10">
-        <div className="absolute inset-0 bg-cover bg-top bg-no-repeat opacity-20" style={{
-        backgroundImage: `url('/lovable-uploads/38ef78d9-ed91-4669-9853-b2edf0a11427.png')`
-      }} />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-6xl lg:text-7xl font-light text-foreground mb-8 tracking-tight leading-tight">
-            Help George learn about
-            <span className="block font-normal text-primary">family & friends</span>
+      {/* Hero Section - Art Center inspired */}
+      <section className="relative py-32 px-6 lg:px-8 z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-8 leading-tight">
+            Family Cards and
+            <br />Learning for Kids
           </h1>
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-            Create personalized flashcards featuring your family and friends. Perfect for babies and toddlers 
-            to learn names, faces, and stories about the people they love most.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-base font-medium rounded-sm">
-              Create Your Cards
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 py-4 border-border hover:bg-accent hover:text-accent-foreground rounded-sm font-medium">
-              See Examples
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-light text-foreground mb-6 tracking-tight">
-              How it works
-            </h2>
-            <p className="text-xl text-muted-foreground font-light">
-              Creating your custom family cards is simple
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-16">
-            <div className="text-center">
-              <div className="bg-primary text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
-                1
-              </div>
-              <h3 className="text-2xl font-light text-foreground mb-4">Upload Photos</h3>
-              <p className="text-muted-foreground text-base leading-relaxed">
-                Add photos of family members and friends you want to include
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-secondary text-secondary-foreground rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
-                2
-              </div>
-              <h3 className="text-2xl font-light text-foreground mb-4">Add Details</h3>
-              <p className="text-muted-foreground text-base leading-relaxed">
-                Fill in names, birthdays, favorite things, and fun facts
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-accent text-accent-foreground rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
-                3
-              </div>
-              <h3 className="text-2xl font-light text-foreground mb-4">Order & Enjoy</h3>
-              <p className="text-muted-foreground text-base leading-relaxed">
-                Review your cards and place your order - we'll handle the rest
-              </p>
+          <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest">
+            Create Now
+          </Button>
+          <div className="mt-8">
+            <div className="inline-block animate-bounce">
+              <ArrowRight className="h-6 w-6 text-foreground rotate-90" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Developmental Benefits Section */}
-      <section className="py-24 bg-gradient-to-br from-vibrant-blue/10 to-vibrant-purple/10">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-light text-foreground mb-6 tracking-tight">Backed by Research</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-              University research proves that children who engage in family storytelling and cultural learning 
-              demonstrate higher academic performance, stronger emotional health, and better social skills compared to their peers.
-            </p>
-          </div>
-          
-          <Carousel opts={{ align: "start", slidesToScroll: 1, skipSnaps: false }} className="max-w-5xl mx-auto mb-16">
-            <CarouselContent>
-              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Brain className="h-6 w-6 text-blue-600" />
-                      <CardTitle className="text-xl text-black font-medium">Boosts Academic Performance</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                      Children who engage in family storytelling show higher language and literacy skills that last through 
-                      elementary school, with benefits extending 7 years down the line.
-                    </CardDescription>
-                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                      Source: Duke University Family Life Project
-                    </a>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-
-              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Smile className="h-6 w-6 text-pink-600" />
-                      <CardTitle className="text-xl text-black font-medium">Builds Emotional Intelligence</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                      Develops empathy, self-awareness, and social skills that lead to better relationships and reduced 
-                      anxiety - core foundations for lifelong success.
-                    </CardDescription>
-                    <a href="https://casel.org/fundamentals-of-sel/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                      Source: CASEL Research
-                    </a>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-
-              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <UserCheck className="h-6 w-6 text-green-600" />
-                      <CardTitle className="text-xl text-black font-medium">Strengthens Identity & Self-Esteem</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                      Research shows kids who know more about their families have stronger self-control, higher confidence, 
-                      and believe their families function better.
-                    </CardDescription>
-                    <a href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                      Source: Emory University Study
-                    </a>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-
-              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Target className="h-6 w-6 text-purple-600" />
-                      <CardTitle className="text-xl text-black font-medium">Develops Critical Thinking</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                      Encourages children to ask questions, understand different perspectives, and make connections - 
-                      essential skills for school and life.
-                    </CardDescription>
-                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                      Source: Brain Imaging Studies
-                    </a>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-
-              <CarouselItem className="md:basis-1/2 lg:basis-1/2">
-                <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm h-full">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Heart className="h-6 w-6 text-red-500" />
-                      <CardTitle className="text-xl text-black font-medium">Creates Lasting Family Bonds</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-700 text-base leading-relaxed mb-4">
-                      Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
-                    </CardDescription>
-                    <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-                      Source: NAEYC Research
-                    </a>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto text-center px-6 lg:px-8">
-          <h2 className="text-5xl font-light mb-6 tracking-tight">
-            Ready to create your family cards?
+      {/* About section - Art Center style */}
+      <section className="relative py-20 bg-background/50 z-10">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-8 leading-tight">
+            We teach the fundamentals of family connection while encouraging creativity, curiosity, and individuality.
           </h2>
-          <p className="text-xl mb-12 opacity-90 font-light">
-            Give your child a special way to learn about the people who love them most
-          </p>
-          <Button size="lg" onClick={() => navigate('/create')} className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-4 rounded-sm font-medium">
-            Start Creating Now
-            <ArrowRight className="ml-2 h-4 w-4" />
+          <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-3 text-base font-bold uppercase tracking-wide">
+            About Us
           </Button>
         </div>
       </section>
 
+      {/* Our Programs - Art Center style */}
+      <section className="relative py-20 z-10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Our Programs</h2>
+            <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto">
+              We offer custom family cards for all ages throughout the year. If you don't see the perfect option, we'll create one!
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="group">
+              <div className="bg-art-yellow p-8 rounded-3xl h-64 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
+                <div>
+                  <h3 className="text-2xl font-black text-foreground mb-2">Baby Cards</h3>
+                  <p className="text-foreground/80 font-medium">First introductions to family</p>
+                </div>
+                <Button variant="outline" className="border-2 border-foreground text-foreground hover:bg-foreground hover:text-art-yellow w-fit px-6 py-2 font-bold uppercase text-sm tracking-wide">
+                  Learn More
+                </Button>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-art-pink p-8 rounded-3xl h-64 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
+                <div>
+                  <h3 className="text-2xl font-black text-foreground mb-2">Toddler Collection</h3>
+                  <p className="text-foreground/80 font-medium">Interactive family learning</p>
+                </div>
+                <Button variant="outline" className="border-2 border-foreground text-foreground hover:bg-foreground hover:text-art-pink w-fit px-6 py-2 font-bold uppercase text-sm tracking-wide">
+                  Learn More
+                </Button>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-art-green p-8 rounded-3xl h-64 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
+                <div>
+                  <h3 className="text-2xl font-black text-foreground mb-2">Custom Sets</h3>
+                  <p className="text-foreground/80 font-medium">Personalized family stories</p>
+                </div>
+                <Button variant="outline" className="border-2 border-foreground text-foreground hover:bg-foreground hover:text-art-green w-fit px-6 py-2 font-bold uppercase text-sm tracking-wide">
+                  Learn More
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Parties & Events section */}
+      <section className="relative py-20 bg-art-blue/20 z-10">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-8">Parties & Events</h2>
+          <p className="text-xl text-foreground/80 font-medium mb-8 max-w-2xl mx-auto">
+            Make birthdays and celebrations extra special with custom family learning activities
+          </p>
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base font-bold uppercase tracking-wide">
+            Learn More
+          </Button>
+        </div>
+      </section>
+
+      {/* Featured Products - Art Center style */}
+      <section className="relative py-20 z-10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Family Goodies</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="group">
+              <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="aspect-square bg-art-yellow/20 rounded-2xl mb-4 flex items-center justify-center">
+                  <Heart className="h-16 w-16 text-art-pink" />
+                </div>
+                <h3 className="text-xl font-black text-foreground mb-2">Family Memory Box</h3>
+                <p className="text-lg font-bold text-foreground mb-4">$28.00</p>
+                <div className="space-y-2 mb-4">
+                  <p className="text-sm text-muted-foreground font-medium">Color</p>
+                  <div className="flex space-x-2">
+                    <div className="w-6 h-6 bg-art-pink rounded-full border-2 border-foreground"></div>
+                    <div className="w-6 h-6 bg-art-yellow rounded-full border border-border"></div>
+                    <div className="w-6 h-6 bg-art-blue rounded-full border border-border"></div>
+                  </div>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold uppercase text-sm tracking-wide">
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="aspect-square bg-art-green/20 rounded-2xl mb-4 flex items-center justify-center">
+                  <Users className="h-16 w-16 text-art-green" />
+                </div>
+                <h3 className="text-xl font-black text-foreground mb-2">Kids Family Tee</h3>
+                <p className="text-lg font-bold text-foreground mb-4">$20.00</p>
+                <div className="space-y-2 mb-4">
+                  <p className="text-sm text-muted-foreground font-medium">Size</p>
+                  <div className="flex space-x-2">
+                    <span className="px-3 py-1 border border-border rounded text-sm font-medium">XS</span>
+                    <span className="px-3 py-1 border border-border rounded text-sm font-medium">S</span>
+                    <span className="px-3 py-1 border border-border rounded text-sm font-medium">M</span>
+                  </div>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold uppercase text-sm tracking-wide">
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+
+            <div className="group">
+              <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="aspect-square bg-art-orange/20 rounded-2xl mb-4 flex items-center justify-center">
+                  <Image className="h-16 w-16 text-art-orange" />
+                </div>
+                <h3 className="text-xl font-black text-foreground mb-2">Custom Photo Cards</h3>
+                <p className="text-lg font-bold text-foreground mb-4">$26.00</p>
+                <div className="space-y-2 mb-4">
+                  <p className="text-sm text-muted-foreground font-medium">Set Size</p>
+                  <div className="flex space-x-2">
+                    <span className="px-3 py-1 border border-border rounded text-sm font-medium">10</span>
+                    <span className="px-3 py-1 border border-border rounded text-sm font-medium">20</span>
+                    <span className="px-3 py-1 border border-border rounded text-sm font-medium">30</span>
+                  </div>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold uppercase text-sm tracking-wide">
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="bg-background border-t border-border py-16">
+      <footer className="relative bg-background border-t border-border py-16 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <Heart className="h-6 w-6 text-accent" />
-              <span className="text-xl font-semibold text-foreground">FamilyCards</span>
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Heart className="h-6 w-6 text-art-pink" />
+              <span className="text-2xl font-black text-foreground tracking-tight">FamilyCards</span>
             </div>
-            <p className="text-muted-foreground font-light">
+            <p className="text-muted-foreground font-medium text-lg">
               Creating memories, one card at a time
             </p>
           </div>
