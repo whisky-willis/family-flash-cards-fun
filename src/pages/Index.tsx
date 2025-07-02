@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -6,6 +6,16 @@ import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCh
 import { useNavigate } from "react-router-dom";
 const Index = () => {
   const navigate = useNavigate();
+  const names = ['George', 'Baileigh', 'Nick', 'Maggie'];
+  const [currentNameIndex, setCurrentNameIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentNameIndex((prevIndex) => (prevIndex + 1) % names.length);
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, []);
   return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Organic background shapes inspired by Art Center */}
       <div className="absolute inset-0 pointer-events-none">
@@ -81,7 +91,7 @@ const Index = () => {
         {/* Content over blobs - exact Art Center positioning */}
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
           <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-12 leading-tight max-w-4xl">
-            Help George Learn
+            Help <span className="animate-fade-in">{names[currentNameIndex]}</span> Learn
             <br />About Family and Friends
           </h1>
           <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest mb-16">
