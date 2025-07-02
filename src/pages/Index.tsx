@@ -141,87 +141,101 @@ const Index = () => {
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Backed by Research: Real Benefits for Your Child</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="group">
-              <div className="bg-art-yellow p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
-                <div className="text-4xl mb-4">🧠</div>
-                <h3 className="text-2xl font-black text-foreground mb-4">Boosts Academic Performance</h3>
-                <p className="text-foreground/80 font-medium mb-4 flex-grow">
-                  Children who engage in family storytelling show higher language and literacy skills that last through elementary school, with benefits extending 7 years down the line.
-                </p>
-                <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
-                  Source: Duke University Family Life Project
-                </a>
-              </div>
-            </div>
+          <Carousel className="w-full max-w-6xl mx-auto">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="group">
+                  <div className="bg-art-yellow p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                    <div className="text-4xl mb-4">🧠</div>
+                    <h3 className="text-2xl font-black text-foreground mb-4">Boosts Academic Performance</h3>
+                    <p className="text-foreground/80 font-medium mb-4 flex-grow">
+                      Children who engage in family storytelling show higher language and literacy skills that last through elementary school, with benefits extending 7 years down the line.
+                    </p>
+                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
+                      Source: Duke University Family Life Project
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
 
-            <div className="group">
-              <div className="bg-art-pink p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
-                <div className="text-4xl mb-4">❤️</div>
-                <h3 className="text-2xl font-black text-foreground mb-4">Builds Emotional Intelligence</h3>
-                <p className="text-foreground/80 font-medium mb-4 flex-grow">
-                  Develops empathy, self-awareness, and social skills that lead to better relationships and reduced anxiety - core foundations for lifelong success.
-                </p>
-                <a href="https://casel.org/fundamentals-of-sel/" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
-                  Source: CASEL Research
-                </a>
-              </div>
-            </div>
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="group">
+                  <div className="bg-art-pink p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                    <div className="text-4xl mb-4">❤️</div>
+                    <h3 className="text-2xl font-black text-foreground mb-4">Builds Emotional Intelligence</h3>
+                    <p className="text-foreground/80 font-medium mb-4 flex-grow">
+                      Develops empathy, self-awareness, and social skills that lead to better relationships and reduced anxiety - core foundations for lifelong success.
+                    </p>
+                    <a href="https://casel.org/fundamentals-of-sel/" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
+                      Source: CASEL Research
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
 
-            <div className="group">
-              <div className="bg-art-green p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
-                <div className="text-4xl mb-4">🌟</div>
-                <h3 className="text-2xl font-black text-foreground mb-4">Strengthens Identity & Self-Esteem</h3>
-                <p className="text-foreground/80 font-medium mb-4 flex-grow">
-                  Research shows kids who know more about their families have stronger self-control, higher confidence, and believe their families function better.
-                </p>
-                <a href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
-                  Source: Emory University Study
-                </a>
-              </div>
-            </div>
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="group">
+                  <div className="bg-art-green p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                    <div className="text-4xl mb-4">🌟</div>
+                    <h3 className="text-2xl font-black text-foreground mb-4">Strengthens Identity & Self-Esteem</h3>
+                    <p className="text-foreground/80 font-medium mb-4 flex-grow">
+                      Research shows kids who know more about their families have stronger self-control, higher confidence, and believe their families function better.
+                    </p>
+                    <a href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
+                      Source: Emory University Study
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
 
-            <div className="group md:col-span-2 lg:col-span-1">
-              <div className="bg-art-blue p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
-                <div className="text-4xl mb-4">🤝</div>
-                <h3 className="text-2xl font-black text-foreground mb-4">Creates Lasting Family Bonds</h3>
-                <p className="text-foreground/80 font-medium mb-4 flex-grow">
-                  Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
-                </p>
-                <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
-                  Source: NAEYC Research
-                </a>
-              </div>
-            </div>
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="group">
+                  <div className="bg-art-blue p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                    <div className="text-4xl mb-4">🤝</div>
+                    <h3 className="text-2xl font-black text-foreground mb-4">Creates Lasting Family Bonds</h3>
+                    <p className="text-foreground/80 font-medium mb-4 flex-grow">
+                      Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
+                    </p>
+                    <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
+                      Source: NAEYC Research
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
 
-            <div className="group lg:col-span-2">
-              <div className="bg-art-orange p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
-                <div className="text-4xl mb-4">🎯</div>
-                <h3 className="text-2xl font-black text-foreground mb-4">Develops Critical Thinking</h3>
-                <p className="text-foreground/80 font-medium mb-4 flex-grow">
-                  Encourages children to ask questions, understand different perspectives, and make connections - essential skills for school and life.
-                </p>
-                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
-                  Source: Brain Imaging Studies
-                </a>
-              </div>
-            </div>
-          </div>
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="group">
+                  <div className="bg-art-orange p-8 rounded-3xl h-auto flex flex-col hover:scale-105 transition-transform duration-300">
+                    <div className="text-4xl mb-4">🎯</div>
+                    <h3 className="text-2xl font-black text-foreground mb-4">Develops Critical Thinking</h3>
+                    <p className="text-foreground/80 font-medium mb-4 flex-grow">
+                      Encourages children to ask questions, understand different perspectives, and make connections - essential skills for school and life.
+                    </p>
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="text-sm font-bold text-foreground/60 hover:text-foreground underline">
+                      Source: Brain Imaging Studies
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
 
           <div className="mt-16 text-center">
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-primary/20">
