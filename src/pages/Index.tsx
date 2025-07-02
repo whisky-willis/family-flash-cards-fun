@@ -48,20 +48,47 @@ const Index = () => {
         </div>
       </nav>
 
-      {/* Hero Section - Art Center inspired */}
-      <section className="relative py-32 px-6 lg:px-8 z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-8 leading-tight">
+      {/* Hero Section - Exact Art Center style with organic blobs */}
+      <section className="relative h-screen px-6 lg:px-8 z-10 overflow-hidden">
+        {/* Large organic blob shapes - exact Art Center style */}
+        <div className="absolute inset-0">
+          {/* Pink blob - top left */}
+          <div className="absolute top-0 left-0 w-[600px] h-[500px] bg-art-pink opacity-90" style={{
+            clipPath: 'polygon(20% 0%, 80% 10%, 100% 50%, 85% 90%, 30% 100%, 0% 70%, 5% 30%)'
+          }}></div>
+          
+          {/* Yellow blob - center large */}
+          <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-95 transform -translate-x-1/2 -translate-y-1/2" style={{
+            clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
+          }}></div>
+          
+          {/* Green blob - top right */}
+          <div className="absolute top-0 right-0 w-[550px] h-[600px] bg-art-green opacity-90" style={{
+            clipPath: 'polygon(15% 0%, 85% 0%, 100% 40%, 95% 80%, 60% 100%, 20% 85%, 0% 50%, 10% 20%)'
+          }}></div>
+          
+          {/* Red/Orange blob - bottom left */}
+          <div className="absolute bottom-0 left-0 w-[500px] h-[400px] bg-art-red opacity-85" style={{
+            clipPath: 'polygon(30% 0%, 80% 15%, 100% 60%, 75% 100%, 0% 100%, 0% 40%, 15% 10%)'
+          }}></div>
+          
+          {/* Blue blob - bottom right */}
+          <div className="absolute bottom-0 right-0 w-[450px] h-[350px] bg-art-blue opacity-85" style={{
+            clipPath: 'polygon(40% 0%, 100% 0%, 100% 70%, 80% 100%, 20% 90%, 10% 50%, 25% 15%)'
+          }}></div>
+        </div>
+
+        {/* Content over blobs - exact Art Center positioning */}
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
+          <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-12 leading-tight max-w-4xl">
             Family Cards and
             <br />Learning for Kids
           </h1>
-          <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest">
+          <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest mb-16">
             Create Now
           </Button>
-          <div className="mt-8">
-            <div className="inline-block animate-bounce">
-              <ArrowRight className="h-6 w-6 text-foreground rotate-90" />
-            </div>
+          <div className="animate-bounce">
+            <ArrowRight className="h-6 w-6 text-foreground rotate-90" />
           </div>
         </div>
       </section>
