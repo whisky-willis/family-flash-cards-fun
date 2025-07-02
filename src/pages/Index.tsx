@@ -6,17 +6,17 @@ import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCh
 import { useNavigate } from "react-router-dom";
 const Index = () => {
   const navigate = useNavigate();
-  return <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm">
+      <nav className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
-              <Heart className="h-7 w-7 text-black" />
-              <span className="text-2xl font-semibold text-black tracking-tight">FamilyCards</span>
+              <Heart className="h-7 w-7 text-accent" />
+              <span className="text-2xl font-semibold text-foreground tracking-tight">FamilyCards</span>
             </div>
             <div className="flex items-center space-x-8">
-              <Button onClick={() => navigate('/create')} className="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-sm">
+              <Button onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-sm">
                 Create Cards
               </Button>
             </div>
@@ -25,25 +25,25 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-24 px-6 lg:px-8 relative bg-gradient-to-br from-gray-50 to-white">
-        <div className="absolute inset-0 bg-cover bg-top bg-no-repeat opacity-30" style={{
+      <section className="py-24 px-6 lg:px-8 relative bg-gradient-to-br from-secondary/10 to-accent/10">
+        <div className="absolute inset-0 bg-cover bg-top bg-no-repeat opacity-20" style={{
         backgroundImage: `url('/lovable-uploads/38ef78d9-ed91-4669-9853-b2edf0a11427.png')`
       }} />
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-6xl lg:text-7xl font-light text-black mb-8 tracking-tight leading-tight">
+          <h1 className="text-6xl lg:text-7xl font-light text-foreground mb-8 tracking-tight leading-tight">
             Help George learn about
-            <span className="block font-normal">family & friends</span>
+            <span className="block font-normal text-primary">family & friends</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed font-light">
             Create personalized flashcards featuring your family and friends. Perfect for babies and toddlers 
             to learn names, faces, and stories about the people they love most.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate('/create')} className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-base font-medium rounded-sm">
+            <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-base font-medium rounded-sm">
               Create Your Cards
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 py-4 border-gray-300 hover:bg-gray-50 rounded-sm font-medium">
+            <Button size="lg" variant="outline" className="text-base px-8 py-4 border-border hover:bg-accent hover:text-accent-foreground rounded-sm font-medium">
               See Examples
             </Button>
           </div>
@@ -51,44 +51,44 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-5xl font-light text-black mb-6 tracking-tight">
+            <h2 className="text-5xl font-light text-foreground mb-6 tracking-tight">
               How it works
             </h2>
-            <p className="text-xl text-gray-600 font-light">
+            <p className="text-xl text-muted-foreground font-light">
               Creating your custom family cards is simple
             </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-16">
             <div className="text-center">
-              <div className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
+              <div className="bg-primary text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
                 1
               </div>
-              <h3 className="text-2xl font-light text-black mb-4">Upload Photos</h3>
-              <p className="text-gray-600 text-base leading-relaxed">
+              <h3 className="text-2xl font-light text-foreground mb-4">Upload Photos</h3>
+              <p className="text-muted-foreground text-base leading-relaxed">
                 Add photos of family members and friends you want to include
               </p>
             </div>
 
             <div className="text-center">
-              <div className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
+              <div className="bg-secondary text-secondary-foreground rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
                 2
               </div>
-              <h3 className="text-2xl font-light text-black mb-4">Add Details</h3>
-              <p className="text-gray-600 text-base leading-relaxed">
+              <h3 className="text-2xl font-light text-foreground mb-4">Add Details</h3>
+              <p className="text-muted-foreground text-base leading-relaxed">
                 Fill in names, birthdays, favorite things, and fun facts
               </p>
             </div>
 
             <div className="text-center">
-              <div className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
+              <div className="bg-accent text-accent-foreground rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium mx-auto mb-8">
                 3
               </div>
-              <h3 className="text-2xl font-light text-black mb-4">Order & Enjoy</h3>
-              <p className="text-gray-600 text-base leading-relaxed">
+              <h3 className="text-2xl font-light text-foreground mb-4">Order & Enjoy</h3>
+              <p className="text-muted-foreground text-base leading-relaxed">
                 Review your cards and place your order - we'll handle the rest
               </p>
             </div>
@@ -97,11 +97,11 @@ const Index = () => {
       </section>
 
       {/* Developmental Benefits Section */}
-      <section className="py-24 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <section className="py-24 bg-gradient-to-br from-vibrant-blue/10 to-vibrant-purple/10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-5xl font-light text-black mb-6 tracking-tight">Backed by Research</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+            <h2 className="text-5xl font-light text-foreground mb-6 tracking-tight">Backed by Research</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
               University research proves that children who engage in family storytelling and cultural learning 
               demonstrate higher academic performance, stronger emotional health, and better social skills compared to their peers.
             </p>
@@ -215,15 +215,15 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-black text-white">
+      <section className="py-24 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto text-center px-6 lg:px-8">
           <h2 className="text-5xl font-light mb-6 tracking-tight">
             Ready to create your family cards?
           </h2>
-          <p className="text-xl mb-12 opacity-80 font-light">
+          <p className="text-xl mb-12 opacity-90 font-light">
             Give your child a special way to learn about the people who love them most
           </p>
-          <Button size="lg" onClick={() => navigate('/create')} className="bg-white text-black hover:bg-gray-100 text-base px-8 py-4 rounded-sm font-medium">
+          <Button size="lg" onClick={() => navigate('/create')} className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-4 rounded-sm font-medium">
             Start Creating Now
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -231,14 +231,14 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-16">
+      <footer className="bg-background border-t border-border py-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <Heart className="h-6 w-6 text-black" />
-              <span className="text-xl font-semibold text-black">FamilyCards</span>
+              <Heart className="h-6 w-6 text-accent" />
+              <span className="text-xl font-semibold text-foreground">FamilyCards</span>
             </div>
-            <p className="text-gray-600 font-light">
+            <p className="text-muted-foreground font-light">
               Creating memories, one card at a time
             </p>
           </div>
