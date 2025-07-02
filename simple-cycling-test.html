@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cycling Names Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .debug {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #007acc;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Help <span id="currentName" class="highlight">George</span> learn about family & friends</h1>
+        
+        <div class="debug">
+            <h3>Debug Info:</h3>
+            <p>Current Index: <span id="debugIndex">0</span></p>
+            <p>Current Name: <span id="debugName">George</span></p>
+            <p>Next change in: <span id="countdown">2</span> seconds</p>
+            <p>Total cycles: <span id="totalCycles">0</span></p>
+        </div>
+        
+        <button onclick="startCycling()">Start Cycling</button>
+        <button onclick="stopCycling()">Stop Cycling</button>
+        <button onclick="nextName()">Next Name</button>
+    </div>
+
+    <script>
+        const names = ['George', 'Maggie', 'Tom'];
+        let currentIndex = 0;
+        let interval = null;
+        let countdownInterval = null;
+        let totalCycles = 0;
+        let timeLeft = 2;
+
+        function updateDisplay() {
+            document.getElementById('currentName').textContent = names[currentIndex];
+            document.getElementById('debugIndex').textContent = currentIndex;
+            document.getElementById('debugName').textContent = names[currentIndex];
+            document.getElementById('totalCycles').textContent = totalCycles;
+            console.log(`🔄 Updated display: Index ${currentIndex}, Name: ${names[currentIndex]}`);
+        }
+
+        function nextName() {
+            currentIndex = (currentIndex + 1) % names.length;
+            totalCycles++;
+            timeLeft = 2;
+            updateDisplay();
+            console.log(`➡️ Manual next: ${names[currentIndex]}`);
+        }
+
+        function startCycling() {
+            if (interval) return; // Already running
+            
+            console.log('🚀 Starting automatic cycling...');
+            
+            interval = setInterval(() => {
+                console.log('⏰ Interval triggered!');
+                nextName();
+            }, 2000);
+
+            // Countdown timer
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('countdown').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    timeLeft = 2;
+                }
+            }, 1000);
+
+            console.log('✅ Cycling started!');
+        }
+
+        function stopCycling() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+                console.log('⏹️ Cycling stopped');
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+        }
+
+        // Auto-start after 1 second
+        setTimeout(() => {
+            console.log('🎬 Auto-starting cycling...');
+            startCycling();
+        }, 1000);
+
+        // Initial display
+        updateDisplay();
+    </script>
+</body>
+</html>

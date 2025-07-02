@@ -1,32 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import NameCycler from '../components/NameCycler';
 const Index = () => {
   const navigate = useNavigate();
   
-  // State for cycling names
-  const names = ['George', 'Maggie', 'Tom'];
-  const [currentNameIndex, setCurrentNameIndex] = useState(0);
+  // Simple cycling names state
+  const [nameIndex, setNameIndex] = useState(0);
+  const allNames = ['George', 'Maggie', 'Tom'];
   
-  // Effect to cycle through names every 2 seconds
+  // Start cycling immediately on mount
   useEffect(() => {
-    console.log('Setting up name cycling interval');
-    const interval = setInterval(() => {
-      setCurrentNameIndex((prevIndex) => {
-        const newIndex = (prevIndex + 1) % 3;
-        console.log(`Cycling from ${prevIndex} to ${newIndex}`);
-        return newIndex;
-      });
-    }, 2000);
+    console.log('� Component mounted, starting name cycling');
     
-    return () => {
-      console.log('Cleaning up interval');
-      clearInterval(interval);
+    const cycleNames = () => {
+      console.log('🔄 Cycling to next name...');
+      setNameIndex(current => {
+        const next = (current + 1) % 3;
+        console.log(`Name change: ${allNames[current]} → ${allNames[next]}`);
+        return next;
+      });
     };
-  }, []); // Empty dependency array since we're using a hardcoded length
+    
+    // Start cycling after 2 seconds, then every 2 seconds
+    const timer = setInterval(cycleNames, 2000);
+    
+    // Cleanup
+    return () => {
+      console.log('🧹 Component unmounting, clearing timer');
+      clearInterval(timer);
+    };
+  }, [allNames]);
   return <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm">
@@ -54,8 +61,16 @@ const Index = () => {
         backgroundImage: `url('/lovable-uploads/38ef78d9-ed91-4669-9853-b2edf0a11427.png')`
       }} />
         <div className="max-w-4xl mx-auto text-center relative z-10">
+          {/* Test component */}
+          <NameCycler />
+          
+          {/* Debug info - remove this after testing */}
+          <div className="mb-4 text-sm text-gray-500">
+            Debug: Index={nameIndex}, Name={allNames[nameIndex]}
+          </div>
+          
           <h1 className="text-6xl lg:text-7xl font-light text-black mb-8 tracking-tight leading-tight">
-            Help {names[currentNameIndex] || 'George'} learn about
+            Help {allNames[nameIndex] || 'George'} learn about
             <span className="block font-normal">family & friends</span>
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
