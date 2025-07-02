@@ -15,24 +15,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Updated primary to vibrant teal from the image */
+    --primary: 175 100% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Updated secondary to bright orange */
+    --secondary: 16 100% 60%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Updated accent to vibrant pink */
+    --accent: 330 100% 75%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 175 100% 35%;
+
+    /* New vibrant color palette from the image */
+    --vibrant-yellow: 52 100% 50%;
+    --vibrant-blue: 215 100% 50%;
+    --vibrant-purple: 280 100% 70%;
+    --vibrant-green: 140 100% 35%;
+    --gradient-playful: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-warm: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--vibrant-yellow)));
+    --shadow-colorful: 0 10px 30px -10px hsl(var(--primary) / 0.3);
 
     --radius: 0.5rem;
 
