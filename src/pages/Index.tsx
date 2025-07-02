@@ -8,14 +8,30 @@ const Index = () => {
   const navigate = useNavigate();
   const names = ['George', 'Baileigh', 'Nick', 'Maggie'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentNameIndex((prevIndex) => (prevIndex + 1) % names.length);
-    }, 1500);
+    const currentName = names[currentNameIndex];
+    let charIndex = 0;
+    setDisplayedText('');
+    setIsTyping(true);
 
-    return () => clearInterval(interval);
-  }, []);
+    const typeInterval = setInterval(() => {
+      if (charIndex <= currentName.length) {
+        setDisplayedText(currentName.slice(0, charIndex));
+        charIndex++;
+      } else {
+        clearInterval(typeInterval);
+        setIsTyping(false);
+        setTimeout(() => {
+          setCurrentNameIndex((prevIndex) => (prevIndex + 1) % names.length);
+        }, 1000);
+      }
+    }, 100);
+
+    return () => clearInterval(typeInterval);
+  }, [currentNameIndex]);
   return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Organic background shapes inspired by Art Center */}
       <div className="absolute inset-0 pointer-events-none">
@@ -91,7 +107,10 @@ const Index = () => {
         {/* Content over blobs - exact Art Center positioning */}
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
           <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-12 leading-tight max-w-4xl">
-            Help <span className="animate-fade-in">{names[currentNameIndex]}</span> Learn
+            Help <span className="relative">
+              {displayedText}
+              {isTyping && <span className="animate-pulse">|</span>}
+            </span> Learn
             <br />About Family and Friends
           </h1>
           <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest mb-16">
