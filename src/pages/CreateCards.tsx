@@ -85,22 +85,31 @@ const CreateCards = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-pink-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Organic background shapes */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-art-pink rounded-full mix-blend-multiply filter blur-xl opacity-70 -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-1/4 right-0 w-80 h-80 bg-art-yellow rounded-full mix-blend-multiply filter blur-xl opacity-70 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-art-green rounded-full mix-blend-multiply filter blur-xl opacity-70 translate-y-1/3"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-art-blue rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+        <div className="absolute top-1/2 left-1/2 w-56 h-56 bg-art-orange rounded-full mix-blend-multiply filter blur-xl opacity-70 -translate-x-1/2 -translate-y-1/2"></div>
+      </div>
+
+      {/* Navigation - Art Center style */}
+      <nav className="bg-background/90 backdrop-blur-sm sticky top-0 z-50 border-b border-border/20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-pink-500" />
-              <span className="text-2xl font-bold text-gray-800">FamilyCards</span>
+              <Heart className="h-6 w-6 text-art-pink" />
+              <span className="text-xl font-bold text-foreground tracking-tight">FamilyCards</span>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/')}>
+              <Button variant="outline" onClick={() => navigate('/')} className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold uppercase text-sm tracking-wide">
                 Home
               </Button>
               <Button 
                 onClick={handleProceedToOrder}
-                className="bg-pink-500 hover:bg-pink-600"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium uppercase tracking-wide"
                 disabled={cards.length === 0}
               >
                 Order Cards ({cards.length})
@@ -110,12 +119,12 @@ const CreateCards = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl lg:text-5xl font-black text-foreground mb-6">
             Create Your Family Cards
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
             Add photos and details for each family member or friend
           </p>
         </div>
@@ -123,10 +132,10 @@ const CreateCards = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Card Form */}
           <div>
-            <Card className="border-pink-100">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-pink/20 rounded-3xl shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-6 w-6 text-pink-500" />
+                <CardTitle className="flex items-center space-x-2 text-2xl font-black">
+                  <Users className="h-6 w-6 text-art-pink" />
                   <span>{isEditing ? 'Edit Card' : 'Add New Card'}</span>
                 </CardTitle>
               </CardHeader>
@@ -147,10 +156,10 @@ const CreateCards = () => {
 
           {/* Card Preview */}
           <div>
-            <Card className="border-blue-100">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <ImageIcon className="h-6 w-6 text-blue-500" />
+                <CardTitle className="flex items-center space-x-2 text-2xl font-black">
+                  <ImageIcon className="h-6 w-6 text-art-blue" />
                   <span>Card Preview</span>
                 </CardTitle>
               </CardHeader>
@@ -164,12 +173,12 @@ const CreateCards = () => {
         {/* Cards Collection */}
         {cards.length > 0 && (
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-8 text-center">
               Your Card Collection ({cards.length} cards)
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cards.map((card) => (
-                <div key={card.id} className="relative">
+                <div key={card.id} className="relative hover:scale-105 transition-transform duration-300">
                   <CardPreview 
                     card={card} 
                     onEdit={() => handleEditCard(card)}

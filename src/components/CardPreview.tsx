@@ -18,10 +18,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
   if (!hasData) {
     return (
       <div className="w-full max-w-sm mx-auto">
-        <Card className="bg-gradient-to-br from-pink-100 to-blue-100 border-2 border-dashed border-gray-300">
+        <Card className="bg-art-yellow/20 border-2 border-dashed border-art-yellow/50 rounded-3xl">
           <CardContent className="p-6 text-center">
-            <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">Fill in the form to see your card preview</p>
+            <Users className="h-12 w-12 text-art-yellow mx-auto mb-4" />
+            <p className="text-muted-foreground font-medium">Fill in the form to see your card preview</p>
           </CardContent>
         </Card>
       </div>
@@ -30,13 +30,13 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <Card className="bg-gradient-to-br from-pink-100 to-blue-100 border-2 border-pink-200 shadow-lg">
+      <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardContent className="p-6">
           {/* Photo Section */}
           <div className="text-center mb-4">
             {card.photo ? (
               <div className="px-4">
-                <div className="relative overflow-hidden rounded-lg border-4 border-white shadow-md" style={{ height: '180px' }}>
+                <div className="relative overflow-hidden rounded-2xl border-4 border-white shadow-md" style={{ height: '180px' }}>
                   <img 
                     src={card.photo} 
                     alt={card.name}
@@ -50,14 +50,14 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                 </div>
               </div>
             ) : (
-              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto border-4 border-white shadow-md flex items-center justify-center">
-                <Users className="h-12 w-12 text-gray-400" />
+              <div className="w-32 h-32 bg-art-yellow/20 rounded-full mx-auto border-4 border-white shadow-md flex items-center justify-center">
+                <Users className="h-12 w-12 text-art-yellow" />
               </div>
             )}
           </div>
 
           {/* Name */}
-          <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">
+          <h3 className="text-2xl font-black text-center text-foreground mb-4">
             {card.name}
           </h3>
 
@@ -65,15 +65,15 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           <div className="space-y-2 text-sm">
             {card.relationship && card.relationship.trim() && (
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-600">Relationship:</span>
-                <span className="text-gray-800 capitalize">{card.relationship}</span>
+                <span className="font-bold text-muted-foreground">Relationship:</span>
+                <span className="text-foreground capitalize font-medium">{card.relationship}</span>
               </div>
             )}
             
             {card.dateOfBirth && (
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-600">Birthday:</span>
-                <span className="text-gray-800">
+                <span className="font-bold text-muted-foreground">Birthday:</span>
+                <span className="text-foreground font-medium">
                   {new Date(card.dateOfBirth).toLocaleDateString()}
                 </span>
               </div>
@@ -81,22 +81,22 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             
             {card.favoriteColor && card.favoriteColor.trim() && (
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-600">Favorite Color:</span>
-                <span className="text-gray-800">{card.favoriteColor}</span>
+                <span className="font-bold text-muted-foreground">Favorite Color:</span>
+                <span className="text-foreground font-medium">{card.favoriteColor}</span>
               </div>
             )}
             
             {card.hobbies && card.hobbies.trim() && (
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-600">Hobbies:</span>
-                <span className="text-gray-800 text-right">{card.hobbies}</span>
+                <span className="font-bold text-muted-foreground">Hobbies:</span>
+                <span className="text-foreground text-right font-medium">{card.hobbies}</span>
               </div>
             )}
             
             {card.funFact && card.funFact.trim() && (
-              <div className="mt-3 p-3 bg-white/50 rounded-lg">
-                <span className="font-semibold text-gray-600 block mb-1">Fun Fact:</span>
-                <p className="text-gray-800 text-xs leading-relaxed">{card.funFact}</p>
+              <div className="mt-3 p-3 bg-art-yellow/20 rounded-2xl">
+                <span className="font-bold text-muted-foreground block mb-1">Fun Fact:</span>
+                <p className="text-foreground text-xs leading-relaxed font-medium">{card.funFact}</p>
               </div>
             )}
           </div>
@@ -108,7 +108,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                 variant="outline" 
                 size="sm" 
                 onClick={onEdit}
-                className="flex-1 border-pink-300 hover:bg-pink-50"
+                className="flex-1 border-2 border-art-green text-art-green hover:bg-art-green hover:text-white font-bold uppercase text-xs tracking-wide"
               >
                 Edit
               </Button>
@@ -116,7 +116,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                 variant="outline" 
                 size="sm" 
                 onClick={onDelete}
-                className="flex-1 border-red-300 hover:bg-red-50 text-red-600"
+                className="flex-1 border-2 border-art-red text-art-red hover:bg-art-red hover:text-white font-bold uppercase text-xs tracking-wide"
               >
                 Delete
               </Button>
@@ -127,8 +127,8 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
 
       {/* Card Brand */}
       <div className="text-center mt-2">
-        <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
-          <Heart className="h-3 w-3" />
+        <div className="flex items-center justify-center space-x-1 text-xs text-muted-foreground font-medium">
+          <Heart className="h-3 w-3 text-art-pink" />
           <span>FamilyCards</span>
         </div>
       </div>

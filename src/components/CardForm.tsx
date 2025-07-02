@@ -108,11 +108,11 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           type="file"
           accept="image/*"
           onChange={handleImageUpload}
-          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
+          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
         />
         {formData.photo && (
           <div className="mt-3">
-            <Label className="text-sm text-gray-600 mb-2 block">Adjust Image Position</Label>
+            <Label className="text-sm text-muted-foreground mb-2 block font-medium">Adjust Image Position</Label>
             <ImagePositionAdjuster
               imageSrc={formData.photo}
               alt={formData.name || "Preview"}
@@ -175,11 +175,11 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
       </div>
 
       <div className="flex space-x-4">
-        <Button type="submit" className="bg-pink-500 hover:bg-pink-600 flex-1">
+        <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 font-bold uppercase text-sm tracking-wide">
           {isEditing ? 'Update Card' : 'Add Card'}
         </Button>
         {isEditing && onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold uppercase text-sm tracking-wide">
             Cancel
           </Button>
         )}
