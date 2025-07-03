@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CardPreview } from "@/components/CardPreview";
 import kindredLogo from "@/assets/kindred-cards-logo.png";
 const Index = () => {
   const navigate = useNavigate();
@@ -173,112 +174,111 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Our Programs - Art Center style */}
+      {/* Card Examples - Art Center style */}
       <section className="relative py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Backed by Research: Real Benefits for Your Child</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">See Example Family Cards</h2>
+            <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">
+              Discover how our cards help children learn about the special people in their lives
+            </p>
           </div>
 
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group p-2">
-                  <div className="bg-art-yellow p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-                    <div>
-                      <div className="text-3xl mb-3">🧠</div>
-                      <h3 className="text-xl font-black text-foreground mb-3">Boosts Academic Performance</h3>
-                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-                        Children who engage in family storytelling show higher language and literacy skills that last through elementary school, with benefits extending 7 years down the line.
-                      </p>
-                    </div>
-                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
-                      Source: Duke University Family Life Project
-                    </a>
-                  </div>
+                <div className="p-2">
+                  <CardPreview 
+                    card={{
+                      name: "Uncle Mike",
+                      relationship: "uncle",
+                      dateOfBirth: "1985-03-15",
+                      favoriteColor: "green",
+                      hobbies: "Guitar, Hiking",
+                      funFact: "Can play 5 different instruments and once climbed Mount Washington!"
+                    }}
+                  />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group p-2">
-                  <div className="bg-art-pink p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-                    <div>
-                      <div className="text-3xl mb-3">❤️</div>
-                      <h3 className="text-xl font-black text-foreground mb-3">Builds Emotional Intelligence</h3>
-                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-                        Develops empathy, self-awareness, and social skills that lead to better relationships and reduced anxiety - core foundations for lifelong success.
-                      </p>
-                    </div>
-                    <a href="https://casel.org/fundamentals-of-sel/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
-                      Source: CASEL Research
-                    </a>
-                  </div>
+                <div className="p-2">
+                  <CardPreview 
+                    card={{
+                      name: "Grandma Rose",
+                      relationship: "grandmother",
+                      dateOfBirth: "1952-09-22",
+                      favoriteColor: "purple",
+                      hobbies: "Gardening, Baking",
+                      funFact: "Has traveled to 23 countries and speaks 4 languages fluently"
+                    }}
+                  />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group p-2">
-                  <div className="bg-art-green p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-                    <div>
-                      <div className="text-3xl mb-3">🌟</div>
-                      <h3 className="text-xl font-black text-foreground mb-3">Strengthens Identity & Self-Esteem</h3>
-                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-                        Research shows kids who know more about their families have stronger self-control, higher confidence, and believe their families function better.
-                      </p>
-                    </div>
-                    <a href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
-                      Source: Emory University Study
-                    </a>
-                  </div>
+                <div className="p-2">
+                  <CardPreview 
+                    card={{
+                      name: "Cousin Alex",
+                      relationship: "cousin",
+                      dateOfBirth: "2010-07-08",
+                      favoriteColor: "orange",
+                      hobbies: "Soccer, Video Games",
+                      funFact: "Scored the winning goal in the championship game last year"
+                    }}
+                  />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group p-2">
-                  <div className="bg-art-blue p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-                    <div>
-                      <div className="text-3xl mb-3">🤝</div>
-                      <h3 className="text-xl font-black text-foreground mb-3">Creates Lasting Family Bonds</h3>
-                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-                        Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
-                      </p>
-                    </div>
-                    <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
-                      Source: NAEYC Research
-                    </a>
-                  </div>
+                <div className="p-2">
+                  <CardPreview 
+                    card={{
+                      name: "Aunt Sarah",
+                      relationship: "aunt",
+                      dateOfBirth: "1978-12-03",
+                      favoriteColor: "pink",
+                      hobbies: "Photography, Yoga",
+                      funFact: "Takes amazing nature photos and teaches yoga to kids on weekends"
+                    }}
+                  />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group p-2">
-                  <div className="bg-art-orange p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-                    <div>
-                      <div className="text-3xl mb-3">🎯</div>
-                      <h3 className="text-xl font-black text-foreground mb-3">Develops Critical Thinking</h3>
-                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-                        Encourages children to ask questions, understand different perspectives, and make connections - essential skills for school and life.
-                      </p>
-                    </div>
-                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
-                      Source: Brain Imaging Studies
-                    </a>
-                  </div>
+                <div className="p-2">
+                  <CardPreview 
+                    card={{
+                      name: "Uncle Tom",
+                      relationship: "uncle",
+                      dateOfBirth: "1980-06-18",
+                      favoriteColor: "blue",
+                      hobbies: "Cooking, Fishing",
+                      funFact: "Makes the world's best pancakes and caught a 20-pound fish last summer"
+                    }}
+                  />
+                </div>
+              </CarouselItem>
+
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <CardPreview 
+                    card={{
+                      name: "Big Sister Emma",
+                      relationship: "sister",
+                      dateOfBirth: "2005-11-14",
+                      favoriteColor: "yellow",
+                      hobbies: "Dancing, Reading",
+                      funFact: "Won first place in the school talent show with her amazing dance routine"
+                    }}
+                  />
                 </div>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-
-          <div className="mt-16 text-center">
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-primary/20">
-              <h3 className="text-2xl font-black text-foreground mb-4">The Bottom Line</h3>
-              <p className="text-lg text-muted-foreground font-medium italic max-w-4xl mx-auto">
-                University research proves that children who engage in family storytelling and cultural learning demonstrate higher academic performance, stronger emotional health, and better social skills compared to their peers.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
