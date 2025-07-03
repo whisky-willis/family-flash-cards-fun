@@ -210,7 +210,8 @@ const Index = () => {
                       dateOfBirth: "1952-09-22",
                       favoriteColor: "purple",
                       hobbies: "Gardening, Baking",
-                      funFact: "Has traveled to 23 countries and speaks 4 languages fluently"
+                      funFact: "Has traveled to 23 countries and speaks 4 languages fluently",
+                      photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png"
                     }}
                   />
                 </div>
