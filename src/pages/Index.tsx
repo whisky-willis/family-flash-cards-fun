@@ -195,7 +195,8 @@ const Index = () => {
                       dateOfBirth: "1985-03-15",
                       favoriteColor: "green",
                       hobbies: "Guitar, Hiking",
-                      funFact: "Can play 5 different instruments and once climbed Mount Washington!"
+                      funFact: "Can play 5 different instruments and once climbed Mount Washington!",
+                      photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png"
                     }}
                   />
                 </div>
