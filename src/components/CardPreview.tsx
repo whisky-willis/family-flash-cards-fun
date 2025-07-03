@@ -77,7 +77,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
               <div className="flex items-center justify-between">
                 <span className="font-bold text-muted-foreground">Birthday:</span>
                 <span className="text-foreground font-medium">
-                  {new Date(card.dateOfBirth).toLocaleDateString()}
+                  {new Date(card.dateOfBirth).toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
                 </span>
               </div>
             )}
