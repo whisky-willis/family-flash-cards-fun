@@ -195,55 +195,55 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Scattered emoji pattern */}
+        {/* Scattered emoji pattern - increased size and reduced opacity for clarity */}
         <div 
-          className="absolute top-2 left-4 opacity-20 text-lg"
+          className="absolute top-2 left-4 opacity-30 text-4xl"
           style={{ color: colorValue }}
         >
           {emojis[0]}
         </div>
         <div 
-          className="absolute top-8 right-6 opacity-15 text-sm"
+          className="absolute top-8 right-6 opacity-20 text-2xl"
           style={{ color: colorValue }}
         >
           {emojis[1]}
         </div>
         <div 
-          className="absolute bottom-12 left-6 opacity-25 text-base"
+          className="absolute bottom-12 left-6 opacity-40 text-3xl"
           style={{ color: colorValue }}
         >
           {emojis[2]}
         </div>
         <div 
-          className="absolute bottom-4 right-4 opacity-20 text-lg"
+          className="absolute bottom-4 right-4 opacity-30 text-4xl"
           style={{ color: colorValue }}
         >
           {emojis[0]}
         </div>
         <div 
-          className="absolute top-1/2 left-2 opacity-15 text-xs"
+          className="absolute top-1/2 left-2 opacity-20 text-xl"
           style={{ color: colorValue }}
         >
           {emojis[1]}
         </div>
         <div 
-          className="absolute top-1/3 right-2 opacity-20 text-sm"
+          className="absolute top-1/3 right-2 opacity-30 text-2xl"
           style={{ color: colorValue }}
         >
           {emojis[2]}
         </div>
         
-        {/* Music hobby gets special treatment with Lucide icon */}
+        {/* Music hobby gets special treatment with Lucide icon - increased size */}
         {(card.hobbies.toLowerCase().includes('music') || 
           card.hobbies.toLowerCase().includes('piano') || 
           card.hobbies.toLowerCase().includes('guitar')) && (
           <>
             <Music 
-              className="absolute top-6 right-8 opacity-10 h-6 w-6" 
+              className="absolute top-6 right-8 opacity-20 h-12 w-12" 
               style={{ color: colorValue }}
             />
             <Music 
-              className="absolute bottom-8 left-8 opacity-15 h-4 w-4" 
+              className="absolute bottom-8 left-8 opacity-30 h-8 w-8" 
               style={{ color: colorValue }}
             />
           </>
