@@ -430,13 +430,8 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </div>
 
           {/* Name */}
-          <h3 className="text-2xl font-fredoka-one text-center mb-4" style={{
-            background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            backgroundSize: '200% 200%',
-            animation: 'gradient 3s ease infinite',
+          <h3 className="text-4xl font-fredoka-one text-center mb-4 text-foreground" style={{
+            textShadow: '0 0 10px white, 0 0 20px white, 0 0 30px white',
           }}>
             {card.name}
           </h3>
