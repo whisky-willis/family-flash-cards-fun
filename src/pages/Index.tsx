@@ -123,7 +123,7 @@ const Index = () => {
       {/* About section - Art Center style */}
       <section className="relative py-20 bg-background/50 z-10">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-4 leading-tight">Turn Screen time into story time</h2>
+          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-4 leading-tight">Turn Screen Time Into Story Time</h2>
           <h4 className="text-xl lg:text-2xl font-medium text-foreground/80 mb-8 leading-relaxed">that develops creativity, curiosity, and individuality</h4>
           
         </div>
