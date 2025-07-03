@@ -81,6 +81,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         });
       };
       reader.readAsDataURL(file);
+      // Clear the input value so the same file can be selected again
+      e.target.value = '';
     }
   };
 
