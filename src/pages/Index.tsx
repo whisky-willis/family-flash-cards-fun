@@ -146,7 +146,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Upload Photos</h3>
               <p className="text-foreground/80 font-medium leading-relaxed">
-                Add family photos and memories that tell your unique story
+                Select photos of family members, friends, and loved ones who matter most
               </p>
             </div>
 
