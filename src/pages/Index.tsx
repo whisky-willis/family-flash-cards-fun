@@ -129,6 +129,50 @@ const Index = () => {
         </div>
       </section>
 
+      {/* How It Works section */}
+      <section className="relative py-20 z-10">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">How It Works</h2>
+            <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">
+              Create personalized learning cards in just three simple steps
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="bg-art-yellow rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <span className="text-2xl font-black text-foreground">1</span>
+              </div>
+              <h3 className="text-xl font-black text-foreground mb-3">Upload Photos</h3>
+              <p className="text-foreground/80 font-medium leading-relaxed">
+                Add family photos and memories that tell your unique story
+              </p>
+            </div>
+
+            <div className="text-center group">
+              <div className="bg-art-pink rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <span className="text-2xl font-black text-foreground">2</span>
+              </div>
+              <h3 className="text-xl font-black text-foreground mb-3">Customize Cards</h3>
+              <p className="text-foreground/80 font-medium leading-relaxed">
+                Personalize with names, questions, and family details
+              </p>
+            </div>
+
+            <div className="text-center group">
+              <div className="bg-art-green rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <span className="text-2xl font-black text-foreground">3</span>
+              </div>
+              <h3 className="text-xl font-black text-foreground mb-3">Start Learning</h3>
+              <p className="text-foreground/80 font-medium leading-relaxed">
+                Enjoy meaningful conversations and strengthen family bonds
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Our Programs - Art Center style */}
       <section className="relative py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
