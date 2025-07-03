@@ -367,37 +367,37 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Scattered emoji pattern - increased size and reduced opacity for clarity */}
         <div 
-          className="absolute top-2 left-4 opacity-30 text-4xl"
+          className="absolute top-2 left-4 opacity-100 text-4xl"
           style={{ color: colorValue }}
         >
           {emojis[0]}
         </div>
         <div 
-          className="absolute top-8 right-6 opacity-20 text-2xl"
+          className="absolute top-8 right-6 opacity-100 text-2xl"
           style={{ color: colorValue }}
         >
           {emojis[1]}
         </div>
         <div 
-          className="absolute bottom-12 left-6 opacity-40 text-3xl"
+          className="absolute bottom-12 left-6 opacity-100 text-3xl"
           style={{ color: colorValue }}
         >
           {emojis[2]}
         </div>
         <div 
-          className="absolute bottom-4 right-4 opacity-30 text-4xl"
+          className="absolute bottom-4 right-4 opacity-100 text-4xl"
           style={{ color: colorValue }}
         >
           {emojis[0]}
         </div>
         <div 
-          className="absolute top-1/2 left-2 opacity-20 text-xl"
+          className="absolute top-1/2 left-2 opacity-100 text-xl"
           style={{ color: colorValue }}
         >
           {emojis[1]}
         </div>
         <div 
-          className="absolute top-1/3 right-2 opacity-30 text-2xl"
+          className="absolute top-1/3 right-2 opacity-100 text-2xl"
           style={{ color: colorValue }}
         >
           {emojis[2]}
@@ -409,11 +409,11 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           card.hobbies.toLowerCase().includes('guitar')) && (
           <>
             <Music 
-              className="absolute top-6 right-8 opacity-20 h-12 w-12" 
+              className="absolute top-6 right-8 opacity-100 h-12 w-12" 
               style={{ color: colorValue }}
             />
             <Music 
-              className="absolute bottom-8 left-8 opacity-30 h-8 w-8" 
+              className="absolute bottom-8 left-8 opacity-100 h-8 w-8" 
               style={{ color: colorValue }}
             />
           </>
