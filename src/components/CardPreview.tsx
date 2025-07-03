@@ -468,12 +468,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             {card.favoriteColor && card.favoriteColor.trim() && (
               <div className="flex items-center justify-between">
                 <span className={`font-bold ${card.theme === 'organic' ? 'text-red-500' : 'text-purple-600'}`}>Favorite Color:</span>
-                <span 
-                  className={`font-semibold ${card.theme === 'organic' ? 'text-blue-600' : 'text-green-600'}`}
-                  style={{
-                    textShadow: `0 0 8px ${getColorValue(card.favoriteColor)}, 0 0 16px ${getColorValue(card.favoriteColor)}40`
-                  }}
-                >
+                <span className={`font-semibold ${card.theme === 'organic' ? 'text-blue-600' : 'text-green-600'}`}>
                   {card.favoriteColor}
                 </span>
               </div>
