@@ -156,7 +156,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Customize Cards</h3>
               <p className="text-foreground/80 font-medium leading-relaxed">
-                Personalize with names, questions, and family details
+                Add names, relationships, fun facts, and conversation starters for each person
               </p>
             </div>
 
