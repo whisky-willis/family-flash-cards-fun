@@ -450,12 +450,12 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     );
   };
 
-  // Determine background style with more visible colors
+  // Determine background style with solid color at 100% opacity
   const getBackgroundStyle = () => {
     if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
       const colorValue = getColorValue(card.favoriteColor);
       return {
-        background: `linear-gradient(135deg, ${colorValue}60, ${colorValue}30, white)`
+        background: colorValue
       };
     }
     
