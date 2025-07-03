@@ -430,23 +430,30 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </div>
 
           {/* Name */}
-          <h3 className="text-2xl font-black text-center text-foreground mb-4">
+          <h3 className="text-2xl font-fredoka-one text-center mb-4" style={{
+            background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            backgroundSize: '200% 200%',
+            animation: 'gradient 3s ease infinite',
+          }}>
             {card.name}
           </h3>
 
           {/* Attributes with white background for visibility */}
-          <div className="space-y-2 text-base bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm">
+          <div className="space-y-2 text-base bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm font-fredoka">
             {card.relationship && card.relationship.trim() && (
               <div className="flex items-center justify-between">
-                <span className="font-bold text-muted-foreground">Relationship:</span>
-                <span className="text-foreground capitalize font-medium">{card.relationship}</span>
+                <span className="font-bold text-art-pink">Relationship:</span>
+                <span className="text-art-blue capitalize font-semibold">{card.relationship}</span>
               </div>
             )}
             
             {card.dateOfBirth && (
               <div className="flex items-center justify-between">
-                <span className="font-bold text-muted-foreground">Birthday:</span>
-                <span className="text-foreground font-medium">
+                <span className="font-bold text-art-green">Birthday:</span>
+                <span className="text-art-orange font-semibold">
                   {(() => {
                     // Parse the date string properly to avoid timezone issues
                     const [year, month, day] = card.dateOfBirth.split('-').map(Number);
@@ -465,9 +472,9 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             
             {card.favoriteColor && card.favoriteColor.trim() && (
               <div className="flex items-center justify-between">
-                <span className="font-bold text-muted-foreground">Favorite Color:</span>
+                <span className="font-bold text-art-blue">Favorite Color:</span>
                 <span 
-                  className="text-foreground font-medium"
+                  className="text-art-red font-semibold"
                   style={{
                     textShadow: `0 0 8px ${getColorValue(card.favoriteColor)}, 0 0 16px ${getColorValue(card.favoriteColor)}40`
                   }}
@@ -479,15 +486,15 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             
             {card.hobbies && card.hobbies.trim() && (
               <div className="flex items-center justify-between">
-                <span className="font-bold text-muted-foreground">Hobbies:</span>
-                <span className="text-foreground text-right font-medium">{card.hobbies}</span>
+                <span className="font-bold text-art-orange">Hobbies:</span>
+                <span className="text-art-green text-right font-semibold">{card.hobbies}</span>
               </div>
             )}
             
             {card.funFact && card.funFact.trim() && (
-              <div className="mt-3 p-3 bg-art-yellow/20 rounded-2xl">
-                <span className="font-bold text-muted-foreground block mb-1">Fun Fact:</span>
-                <p className="text-foreground text-sm leading-relaxed font-medium">{card.funFact}</p>
+              <div className="mt-3 p-3 bg-art-yellow/20 rounded-2xl border-2 border-art-yellow/30">
+                <span className="font-bold text-art-red block mb-1">Fun Fact:</span>
+                <p className="text-art-blue text-sm leading-relaxed font-medium">{card.funFact}</p>
               </div>
             )}
           </div>
