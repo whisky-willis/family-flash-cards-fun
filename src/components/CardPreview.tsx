@@ -427,7 +427,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
       const colorValue = getColorValue(card.favoriteColor);
       return {
-        background: `linear-gradient(135deg, ${colorValue}40, ${colorValue}20, white)`
+        background: `linear-gradient(135deg, ${colorValue}60, ${colorValue}30, white)`
       };
     }
     
