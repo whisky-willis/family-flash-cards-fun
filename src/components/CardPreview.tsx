@@ -110,7 +110,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </h3>
 
           {/* Attributes */}
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-base">
             {card.relationship && card.relationship.trim() && (
               <div className="flex items-center justify-between">
                 <span className="font-bold text-muted-foreground">Relationship:</span>
@@ -162,7 +162,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             {card.funFact && card.funFact.trim() && (
               <div className="mt-3 p-3 bg-art-yellow/20 rounded-2xl">
                 <span className="font-bold text-muted-foreground block mb-1">Fun Fact:</span>
-                <p className="text-foreground text-xs leading-relaxed font-medium">{card.funFact}</p>
+                <p className="text-foreground text-sm leading-relaxed font-medium">{card.funFact}</p>
               </div>
             )}
           </div>
