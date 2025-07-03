@@ -73,9 +73,26 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     );
   }
 
+  // Generate background based on hobbies and favorite color
+  const generateBackground = async () => {
+    if (card.hobbies && card.favoriteColor) {
+      const prompt = `A vibrant, abstract background pattern inspired by ${card.hobbies} with dominant ${card.favoriteColor} colors. Playful, artistic style with soft gradients and fun shapes. Child-friendly and joyful aesthetic. Ultra high resolution.`;
+      // This would be generated dynamically - for now using a colorful gradient
+      return `linear-gradient(135deg, ${getColorValue(card.favoriteColor)}40, ${getColorValue(card.favoriteColor)}20, white)`;
+    }
+    return 'white';
+  };
+
+  const cardBackground = card.hobbies && card.favoriteColor 
+    ? `linear-gradient(135deg, ${getColorValue(card.favoriteColor)}40, ${getColorValue(card.favoriteColor)}20, white)`
+    : 'white';
+
   return (
     <div className="w-full max-w-sm mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <Card 
+        className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+        style={{ background: cardBackground }}
+      >
         <CardContent className="p-6">
           {/* Photo Section */}
           <div className="text-center mb-4">
