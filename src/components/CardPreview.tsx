@@ -383,13 +383,16 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
         {/* Dynamically render emojis based on all detected hobbies */}
         {emojis.map((emoji, index) => {
           const positions = [
-            // Top corners - visible above photo
+            // Top edge - distributed left to right
             { top: '4px', left: '4px', size: 'text-4xl' },
+            { top: '4px', left: '50%', transform: 'translateX(-50%)', size: 'text-3xl' },
             { top: '4px', right: '4px', size: 'text-4xl' },
             
-            // Side edges - fully visible next to photo/content
+            // Upper sides - balanced left and right
             { top: '20%', left: '2px', size: 'text-5xl' },
             { top: '20%', right: '2px', size: 'text-5xl' },
+            
+            // Middle sides - larger for prominence
             { top: '45%', left: '2px', size: 'text-6xl' },
             { top: '45%', right: '2px', size: 'text-6xl' },
             
@@ -397,28 +400,26 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             { top: '70%', left: '4px', size: 'text-4xl' },
             { top: '70%', right: '4px', size: 'text-4xl' },
             
-            // Bottom corners - below attributes
+            // Bottom edge - distributed left to right
             { bottom: '4px', left: '4px', size: 'text-5xl' },
+            { bottom: '4px', left: '50%', transform: 'translateX(-50%)', size: 'text-3xl' },
             { bottom: '4px', right: '4px', size: 'text-5xl' },
             
-            // Strategic edge positions for maximum visibility
-            { top: '12%', left: '15%', size: 'text-2xl' },
-            { top: '12%', right: '15%', size: 'text-2xl' },
-            { top: '35%', left: '12%', size: 'text-xl' },
-            { top: '35%', right: '12%', size: 'text-xl' },
-            { bottom: '15%', left: '15%', size: 'text-2xl' },
-            { bottom: '15%', right: '15%', size: 'text-2xl' },
+            // Corner accents for balance
+            { top: '15%', left: '15%', size: 'text-2xl' },
+            { top: '15%', right: '15%', size: 'text-2xl' },
+            { bottom: '20%', left: '15%', size: 'text-2xl' },
+            { bottom: '20%', right: '15%', size: 'text-2xl' },
             
-            // Far edges for additional coverage
+            // Additional edge coverage
             { top: '60%', left: '8%', size: 'text-xl' },
             { top: '60%', right: '8%', size: 'text-xl' },
-            { bottom: '35%', left: '8%', size: 'text-2xl' },
-            { bottom: '35%', right: '8%', size: 'text-2xl' }
+            { top: '35%', left: '12%', size: 'text-xl' },
+            { top: '35%', right: '12%', size: 'text-xl' }
           ];
           
-          // Ensure emojis are distributed across the entire card, not just sequential positions
-          const distributedIndex = Math.floor((index / emojis.length) * positions.length);
-          const position = positions[distributedIndex];
+          // Use modulo for cycling through positions to ensure even distribution
+          const position = positions[index % positions.length];
           
           return (
             <div
