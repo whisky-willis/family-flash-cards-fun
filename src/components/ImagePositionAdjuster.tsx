@@ -36,11 +36,16 @@ export const ImagePositionAdjuster = ({
     const newX = e.clientX - dragStart.x;
     const newY = e.clientY - dragStart.y;
     
-    setPosition(prev => ({
-      ...prev,
-      x: Math.max(-100, Math.min(100, newX)),
-      y: Math.max(-100, Math.min(100, newY))
-    }));
+    setPosition(prev => {
+      // Scale-aware bounds - higher zoom levels get more movement range
+      const maxBound = Math.min(150, 100 * prev.scale);
+      
+      return {
+        ...prev,
+        x: Math.max(-maxBound, Math.min(maxBound, newX)),
+        y: Math.max(-maxBound, Math.min(maxBound, newY))
+      };
+    });
   }, [isDragging, dragStart]);
 
   const handleGlobalMouseUp = useCallback(() => {
@@ -69,10 +74,21 @@ export const ImagePositionAdjuster = ({
   };
 
   const handleScaleChange = (delta: number) => {
-    setPosition(prev => ({
-      ...prev,
-      scale: Math.max(0.3, Math.min(3, prev.scale + delta))
-    }));
+    setPosition(prev => {
+      const newScale = prev.scale + delta;
+      const clampedScale = Math.max(0.3, Math.min(3, newScale));
+      
+      // Adjust position bounds based on scale - higher scales need more movement range
+      const maxBound = Math.min(150, 100 * clampedScale);
+      
+      return {
+        ...prev,
+        scale: clampedScale,
+        // Keep position within scale-appropriate bounds
+        x: Math.max(-maxBound, Math.min(maxBound, prev.x)),
+        y: Math.max(-maxBound, Math.min(maxBound, prev.y))
+      };
+    });
   };
 
   const handleReset = () => {
@@ -95,7 +111,7 @@ export const ImagePositionAdjuster = ({
           style={{
             backgroundImage: `url(${imageSrc})`,
             backgroundSize: `${100 * position.scale}%`,
-            backgroundPosition: `${50 + (position.x / 3.6)}% ${50 + (position.y / 3.6)}%`,
+            backgroundPosition: `${50 + (position.x / (3.6 * position.scale))}% ${50 + (position.y / (3.6 * position.scale))}%`,
             backgroundRepeat: 'no-repeat',
             transition: isDragging ? 'none' : 'background-position 0.1s ease-out, background-size 0.1s ease-out'
           }}
@@ -118,8 +134,19 @@ export const ImagePositionAdjuster = ({
             type="button"
             size="sm"
             variant="outline"
-            onClick={() => handleScaleChange(-0.1)}
+            onClick={() => handleScaleChange(-0.2)}
+            className="h-7 px-1 text-xs"
+            title="Zoom out (large step)"
+          >
+            --
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handleScaleChange(-0.05)}
             className="h-7 px-2"
+            title="Zoom out (small step)"
           >
             -
           </Button>
@@ -130,10 +157,21 @@ export const ImagePositionAdjuster = ({
             type="button"
             size="sm"
             variant="outline"
-            onClick={() => handleScaleChange(0.1)}
+            onClick={() => handleScaleChange(0.05)}
             className="h-7 px-2"
+            title="Zoom in (small step)"
           >
             +
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handleScaleChange(0.2)}
+            className="h-7 px-1 text-xs"
+            title="Zoom in (large step)"
+          >
+            ++
           </Button>
         </div>
         
@@ -143,6 +181,7 @@ export const ImagePositionAdjuster = ({
           variant="outline"
           onClick={handleReset}
           className="h-7 px-2"
+          title="Reset position and scale"
         >
           <RotateCcw className="h-3 w-3" />
         </Button>

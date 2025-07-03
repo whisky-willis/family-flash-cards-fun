@@ -45,7 +45,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                       ? `${100 * card.imagePosition.scale}%`
                       : '100%',
                     backgroundPosition: card.imagePosition
-                      ? `${50 + (card.imagePosition.x / 3.6)}% ${50 + (card.imagePosition.y / 3.6)}%`
+                      ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`
                       : 'center center',
                     backgroundRepeat: 'no-repeat'
                   }}
