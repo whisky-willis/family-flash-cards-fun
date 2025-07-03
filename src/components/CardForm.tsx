@@ -25,7 +25,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     hobbies: '',
     funFact: '',
     relationship: '',
-    theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | undefined,
+    theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
@@ -41,7 +41,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         hobbies: '',
         funFact: '',
         relationship: '',
-        theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | undefined,
+        theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
@@ -68,7 +68,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         hobbies: '',
         funFact: '',
         relationship: '',
-        theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | undefined,
+        theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
       // Reset the file input
@@ -245,7 +245,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
 
       <div>
         <Label htmlFor="theme">Card Theme</Label>
-        <Select value={formData.theme || ''} onValueChange={(value: 'geometric' | 'organic' | 'rainbow' | 'mosaic') => setFormData({ ...formData, theme: value })}>
+        <Select value={formData.theme || ''} onValueChange={(value: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => setFormData({ ...formData, theme: value })}>
           <SelectTrigger>
             <SelectValue placeholder="Select a theme" />
           </SelectTrigger>
@@ -254,6 +254,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
             <SelectItem value="organic">Lava Lamp</SelectItem>
             <SelectItem value="rainbow">Rainbow</SelectItem>
             <SelectItem value="mosaic">Mosaic</SelectItem>
+            <SelectItem value="space">Space</SelectItem>
+            <SelectItem value="sports">Sports</SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -380,6 +380,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
         return '/lovable-uploads/218e023d-f5aa-4d6b-ad30-fe4544c295d4.png';
       case 'mosaic':
         return '/lovable-uploads/473f2252-c157-4af5-8dce-4d10b6e0191a.png';
+      case 'space':
+        return '/lovable-uploads/a5f11a82-3c49-41b7-a0fc-7c2d29fdcda9.png';
+      case 'sports':
+        return '/lovable-uploads/73e0e4f2-881f-4259-82b5-0cc0a112eae5.png';
       default:
         return null;
     }
