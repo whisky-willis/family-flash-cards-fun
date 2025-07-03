@@ -21,7 +21,6 @@ export default {
 			fontFamily: {
 				'fredoka': ['Fredoka', 'sans-serif'],
 				'fredoka-one': ['Fredoka One', 'sans-serif'],
-				'sue-ellen': ['Sue Ellen Francisco', 'cursive'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
