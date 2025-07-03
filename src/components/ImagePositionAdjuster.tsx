@@ -1,5 +1,4 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Move, RotateCcw } from "lucide-react";
 
@@ -22,18 +21,16 @@ export const ImagePositionAdjuster = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    onPositionChange(position);
-  }, [position, onPositionChange]);
+    setPosition(initialPosition);
+  }, [initialPosition]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    });
-  };
+  const stableOnPositionChange = useCallback(onPositionChange, [onPositionChange]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  useEffect(() => {
+    stableOnPositionChange(position);
+  }, [position, stableOnPositionChange]);
+
+  const handleGlobalMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
     
     const newX = e.clientX - dragStart.x;
@@ -41,19 +38,40 @@ export const ImagePositionAdjuster = ({
     
     setPosition(prev => ({
       ...prev,
-      x: Math.max(-100, Math.min(100, newX)),
-      y: Math.max(-100, Math.min(100, newY))
+      x: Math.max(-150, Math.min(150, newX)),
+      y: Math.max(-150, Math.min(150, newY))
     }));
-  };
+  }, [isDragging, dragStart]);
 
-  const handleMouseUp = () => {
+  const handleGlobalMouseUp = useCallback(() => {
     setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleGlobalMouseMove);
+        document.removeEventListener('mouseup', handleGlobalMouseUp);
+      };
+    }
+  }, [isDragging, handleGlobalMouseMove, handleGlobalMouseUp]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
   };
 
   const handleScaleChange = (delta: number) => {
     setPosition(prev => ({
       ...prev,
-      scale: Math.max(0.5, Math.min(2, prev.scale + delta))
+      scale: Math.max(0.3, Math.min(3, prev.scale + delta))
     }));
   };
 
@@ -65,12 +83,9 @@ export const ImagePositionAdjuster = ({
     <div className="space-y-3">
       <div 
         ref={containerRef}
-        className="relative overflow-hidden rounded-lg border-4 border-white shadow-md cursor-move"
+        className="relative overflow-hidden rounded-lg border-4 border-white shadow-md cursor-move bg-gray-50"
         style={{ height: '180px' }}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       >
         <img 
           src={imageSrc} 
@@ -85,6 +100,11 @@ export const ImagePositionAdjuster = ({
         {isDragging && (
           <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
             <Move className="h-8 w-8 text-white" />
+          </div>
+        )}
+        {!isDragging && (
+          <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+            Drag to reposition
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,12 +42,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         ...initialData
       });
     }
-  }, [isEditing]); // Only depend on isEditing, not initialData
+  }, [isEditing, initialData]); // Fixed: Added initialData dependency
 
   // Call onChange whenever formData changes, but only if onChange exists
   useEffect(() => {
     onChange?.(formData);
-  }, [formData]); // Removed onChange from dependencies to prevent infinite loop
+  }, [formData, onChange]); // Fixed: Added onChange back but it should be memoized by parent
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,9 +86,18 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     }
   };
 
-  const handlePositionChange = (position: { x: number; y: number; scale: number }) => {
-    setFormData({ ...formData, imagePosition: position });
+  // Added: Function to remove the uploaded image
+  const handleRemoveImage = () => {
+    setFormData({ 
+      ...formData, 
+      photo: '',
+      imagePosition: { x: 0, y: 0, scale: 1 }
+    });
   };
+
+  const handlePositionChange = useCallback((position: { x: number; y: number; scale: number }) => {
+    setFormData(prev => ({ ...prev, imagePosition: position }));
+  }, []); // Fixed: Memoized the callback to prevent infinite re-renders
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -105,13 +114,29 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
 
       <div>
         <Label htmlFor="photo">Photo</Label>
-        <Input
-          id="photo"
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
-        />
+        <div className="space-y-2">
+          <Input
+            id="photo"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
+          />
+          {formData.photo && (
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Image uploaded</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRemoveImage}
+                className="h-8 px-3 text-xs border-art-red text-art-red hover:bg-art-red hover:text-white"
+              >
+                Remove Image
+              </Button>
+            </div>
+          )}
+        </div>
         {formData.photo && (
           <div className="mt-3">
             <Label className="text-sm text-muted-foreground mb-2 block font-medium">Adjust Image Position</Label>
