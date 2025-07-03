@@ -52,7 +52,7 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-3">
-                <img src="/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png" alt="Kindred Cards" className="h-12 w-32 object-cover" />
+                <img src="/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png" alt="Kindred Cards" className="h-12 w-32 object-cover object-center" />
                 
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
