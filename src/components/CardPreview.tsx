@@ -96,45 +96,94 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     );
   }
 
-  // Create hobby-themed background with emojis and icons
+  // Comprehensive hobby-to-emoji mapping system
   const getHobbyEmojis = (hobby: string) => {
     const hobbyLower = hobby.toLowerCase();
     
-    if (hobbyLower.includes('soccer') || hobbyLower.includes('football')) {
-      return ['⚽', '🥅', '🏆'];
-    }
-    if (hobbyLower.includes('basketball')) {
-      return ['🏀', '🏀', '⛹️'];
-    }
-    if (hobbyLower.includes('music') || hobbyLower.includes('piano') || hobbyLower.includes('guitar')) {
-      return ['🎵', '🎶', '🎼'];
-    }
-    if (hobbyLower.includes('art') || hobbyLower.includes('painting') || hobbyLower.includes('drawing')) {
-      return ['🎨', '🖌️', '✏️'];
-    }
-    if (hobbyLower.includes('dance') || hobbyLower.includes('dancing')) {
-      return ['💃', '🕺', '🎭'];
-    }
-    if (hobbyLower.includes('reading') || hobbyLower.includes('book')) {
-      return ['📚', '📖', '📝'];
-    }
-    if (hobbyLower.includes('swimming')) {
-      return ['🏊', '🌊', '🏄'];
-    }
-    if (hobbyLower.includes('cooking') || hobbyLower.includes('baking')) {
-      return ['👨‍🍳', '🍰', '🥧'];
-    }
-    if (hobbyLower.includes('garden') || hobbyLower.includes('plant')) {
-      return ['🌱', '🌸', '🌻'];
-    }
-    if (hobbyLower.includes('travel')) {
-      return ['✈️', '🗺️', '🎒'];
-    }
-    if (hobbyLower.includes('photo')) {
-      return ['📷', '📸', '🎞️'];
-    }
+    // Sports & Physical Activities
+    if (hobbyLower.match(/soccer|football(?!\s+american)/)) return ['⚽', '🥅', '🏆'];
+    if (hobbyLower.match(/basketball/)) return ['🏀', '⛹️', '🏀'];
+    if (hobbyLower.match(/tennis/)) return ['🎾', '🏸', '🎾'];
+    if (hobbyLower.match(/baseball|softball/)) return ['⚾', '🥎', '⚾'];
+    if (hobbyLower.match(/volleyball/)) return ['🏐', '🏐', '🏐'];
+    if (hobbyLower.match(/golf/)) return ['⛳', '🏌️', '⛳'];
+    if (hobbyLower.match(/hockey/)) return ['🏒', '🥅', '🏒'];
+    if (hobbyLower.match(/american\s+football/)) return ['🏈', '🏈', '🏈'];
+    if (hobbyLower.match(/swimming|pool/)) return ['🏊', '🌊', '🏄'];
+    if (hobbyLower.match(/running|jogging|marathon/)) return ['🏃', '👟', '🏃'];
+    if (hobbyLower.match(/cycling|biking|bike/)) return ['🚴', '🚲', '🚴'];
+    if (hobbyLower.match(/climbing|mountain/)) return ['🧗', '⛰️', '🧗'];
+    if (hobbyLower.match(/skiing|snowboard/)) return ['⛷️', '🎿', '⛷️'];
+    if (hobbyLower.match(/surfing|surf/)) return ['🏄', '🌊', '🏄'];
+    if (hobbyLower.match(/yoga|meditation/)) return ['🧘', '🕉️', '🧘'];
+    if (hobbyLower.match(/martial\s+arts|karate|judo|taekwondo/)) return ['🥋', '👊', '🥋'];
+    if (hobbyLower.match(/boxing/)) return ['🥊', '👊', '🥊'];
+    if (hobbyLower.match(/dance|dancing|ballet/)) return ['💃', '🕺', '🎭'];
     
-    // Default emojis for other hobbies
+    // Creative Arts
+    if (hobbyLower.match(/music|piano|guitar|violin|drums|singing/)) return ['🎵', '🎶', '🎼'];
+    if (hobbyLower.match(/art|painting|drawing|sketch/)) return ['🎨', '🖌️', '✏️'];
+    if (hobbyLower.match(/photography|photo/)) return ['📷', '📸', '🎞️'];
+    if (hobbyLower.match(/writing|poetry|journaling/)) return ['✍️', '📝', '📖'];
+    if (hobbyLower.match(/sculpting|pottery|ceramics/)) return ['🏺', '🎨', '🏺'];
+    if (hobbyLower.match(/knitting|sewing|embroidery|crafts/)) return ['🧶', '✂️', '🪡'];
+    if (hobbyLower.match(/jewelry|beading/)) return ['💎', '💍', '💎'];
+    
+    // Technology & Gaming
+    if (hobbyLower.match(/gaming|video\s+games|computer\s+games/)) return ['🎮', '🕹️', '🎮'];
+    if (hobbyLower.match(/programming|coding|development/)) return ['💻', '⌨️', '💻'];
+    if (hobbyLower.match(/robotics|electronics/)) return ['🤖', '⚡', '🤖'];
+    
+    // Food & Cooking
+    if (hobbyLower.match(/cooking|baking|culinary/)) return ['👨‍🍳', '🍰', '🥧'];
+    if (hobbyLower.match(/wine|beer|brewing/)) return ['🍷', '🍺', '🍷'];
+    if (hobbyLower.match(/coffee|barista/)) return ['☕', '☕', '☕'];
+    
+    // Nature & Outdoors
+    if (hobbyLower.match(/garden|gardening|plant/)) return ['🌱', '🌸', '🌻'];
+    if (hobbyLower.match(/hiking|walking|trail/)) return ['🥾', '🌲', '🥾'];
+    if (hobbyLower.match(/camping|outdoor/)) return ['🏕️', '🔥', '🏕️'];
+    if (hobbyLower.match(/fishing/)) return ['🎣', '🐟', '🎣'];
+    if (hobbyLower.match(/hunting/)) return ['🏹', '🦌', '🏹'];
+    if (hobbyLower.match(/bird\s*watching|birding/)) return ['🦅', '🔭', '🦅'];
+    
+    // Learning & Reading
+    if (hobbyLower.match(/reading|book/)) return ['📚', '📖', '📝'];
+    if (hobbyLower.match(/learning|studying|education/)) return ['📚', '🎓', '📚'];
+    if (hobbyLower.match(/language/)) return ['🗣️', '📚', '🗣️'];
+    
+    // Travel & Culture
+    if (hobbyLower.match(/travel|traveling|vacation/)) return ['✈️', '🗺️', '🎒'];
+    if (hobbyLower.match(/collecting|collection/)) return ['🏆', '💎', '🏆'];
+    
+    // Games & Puzzles
+    if (hobbyLower.match(/chess/)) return ['♟️', '♛', '♟️'];
+    if (hobbyLower.match(/puzzle|crossword|sudoku/)) return ['🧩', '🔍', '🧩'];
+    if (hobbyLower.match(/board\s+games|card\s+games/)) return ['🎲', '🃏', '🎲'];
+    
+    // Animals & Pets
+    if (hobbyLower.match(/pet|dog|cat|animal/)) return ['🐕', '🐱', '🐕'];
+    if (hobbyLower.match(/horse|riding|equestrian/)) return ['🐎', '🏇', '🐎'];
+    
+    // Science & Space
+    if (hobbyLower.match(/astronomy|space|stars/)) return ['🔭', '⭐', '🔭'];
+    if (hobbyLower.match(/science|chemistry|physics/)) return ['🔬', '⚗️', '🔬'];
+    
+    // Health & Wellness
+    if (hobbyLower.match(/fitness|gym|workout/)) return ['💪', '🏋️', '💪'];
+    
+    // Automotive & Transportation
+    if (hobbyLower.match(/car|automotive|racing/)) return ['🏎️', '🚗', '🏎️'];
+    if (hobbyLower.match(/motorcycle|motorbike/)) return ['🏍️', '🏍️', '🏍️'];
+    
+    // Default fallback - try to pick relevant emojis based on common words
+    if (hobbyLower.match(/build|make|create/)) return ['🔨', '⚒️', '🔨'];
+    if (hobbyLower.match(/watch|view|see/)) return ['👀', '📺', '👀'];
+    if (hobbyLower.match(/listen|hear|audio/)) return ['👂', '🎧', '👂'];
+    if (hobbyLower.match(/social|friend|people/)) return ['👥', '🤝', '👥'];
+    if (hobbyLower.match(/relax|chill|rest/)) return ['😌', '🛋️', '😌'];
+    
+    // Ultimate fallback for any unrecognized hobby
     return ['⭐', '✨', '🎯'];
   };
 
