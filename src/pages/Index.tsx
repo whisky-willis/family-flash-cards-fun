@@ -166,7 +166,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Start Learning</h3>
               <p className="text-foreground/80 font-medium leading-relaxed">
-                Enjoy meaningful conversations and strengthen family bonds
+                Experience the joy of watching your child learn about the people they love
               </p>
             </div>
           </div>
