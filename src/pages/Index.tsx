@@ -5,7 +5,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardPreview } from "@/components/CardPreview";
-import kindredLogo from "@/assets/kindred-cards-logo.png";
+const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 const Index = () => {
   const navigate = useNavigate();
   const names = ['George', 'Baileigh', 'Nick', 'Sarah'];
@@ -52,7 +52,7 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-3">
-                <img src="/lovable-uploads/04092500-527b-498c-a609-7be0f47bef86.png" alt="Kindred Cards" className="h-14 w-14" />
+                <img src="/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png" alt="Kindred Cards" className="h-14 w-14" />
                 <span className="text-xl font-bold text-foreground tracking-tight">Kindred Cards</span>
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">

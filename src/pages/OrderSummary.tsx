@@ -10,7 +10,7 @@ import { Heart, Users } from "lucide-react";
 import { FamilyCard } from "@/pages/CreateCards";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
-import kindredLogo from "@/assets/kindred-cards-logo.png";
+const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 const OrderSummary = () => {
   const location = useLocation();
