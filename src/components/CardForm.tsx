@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,7 @@ interface CardFormProps {
 }
 
 export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEditing = false }: CardFormProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     photo: '',
@@ -56,7 +57,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     onSubmit(formData);
     
     if (!isEditing) {
-      setFormData({
+      setFormData(prev => ({
         name: '',
         photo: '',
         dateOfBirth: '',
@@ -65,7 +66,11 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         funFact: '',
         relationship: '',
         imagePosition: { x: 0, y: 0, scale: 1 },
-      });
+      }));
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -73,12 +78,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData({ 
-          ...formData, 
-          photo: e.target?.result as string,
+      reader.onload = (event) => {
+        setFormData(prev => ({ 
+          ...prev, 
+          photo: event.target?.result as string,
           imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
-        });
+        }));
       };
       reader.readAsDataURL(file);
       // Clear the input value so the same file can be selected again
@@ -88,11 +93,22 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
 
   // Added: Function to remove the uploaded image
   const handleRemoveImage = () => {
-    setFormData({ 
-      ...formData, 
+    setFormData(prev => ({ 
+      ...prev, 
       photo: '',
       imagePosition: { x: 0, y: 0, scale: 1 }
-    });
+    }));
+    // Reset the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Added: Function to trigger file input for image replacement
+  const handleReplaceImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   const handlePositionChange = useCallback((position: { x: number; y: number; scale: number }) => {
@@ -116,6 +132,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         <Label htmlFor="photo">Photo</Label>
         <div className="space-y-2">
           <Input
+            ref={fileInputRef}
+            key={formData.photo ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
             id="photo"
             type="file"
             accept="image/*"
@@ -123,18 +141,32 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
             className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
           />
           {formData.photo && (
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Image uploaded</span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleRemoveImage}
-                className="h-8 px-3 text-xs border-art-red text-art-red hover:bg-art-red hover:text-white"
-              >
-                Remove Image
-              </Button>
+            <div className="flex justify-between items-center text-sm bg-green-50 border border-green-200 rounded-lg p-2">
+              <span className="text-green-700 font-medium">✓ Image uploaded successfully</span>
+              <div className="flex space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReplaceImage}
+                  className="h-8 px-3 text-xs border-art-blue text-art-blue hover:bg-art-blue hover:text-white"
+                >
+                  Replace Image
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRemoveImage}
+                  className="h-8 px-3 text-xs border-art-red text-art-red hover:bg-art-red hover:text-white"
+                >
+                  Remove
+                </Button>
+              </div>
             </div>
+          )}
+          {!formData.photo && (
+            <p className="text-sm text-muted-foreground">Upload a photo to get started</p>
           )}
         </div>
         {formData.photo && (
