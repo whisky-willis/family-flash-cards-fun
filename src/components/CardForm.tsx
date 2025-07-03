@@ -91,7 +91,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">Name *</Label>
+        <Label htmlFor="name">Name (Uncle Stu, Granny, Cousin Tom) *</Label>
         <Input
           id="name"
           value={formData.name}
