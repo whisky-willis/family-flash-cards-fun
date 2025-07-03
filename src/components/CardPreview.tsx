@@ -78,14 +78,16 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                 <span className="font-bold text-muted-foreground">Birthday:</span>
                 <span className="text-foreground font-medium">
                   {(() => {
-                    const date = new Date(card.dateOfBirth);
-                    const day = date.getDate();
-                    const month = date.toLocaleDateString('en-US', { month: 'long' });
-                    const suffix = day === 1 || day === 21 || day === 31 ? 'st' 
-                                 : day === 2 || day === 22 ? 'nd'
-                                 : day === 3 || day === 23 ? 'rd'
+                    // Parse the date string properly to avoid timezone issues
+                    const [year, month, day] = card.dateOfBirth.split('-').map(Number);
+                    const date = new Date(year, month - 1, day); // month is 0-indexed
+                    const dayNum = date.getDate();
+                    const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+                    const suffix = dayNum === 1 || dayNum === 21 || dayNum === 31 ? 'st' 
+                                 : dayNum === 2 || dayNum === 22 ? 'nd'
+                                 : dayNum === 3 || dayNum === 23 ? 'rd'
                                  : 'th';
-                    return `${month} ${day}${suffix}`;
+                    return `${monthName} ${dayNum}${suffix}`;
                   })()}
                 </span>
               </div>
