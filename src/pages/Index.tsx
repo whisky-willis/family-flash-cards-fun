@@ -11,13 +11,11 @@ const Index = () => {
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
-
   useEffect(() => {
     const currentName = names[currentNameIndex];
     let charIndex = 0;
     setDisplayedText('');
     setIsTyping(true);
-
     const typeInterval = setInterval(() => {
       if (charIndex <= currentName.length) {
         setDisplayedText(currentName.slice(0, charIndex));
@@ -26,11 +24,10 @@ const Index = () => {
         clearInterval(typeInterval);
         setIsTyping(false);
         setTimeout(() => {
-          setCurrentNameIndex((prevIndex) => (prevIndex + 1) % names.length);
+          setCurrentNameIndex(prevIndex => (prevIndex + 1) % names.length);
         }, 2000);
       }
     }, 100);
-
     return () => clearInterval(typeInterval);
   }, [currentNameIndex]);
   return <div className="min-h-screen bg-background relative overflow-hidden">
@@ -81,28 +78,28 @@ const Index = () => {
         <div className="absolute inset-0">
           {/* Pink blob - top left */}
           <div className="absolute top-0 left-0 w-[600px] h-[500px] bg-art-pink opacity-90" style={{
-            clipPath: 'polygon(20% 0%, 80% 10%, 100% 50%, 85% 90%, 30% 100%, 0% 70%, 5% 30%)'
-          }}></div>
+          clipPath: 'polygon(20% 0%, 80% 10%, 100% 50%, 85% 90%, 30% 100%, 0% 70%, 5% 30%)'
+        }}></div>
           
           {/* Yellow blob - center large */}
           <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-95 transform -translate-x-1/2 -translate-y-1/2" style={{
-            clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
-          }}></div>
+          clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
+        }}></div>
           
           {/* Green blob - top right */}
           <div className="absolute top-0 right-0 w-[550px] h-[600px] bg-art-green opacity-90" style={{
-            clipPath: 'polygon(15% 0%, 85% 0%, 100% 40%, 95% 80%, 60% 100%, 20% 85%, 0% 50%, 10% 20%)'
-          }}></div>
+          clipPath: 'polygon(15% 0%, 85% 0%, 100% 40%, 95% 80%, 60% 100%, 20% 85%, 0% 50%, 10% 20%)'
+        }}></div>
           
           {/* Red/Orange blob - bottom left */}
           <div className="absolute bottom-0 left-0 w-[500px] h-[400px] bg-art-red opacity-85" style={{
-            clipPath: 'polygon(30% 0%, 80% 15%, 100% 60%, 75% 100%, 0% 100%, 0% 40%, 15% 10%)'
-          }}></div>
+          clipPath: 'polygon(30% 0%, 80% 15%, 100% 60%, 75% 100%, 0% 100%, 0% 40%, 15% 10%)'
+        }}></div>
           
           {/* Blue blob - bottom right */}
           <div className="absolute bottom-0 right-0 w-[450px] h-[350px] bg-art-blue opacity-85" style={{
-            clipPath: 'polygon(40% 0%, 100% 0%, 100% 70%, 80% 100%, 20% 90%, 10% 50%, 25% 15%)'
-          }}></div>
+          clipPath: 'polygon(40% 0%, 100% 0%, 100% 70%, 80% 100%, 20% 90%, 10% 50%, 25% 15%)'
+        }}></div>
         </div>
 
         {/* Content over blobs - exact Art Center positioning */}
@@ -126,12 +123,8 @@ const Index = () => {
       {/* About section - Art Center style */}
       <section className="relative py-20 bg-background/50 z-10">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-8 leading-tight">
-            We teach the fundamentals of family connection while encouraging creativity, curiosity, and individuality.
-          </h2>
-          <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-3 text-base font-bold uppercase tracking-wide">
-            About Us
-          </Button>
+          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-8 leading-tight">Turning screen time into story time that develops creativity, curiosity, and individuality</h2>
+          
         </div>
       </section>
 
@@ -154,10 +147,7 @@ const Index = () => {
                         Children who engage in family storytelling show higher language and literacy skills that last through elementary school, with benefits extending 7 years down the line.
                       </p>
                     </div>
-                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
+                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
                       Source: Duke University Family Life Project
                     </a>
                   </div>
@@ -174,10 +164,7 @@ const Index = () => {
                         Develops empathy, self-awareness, and social skills that lead to better relationships and reduced anxiety - core foundations for lifelong success.
                       </p>
                     </div>
-                    <a href="https://casel.org/fundamentals-of-sel/" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
+                    <a href="https://casel.org/fundamentals-of-sel/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
                       Source: CASEL Research
                     </a>
                   </div>
@@ -194,10 +181,7 @@ const Index = () => {
                         Research shows kids who know more about their families have stronger self-control, higher confidence, and believe their families function better.
                       </p>
                     </div>
-                    <a href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
+                    <a href="https://abclifeliteracy.ca/news/5-benefits-of-learning-about-your-heritage/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
                       Source: Emory University Study
                     </a>
                   </div>
@@ -214,10 +198,7 @@ const Index = () => {
                         Transforms screen time into meaningful conversation time, building trust and communication skills through interactive play.
                       </p>
                     </div>
-                    <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
+                    <a href="https://www.naeyc.org/resources/pubs/yc/mar2018/promoting-social-and-emotional-health" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
                       Source: NAEYC Research
                     </a>
                   </div>
@@ -234,10 +215,7 @@ const Index = () => {
                         Encourages children to ask questions, understand different perspectives, and make connections - essential skills for school and life.
                       </p>
                     </div>
-                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
                       Source: Brain Imaging Studies
                     </a>
                   </div>
