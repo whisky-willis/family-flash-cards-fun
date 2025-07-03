@@ -414,7 +414,9 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             { bottom: '35%', right: '8%', size: 'text-2xl' }
           ];
           
-          const position = positions[index % positions.length];
+          // Ensure emojis are distributed across the entire card, not just sequential positions
+          const distributedIndex = Math.floor((index / emojis.length) * positions.length);
+          const position = positions[distributedIndex];
           
           return (
             <div
