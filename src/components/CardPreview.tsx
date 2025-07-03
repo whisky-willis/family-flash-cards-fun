@@ -372,8 +372,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     if (!card.hobbies || !card.favoriteColor) return null;
     
     const baseEmojis = getHobbyEmojis(card.hobbies);
-    // Double the volume by duplicating the emoji array
-    const emojis = [...baseEmojis, ...baseEmojis];
+    // Ensure at least 6 emojis are displayed by repeating the array
+    const minEmojis = 6;
+    const repeatCount = Math.ceil(minEmojis / baseEmojis.length);
+    const emojis = Array(repeatCount).fill(baseEmojis).flat().slice(0, Math.max(minEmojis, baseEmojis.length * 2));
     const colorValue = getColorValue(card.favoriteColor);
     
     return (
