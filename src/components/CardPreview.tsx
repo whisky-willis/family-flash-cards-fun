@@ -437,7 +437,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </h3>
 
           {/* Attributes with white background for visibility */}
-          <div className="space-y-2 text-base bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm font-fredoka">
+          <div className="space-y-2 text-base bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm font-sue-ellen">
             {card.relationship && card.relationship.trim() && (
               <div className="flex items-center justify-between">
                 <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Relationship:</span>
