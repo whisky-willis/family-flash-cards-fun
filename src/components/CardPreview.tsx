@@ -422,12 +422,12 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     );
   };
 
-  // Determine background style
+  // Determine background style with more visible colors
   const getBackgroundStyle = () => {
     if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
       const colorValue = getColorValue(card.favoriteColor);
       return {
-        background: `linear-gradient(135deg, ${colorValue}15, ${colorValue}08, white)`
+        background: `linear-gradient(135deg, ${colorValue}40, ${colorValue}20, white)`
       };
     }
     
