@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Users } from "lucide-react";
+import { Heart, Users, Music } from "lucide-react";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface CardPreviewProps {
@@ -96,68 +96,119 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     );
   }
 
-  // Create hobby-themed background patterns
-  const getHobbyPattern = (hobby: string, color: string) => {
-    const colorValue = getColorValue(color);
-    const lightColor = `${colorValue}20`;
-    const mediumColor = `${colorValue}40`;
-    
+  // Create hobby-themed background with emojis and icons
+  const getHobbyEmojis = (hobby: string) => {
     const hobbyLower = hobby.toLowerCase();
     
-    // Create different patterns based on hobby type
     if (hobbyLower.includes('soccer') || hobbyLower.includes('football')) {
-      return `radial-gradient(circle at 20% 80%, ${lightColor} 15px, transparent 16px),
-              radial-gradient(circle at 80% 20%, ${lightColor} 15px, transparent 16px),
-              radial-gradient(circle at 40% 40%, ${mediumColor} 8px, transparent 9px),
-              linear-gradient(135deg, ${lightColor}, white)`;
+      return ['⚽', '🥅', '🏆'];
     }
-    
     if (hobbyLower.includes('basketball')) {
-      return `radial-gradient(circle at 25% 25%, ${lightColor} 20px, transparent 21px),
-              radial-gradient(circle at 75% 75%, ${lightColor} 20px, transparent 21px),
-              linear-gradient(135deg, ${mediumColor}, white)`;
+      return ['🏀', '🏀', '⛹️'];
     }
-    
     if (hobbyLower.includes('music') || hobbyLower.includes('piano') || hobbyLower.includes('guitar')) {
-      return `linear-gradient(45deg, ${lightColor} 25%, transparent 25%),
-              linear-gradient(-45deg, ${lightColor} 25%, transparent 25%),
-              linear-gradient(135deg, ${mediumColor}, white)`;
+      return ['🎵', '🎶', '🎼'];
     }
-    
     if (hobbyLower.includes('art') || hobbyLower.includes('painting') || hobbyLower.includes('drawing')) {
-      return `conic-gradient(from 0deg at 50% 50%, ${lightColor}, ${mediumColor}, ${lightColor}),
-              radial-gradient(circle at 30% 70%, ${lightColor} 10px, transparent 11px),
-              linear-gradient(135deg, white, ${lightColor})`;
+      return ['🎨', '🖌️', '✏️'];
     }
-    
     if (hobbyLower.includes('dance') || hobbyLower.includes('dancing')) {
-      return `linear-gradient(0deg, ${lightColor} 2px, transparent 2px),
-              linear-gradient(90deg, ${lightColor} 2px, transparent 2px),
-              linear-gradient(135deg, ${mediumColor}, white)`;
+      return ['💃', '🕺', '🎭'];
     }
-    
     if (hobbyLower.includes('reading') || hobbyLower.includes('book')) {
-      return `repeating-linear-gradient(0deg, ${lightColor} 0px, ${lightColor} 2px, transparent 2px, transparent 20px),
-              linear-gradient(135deg, white, ${lightColor})`;
+      return ['📚', '📖', '📝'];
     }
-    
     if (hobbyLower.includes('swimming')) {
-      return `repeating-linear-gradient(90deg, ${lightColor} 0px, transparent 5px, ${mediumColor} 10px, transparent 15px),
-              linear-gradient(135deg, ${lightColor}, white)`;
+      return ['🏊', '🌊', '🏄'];
+    }
+    if (hobbyLower.includes('cooking') || hobbyLower.includes('baking')) {
+      return ['👨‍🍳', '🍰', '🥧'];
+    }
+    if (hobbyLower.includes('garden') || hobbyLower.includes('plant')) {
+      return ['🌱', '🌸', '🌻'];
+    }
+    if (hobbyLower.includes('travel')) {
+      return ['✈️', '🗺️', '🎒'];
+    }
+    if (hobbyLower.includes('photo')) {
+      return ['📷', '📸', '🎞️'];
     }
     
-    // Default pattern for other hobbies
-    return `radial-gradient(circle at 30% 30%, ${lightColor} 8px, transparent 9px),
-            radial-gradient(circle at 70% 70%, ${mediumColor} 6px, transparent 7px),
-            linear-gradient(135deg, ${lightColor}, white)`;
+    // Default emojis for other hobbies
+    return ['⭐', '✨', '🎯'];
+  };
+
+  const renderHobbyBackground = () => {
+    if (!card.hobbies || !card.favoriteColor) return null;
+    
+    const emojis = getHobbyEmojis(card.hobbies);
+    const colorValue = getColorValue(card.favoriteColor);
+    
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Scattered emoji pattern */}
+        <div 
+          className="absolute top-2 left-4 opacity-20 text-lg"
+          style={{ color: colorValue }}
+        >
+          {emojis[0]}
+        </div>
+        <div 
+          className="absolute top-8 right-6 opacity-15 text-sm"
+          style={{ color: colorValue }}
+        >
+          {emojis[1]}
+        </div>
+        <div 
+          className="absolute bottom-12 left-6 opacity-25 text-base"
+          style={{ color: colorValue }}
+        >
+          {emojis[2]}
+        </div>
+        <div 
+          className="absolute bottom-4 right-4 opacity-20 text-lg"
+          style={{ color: colorValue }}
+        >
+          {emojis[0]}
+        </div>
+        <div 
+          className="absolute top-1/2 left-2 opacity-15 text-xs"
+          style={{ color: colorValue }}
+        >
+          {emojis[1]}
+        </div>
+        <div 
+          className="absolute top-1/3 right-2 opacity-20 text-sm"
+          style={{ color: colorValue }}
+        >
+          {emojis[2]}
+        </div>
+        
+        {/* Music hobby gets special treatment with Lucide icon */}
+        {(card.hobbies.toLowerCase().includes('music') || 
+          card.hobbies.toLowerCase().includes('piano') || 
+          card.hobbies.toLowerCase().includes('guitar')) && (
+          <>
+            <Music 
+              className="absolute top-6 right-8 opacity-10 h-6 w-6" 
+              style={{ color: colorValue }}
+            />
+            <Music 
+              className="absolute bottom-8 left-8 opacity-15 h-4 w-4" 
+              style={{ color: colorValue }}
+            />
+          </>
+        )}
+      </div>
+    );
   };
 
   // Determine background style
   const getBackgroundStyle = () => {
     if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
+      const colorValue = getColorValue(card.favoriteColor);
       return {
-        background: getHobbyPattern(card.hobbies, card.favoriteColor),
-        backgroundSize: '50px 50px, 40px 40px, 100% 100%'
+        background: `linear-gradient(135deg, ${colorValue}15, ${colorValue}08, white)`
       };
     }
     
@@ -170,7 +221,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
         className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
         style={getBackgroundStyle()}
       >
-        <CardContent className="p-6">
+        {/* Hobby-themed background */}
+        {renderHobbyBackground()}
+        
+        <CardContent className="p-6 relative z-10">
           {/* Photo Section */}
           <div className="text-center mb-4">
             {card.photo ? (
