@@ -36,17 +36,20 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           <div className="text-center mb-4">
             {card.photo ? (
               <div className="px-4">
-                <div className="relative overflow-hidden rounded-2xl border-4 border-white shadow-md" style={{ height: '180px' }}>
-                  <img 
-                    src={card.photo} 
-                    alt={card.name}
-                    className="w-full h-full object-cover"
-                    style={{ 
-                      transform: card.imagePosition 
-                        ? `translate(${card.imagePosition.x}px, ${card.imagePosition.y}px) scale(${card.imagePosition.scale})`
-                        : 'none'
-                    }}
-                  />
+                <div 
+                  className="relative overflow-hidden rounded-2xl border-4 border-white shadow-md" 
+                  style={{ 
+                    height: '180px',
+                    backgroundImage: `url(${card.photo})`,
+                    backgroundSize: card.imagePosition 
+                      ? `${100 * card.imagePosition.scale}%`
+                      : '100%',
+                    backgroundPosition: card.imagePosition
+                      ? `${50 + (card.imagePosition.x / 3.6)}% ${50 + (card.imagePosition.y / 3.6)}%`
+                      : 'center center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
+                >
                 </div>
               </div>
             ) : (

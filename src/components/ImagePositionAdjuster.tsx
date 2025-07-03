@@ -38,8 +38,8 @@ export const ImagePositionAdjuster = ({
     
     setPosition(prev => ({
       ...prev,
-      x: Math.max(-150, Math.min(150, newX)),
-      y: Math.max(-150, Math.min(150, newY))
+      x: Math.max(-100, Math.min(100, newX)),
+      y: Math.max(-100, Math.min(100, newY))
     }));
   }, [isDragging, dragStart]);
 
@@ -84,18 +84,21 @@ export const ImagePositionAdjuster = ({
       <div 
         ref={containerRef}
         className="relative overflow-hidden rounded-lg border-4 border-white shadow-md cursor-move bg-gray-50"
-        style={{ height: '180px' }}
+        style={{ 
+          height: '180px',
+          background: '#f8f9fa'
+        }}
         onMouseDown={handleMouseDown}
       >
-        <img 
-          src={imageSrc} 
-          alt={alt}
-          className="w-full h-full object-cover pointer-events-none select-none"
-          style={{ 
-            transform: `translate(${position.x}px, ${position.y}px) scale(${position.scale})`,
-            transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+        <div
+          className="w-full h-full pointer-events-none select-none"
+          style={{
+            backgroundImage: `url(${imageSrc})`,
+            backgroundSize: `${100 * position.scale}%`,
+            backgroundPosition: `${50 + (position.x / 3.6)}% ${50 + (position.y / 3.6)}%`,
+            backgroundRepeat: 'no-repeat',
+            transition: isDragging ? 'none' : 'background-position 0.1s ease-out, background-size 0.1s ease-out'
           }}
-          draggable={false}
         />
         {isDragging && (
           <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
