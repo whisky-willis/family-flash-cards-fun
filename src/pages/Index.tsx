@@ -282,19 +282,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Parties & Events section */}
-      <section className="relative py-20 bg-art-blue/20 z-10">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-8">Parties & Events</h2>
-          <p className="text-xl text-foreground/80 font-medium mb-8 max-w-2xl mx-auto">
-            Make birthdays and celebrations extra special with custom family learning activities
-          </p>
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base font-bold uppercase tracking-wide">
-            Learn More
-          </Button>
-        </div>
-      </section>
-
       {/* Featured Products - Art Center style */}
       <section className="relative py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
