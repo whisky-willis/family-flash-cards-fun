@@ -11,6 +11,51 @@ interface CardPreviewProps {
   showActions?: boolean;
 }
 
+// Helper function to map color names to CSS color values
+const getColorValue = (colorName: string): string => {
+  const colorMap: { [key: string]: string } = {
+    // Basic colors
+    'red': '#ff0000',
+    'blue': '#0000ff',
+    'green': '#008000',
+    'yellow': '#ffff00',
+    'orange': '#ffa500',
+    'purple': '#800080',
+    'pink': '#ffc0cb',
+    'black': '#000000',
+    'white': '#ffffff',
+    'gray': '#808080',
+    'grey': '#808080',
+    'brown': '#a52a2a',
+    'turquoise': '#40e0d0',
+    'cyan': '#00ffff',
+    'magenta': '#ff00ff',
+    'lime': '#00ff00',
+    'maroon': '#800000',
+    'navy': '#000080',
+    'olive': '#808000',
+    'silver': '#c0c0c0',
+    'teal': '#008080',
+    'aqua': '#00ffff',
+    'fuchsia': '#ff00ff',
+    // Light variations
+    'light blue': '#add8e6',
+    'light green': '#90ee90',
+    'light pink': '#ffb6c1',
+    'light yellow': '#ffffe0',
+    'light purple': '#dda0dd',
+    // Dark variations
+    'dark blue': '#00008b',
+    'dark green': '#006400',
+    'dark red': '#8b0000',
+    'dark purple': '#4b0082',
+    'dark orange': '#ff8c00'
+  };
+  
+  const normalizedColor = colorName.toLowerCase().trim();
+  return colorMap[normalizedColor] || '#666666'; // Default to gray if color not found
+};
+
 export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: CardPreviewProps) => {
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
@@ -65,7 +110,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </h3>
 
           {/* Attributes */}
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-base">
             {card.relationship && card.relationship.trim() && (
               <div className="flex items-center justify-between">
                 <span className="font-bold text-muted-foreground">Relationship:</span>
@@ -77,7 +122,18 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
               <div className="flex items-center justify-between">
                 <span className="font-bold text-muted-foreground">Birthday:</span>
                 <span className="text-foreground font-medium">
-                  {new Date(card.dateOfBirth).toLocaleDateString()}
+                  {(() => {
+                    // Parse the date string properly to avoid timezone issues
+                    const [year, month, day] = card.dateOfBirth.split('-').map(Number);
+                    const date = new Date(year, month - 1, day); // month is 0-indexed
+                    const dayNum = date.getDate();
+                    const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+                    const suffix = dayNum === 1 || dayNum === 21 || dayNum === 31 ? 'st' 
+                                 : dayNum === 2 || dayNum === 22 ? 'nd'
+                                 : dayNum === 3 || dayNum === 23 ? 'rd'
+                                 : 'th';
+                    return `${monthName} ${dayNum}${suffix}`;
+                  })()}
                 </span>
               </div>
             )}
@@ -85,7 +141,14 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             {card.favoriteColor && card.favoriteColor.trim() && (
               <div className="flex items-center justify-between">
                 <span className="font-bold text-muted-foreground">Favorite Color:</span>
-                <span className="text-foreground font-medium">{card.favoriteColor}</span>
+                <span 
+                  className="text-foreground font-medium"
+                  style={{
+                    textShadow: `0 0 8px ${getColorValue(card.favoriteColor)}, 0 0 16px ${getColorValue(card.favoriteColor)}40`
+                  }}
+                >
+                  {card.favoriteColor}
+                </span>
               </div>
             )}
             
@@ -99,7 +162,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             {card.funFact && card.funFact.trim() && (
               <div className="mt-3 p-3 bg-art-yellow/20 rounded-2xl">
                 <span className="font-bold text-muted-foreground block mb-1">Fun Fact:</span>
-                <p className="text-foreground text-xs leading-relaxed font-medium">{card.funFact}</p>
+                <p className="text-foreground text-sm leading-relaxed font-medium">{card.funFact}</p>
               </div>
             )}
           </div>
