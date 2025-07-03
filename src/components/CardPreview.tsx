@@ -430,7 +430,9 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </div>
 
           {/* Name */}
-          <h3 className="text-4xl font-fredoka-one text-center mb-4 text-foreground">
+          <h3 className="text-4xl font-fredoka-one text-center mb-4 text-foreground" style={{
+            textShadow: '0 0 10px white, 0 0 20px white, 0 0 30px white',
+          }}>
             {card.name}
           </h3>
 
