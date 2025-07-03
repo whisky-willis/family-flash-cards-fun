@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/pages/CreateCards";
 
@@ -24,6 +25,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     hobbies: '',
     funFact: '',
     relationship: '',
+    theme: 'geometric' as 'geometric' | 'organic',
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
@@ -39,6 +41,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         hobbies: '',
         funFact: '',
         relationship: '',
+        theme: 'geometric' as 'geometric' | 'organic',
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
@@ -65,6 +68,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         hobbies: '',
         funFact: '',
         relationship: '',
+        theme: 'geometric' as 'geometric' | 'organic',
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
       // Reset the file input
@@ -237,6 +241,19 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
             </select>
           </div>
         </div>
+      </div>
+
+      <div>
+        <Label htmlFor="theme">Card Theme</Label>
+        <Select value={formData.theme} onValueChange={(value: 'geometric' | 'organic') => setFormData({ ...formData, theme: value })}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a theme" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="geometric">Geometric Shapes</SelectItem>
+            <SelectItem value="organic">Organic Blobs</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>

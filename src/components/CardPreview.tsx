@@ -368,99 +368,28 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     return [...new Set(allEmojis)];
   };
 
-  const renderHobbyBackground = () => {
-    if (!card.hobbies || !card.favoriteColor) return null;
+  const getBackgroundImage = () => {
+    if (!card.theme) return null;
     
-    const baseEmojis = getHobbyEmojis(card.hobbies);
-    // Ensure at least 6 emojis are displayed by repeating the array
-    const minEmojis = 10;
-    const repeatCount = Math.ceil(minEmojis / baseEmojis.length);
-    const emojis = Array(repeatCount).fill(baseEmojis).flat().slice(0, Math.max(minEmojis, baseEmojis.length * 2));
-    const colorValue = getColorValue(card.favoriteColor);
-    
-    return (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Dynamically render emojis based on all detected hobbies */}
-        {emojis.map((emoji, index) => {
-          const positions = [
-            // Top edge - distributed left to right
-            { top: '4px', left: '4px', size: 'text-4xl' },
-            { top: '4px', left: '50%', transform: 'translateX(-50%)', size: 'text-3xl' },
-            { top: '4px', right: '4px', size: 'text-4xl' },
-            
-            // Upper sides - balanced left and right
-            { top: '20%', left: '2px', size: 'text-5xl' },
-            { top: '20%', right: '2px', size: 'text-5xl' },
-            
-            // Middle sides - larger for prominence
-            { top: '45%', left: '2px', size: 'text-6xl' },
-            { top: '45%', right: '2px', size: 'text-6xl' },
-            
-            // Lower sides - visible around attributes
-            { top: '70%', left: '4px', size: 'text-4xl' },
-            { top: '70%', right: '4px', size: 'text-4xl' },
-            
-            // Bottom edge - distributed left to right
-            { bottom: '4px', left: '4px', size: 'text-5xl' },
-            { bottom: '4px', left: '50%', transform: 'translateX(-50%)', size: 'text-3xl' },
-            { bottom: '4px', right: '4px', size: 'text-5xl' },
-            
-            // Corner accents for balance
-            { top: '15%', left: '15%', size: 'text-2xl' },
-            { top: '15%', right: '15%', size: 'text-2xl' },
-            { bottom: '20%', left: '15%', size: 'text-2xl' },
-            { bottom: '20%', right: '15%', size: 'text-2xl' },
-            
-            // Additional edge coverage
-            { top: '60%', left: '8%', size: 'text-xl' },
-            { top: '60%', right: '8%', size: 'text-xl' },
-            { top: '35%', left: '12%', size: 'text-xl' },
-            { top: '35%', right: '12%', size: 'text-xl' }
-          ];
-          
-          // Use modulo for cycling through positions to ensure even distribution
-          const position = positions[index % positions.length];
-          
-          return (
-            <div
-              key={`${emoji}-${index}`}
-              className={`absolute opacity-100 ${position.size}`}
-              style={{ 
-                ...Object.fromEntries(Object.entries(position).filter(([key]) => key !== 'size')),
-                color: colorValue,
-                transform: index > 5 ? 'scale(0.8)' : 'scale(1)' // Scale down extras for variety
-              }}
-            >
-              {emoji}
-            </div>
-          );
-        })}
-        
-        {/* Music hobby gets special treatment with Lucide icon */}
-        {(card.hobbies.toLowerCase().includes('music') || 
-          card.hobbies.toLowerCase().includes('piano') || 
-          card.hobbies.toLowerCase().includes('guitar')) && (
-          <>
-            <Music 
-              className="absolute top-6 right-8 opacity-100 h-12 w-12" 
-              style={{ color: colorValue }}
-            />
-            <Music 
-              className="absolute bottom-8 left-8 opacity-100 h-8 w-8" 
-              style={{ color: colorValue }}
-            />
-          </>
-        )}
-      </div>
-    );
+    switch (card.theme) {
+      case 'geometric':
+        return '/lovable-uploads/b6d6bac9-cbe0-403c-92d3-d931bef709be.png';
+      case 'organic':
+        return '/lovable-uploads/92562094-6386-421f-8a6e-8066dee1d8b9.png';
+      default:
+        return null;
+    }
   };
 
-  // Determine background style with more visible colors
+  // Determine background style
   const getBackgroundStyle = () => {
-    if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
-      const colorValue = getColorValue(card.favoriteColor);
+    const backgroundImage = getBackgroundImage();
+    if (backgroundImage) {
       return {
-        background: `linear-gradient(135deg, ${colorValue}60, ${colorValue}30, white)`
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
       };
     }
     
@@ -473,8 +402,6 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
         className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
         style={getBackgroundStyle()}
       >
-        {/* Hobby-themed background */}
-        {renderHobbyBackground()}
         
         <CardContent className="p-6 relative z-10">
           {/* Photo Section */}
