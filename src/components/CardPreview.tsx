@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Users } from "lucide-react";
@@ -57,8 +57,31 @@ const getColorValue = (colorName: string): string => {
 };
 
 export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: CardPreviewProps) => {
+  const [customBackground, setCustomBackground] = useState<string>('');
+  const [isGeneratingBg, setIsGeneratingBg] = useState(false);
+
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
+
+  // Generate unique key for background generation
+  const backgroundKey = `${card.hobbies}-${card.favoriteColor}`;
+
+  useEffect(() => {
+    const generateCustomBackground = async () => {
+      if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
+        // Create a simple background pattern with hobby elements
+        const backgroundId = `bg-${card.hobbies.replace(/\s+/g, '-').toLowerCase()}-${card.favoriteColor.replace(/\s+/g, '-').toLowerCase()}`;
+        
+        // For now, let's create a CSS-based background with hobby patterns
+        // In a real implementation, you could generate actual images here
+        setCustomBackground(backgroundId);
+      } else {
+        setCustomBackground('');
+      }
+    };
+
+    generateCustomBackground();
+  }, [backgroundKey]);
 
   if (!hasData) {
     return (
@@ -73,25 +96,79 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
     );
   }
 
-  // Generate background based on hobbies and favorite color
-  const generateBackground = async () => {
-    if (card.hobbies && card.favoriteColor) {
-      const prompt = `A vibrant, abstract background pattern inspired by ${card.hobbies} with dominant ${card.favoriteColor} colors. Playful, artistic style with soft gradients and fun shapes. Child-friendly and joyful aesthetic. Ultra high resolution.`;
-      // This would be generated dynamically - for now using a colorful gradient
-      return `linear-gradient(135deg, ${getColorValue(card.favoriteColor)}40, ${getColorValue(card.favoriteColor)}20, white)`;
+  // Create hobby-themed background patterns
+  const getHobbyPattern = (hobby: string, color: string) => {
+    const colorValue = getColorValue(color);
+    const lightColor = `${colorValue}20`;
+    const mediumColor = `${colorValue}40`;
+    
+    const hobbyLower = hobby.toLowerCase();
+    
+    // Create different patterns based on hobby type
+    if (hobbyLower.includes('soccer') || hobbyLower.includes('football')) {
+      return `radial-gradient(circle at 20% 80%, ${lightColor} 15px, transparent 16px),
+              radial-gradient(circle at 80% 20%, ${lightColor} 15px, transparent 16px),
+              radial-gradient(circle at 40% 40%, ${mediumColor} 8px, transparent 9px),
+              linear-gradient(135deg, ${lightColor}, white)`;
     }
-    return 'white';
+    
+    if (hobbyLower.includes('basketball')) {
+      return `radial-gradient(circle at 25% 25%, ${lightColor} 20px, transparent 21px),
+              radial-gradient(circle at 75% 75%, ${lightColor} 20px, transparent 21px),
+              linear-gradient(135deg, ${mediumColor}, white)`;
+    }
+    
+    if (hobbyLower.includes('music') || hobbyLower.includes('piano') || hobbyLower.includes('guitar')) {
+      return `linear-gradient(45deg, ${lightColor} 25%, transparent 25%),
+              linear-gradient(-45deg, ${lightColor} 25%, transparent 25%),
+              linear-gradient(135deg, ${mediumColor}, white)`;
+    }
+    
+    if (hobbyLower.includes('art') || hobbyLower.includes('painting') || hobbyLower.includes('drawing')) {
+      return `conic-gradient(from 0deg at 50% 50%, ${lightColor}, ${mediumColor}, ${lightColor}),
+              radial-gradient(circle at 30% 70%, ${lightColor} 10px, transparent 11px),
+              linear-gradient(135deg, white, ${lightColor})`;
+    }
+    
+    if (hobbyLower.includes('dance') || hobbyLower.includes('dancing')) {
+      return `linear-gradient(0deg, ${lightColor} 2px, transparent 2px),
+              linear-gradient(90deg, ${lightColor} 2px, transparent 2px),
+              linear-gradient(135deg, ${mediumColor}, white)`;
+    }
+    
+    if (hobbyLower.includes('reading') || hobbyLower.includes('book')) {
+      return `repeating-linear-gradient(0deg, ${lightColor} 0px, ${lightColor} 2px, transparent 2px, transparent 20px),
+              linear-gradient(135deg, white, ${lightColor})`;
+    }
+    
+    if (hobbyLower.includes('swimming')) {
+      return `repeating-linear-gradient(90deg, ${lightColor} 0px, transparent 5px, ${mediumColor} 10px, transparent 15px),
+              linear-gradient(135deg, ${lightColor}, white)`;
+    }
+    
+    // Default pattern for other hobbies
+    return `radial-gradient(circle at 30% 30%, ${lightColor} 8px, transparent 9px),
+            radial-gradient(circle at 70% 70%, ${mediumColor} 6px, transparent 7px),
+            linear-gradient(135deg, ${lightColor}, white)`;
   };
 
-  const cardBackground = card.hobbies && card.favoriteColor 
-    ? `linear-gradient(135deg, ${getColorValue(card.favoriteColor)}40, ${getColorValue(card.favoriteColor)}20, white)`
-    : 'white';
+  // Determine background style
+  const getBackgroundStyle = () => {
+    if (card.hobbies && card.favoriteColor && card.hobbies.trim() && card.favoriteColor.trim()) {
+      return {
+        background: getHobbyPattern(card.hobbies, card.favoriteColor),
+        backgroundSize: '50px 50px, 40px 40px, 100% 100%'
+      };
+    }
+    
+    return { background: 'white' };
+  };
 
   return (
     <div className="w-full max-w-sm mx-auto">
       <Card 
-        className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300"
-        style={{ background: cardBackground }}
+        className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
+        style={getBackgroundStyle()}
       >
         <CardContent className="p-6">
           {/* Photo Section */}
