@@ -86,9 +86,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
                   style={{ 
                     height: '180px',
                     backgroundImage: `url(${card.photo})`,
-                    backgroundSize: card.imagePosition 
-                      ? `${100 * card.imagePosition.scale}%`
-                      : '100%',
+                    backgroundSize: 'cover',
                     backgroundPosition: card.imagePosition
                       ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`
                       : 'center center',
