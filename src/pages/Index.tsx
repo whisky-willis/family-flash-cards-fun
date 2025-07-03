@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import kindredLogo from "@/assets/kindred-cards-logo.png";
 const Index = () => {
   const navigate = useNavigate();
-  const names = ['George', 'Baileigh', 'Nick', 'Maggie'];
+  const names = ['George', 'Baileigh', 'Nick', 'Sarah'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
