@@ -135,7 +135,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">How It Works</h2>
             <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">
-              Create personalized learning cards in just three simple steps
+              Create magical moments where family stories come alive through play
             </p>
           </div>
 
