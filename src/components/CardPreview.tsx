@@ -381,32 +381,32 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
         {/* Dynamically render emojis based on all detected hobbies */}
         {emojis.map((emoji, index) => {
           const positions = [
-            // First layer - main positions
-            { top: '8px', left: '16px', size: 'text-4xl' },
-            { top: '32px', right: '24px', size: 'text-2xl' },
-            { bottom: '48px', left: '24px', size: 'text-3xl' },
-            { bottom: '16px', right: '16px', size: 'text-4xl' },
-            { top: '50%', left: '8px', size: 'text-xl' },
-            { top: '33%', right: '8px', size: 'text-2xl' },
-            { top: '20%', left: '50%', size: 'text-lg' },
-            { bottom: '30%', right: '30%', size: 'text-xl' },
-            { top: '60%', right: '12px', size: 'text-sm' },
-            { bottom: '60%', left: '12px', size: 'text-lg' },
-            { top: '15%', right: '40%', size: 'text-sm' },
-            { bottom: '70%', left: '40%', size: 'text-base' },
-            // Second layer - additional density positions
-            { top: '5px', left: '50%', size: 'text-lg' },
-            { top: '45px', left: '5px', size: 'text-sm' },
-            { top: '75%', left: '20%', size: 'text-xl' },
-            { bottom: '5px', left: '50%', size: 'text-lg' },
-            { top: '40%', right: '40px', size: 'text-base' },
-            { bottom: '40%', left: '50%', size: 'text-sm' },
-            { top: '25%', left: '25%', size: 'text-base' },
-            { bottom: '25%', right: '45%', size: 'text-lg' },
-            { top: '65%', left: '60%', size: 'text-sm' },
-            { top: '10%', left: '70%', size: 'text-base' },
-            { bottom: '15%', left: '70%', size: 'text-sm' },
-            { top: '55%', right: '50px', size: 'text-lg' }
+            // First layer - main positions (all sizes doubled)
+            { top: '8px', left: '16px', size: 'text-8xl' },
+            { top: '32px', right: '24px', size: 'text-5xl' },
+            { bottom: '48px', left: '24px', size: 'text-6xl' },
+            { bottom: '16px', right: '16px', size: 'text-8xl' },
+            { top: '50%', left: '8px', size: 'text-4xl' },
+            { top: '33%', right: '8px', size: 'text-5xl' },
+            { top: '20%', left: '50%', size: 'text-3xl' },
+            { bottom: '30%', right: '30%', size: 'text-4xl' },
+            { top: '60%', right: '12px', size: 'text-xl' },
+            { bottom: '60%', left: '12px', size: 'text-3xl' },
+            { top: '15%', right: '40%', size: 'text-xl' },
+            { bottom: '70%', left: '40%', size: 'text-2xl' },
+            // Second layer - additional density positions (all sizes doubled)
+            { top: '5px', left: '50%', size: 'text-3xl' },
+            { top: '45px', left: '5px', size: 'text-xl' },
+            { top: '75%', left: '20%', size: 'text-4xl' },
+            { bottom: '5px', left: '50%', size: 'text-3xl' },
+            { top: '40%', right: '40px', size: 'text-2xl' },
+            { bottom: '40%', left: '50%', size: 'text-xl' },
+            { top: '25%', left: '25%', size: 'text-2xl' },
+            { bottom: '25%', right: '45%', size: 'text-3xl' },
+            { top: '65%', left: '60%', size: 'text-xl' },
+            { top: '10%', left: '70%', size: 'text-2xl' },
+            { bottom: '15%', left: '70%', size: 'text-xl' },
+            { top: '55%', right: '50px', size: 'text-3xl' }
           ];
           
           const position = positions[index % positions.length];
