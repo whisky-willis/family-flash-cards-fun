@@ -225,7 +225,8 @@ const Index = () => {
                       dateOfBirth: "2010-07-08",
                       favoriteColor: "orange",
                       hobbies: "Soccer, Video Games",
-                      funFact: "Scored the winning goal in the championship game last year"
+                      funFact: "Scored the winning goal in the championship game last year",
+                      photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png"
                     }}
                   />
                 </div>
