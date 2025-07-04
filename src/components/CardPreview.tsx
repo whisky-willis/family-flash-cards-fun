@@ -411,15 +411,15 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
         style={getBackgroundStyle()}
       >
         
-        <CardContent className="p-6 relative z-10">
+        <CardContent className="p-4 relative z-10">
           {/* Photo Section */}
           <div className="text-center mb-4">
             {card.photo ? (
-              <div className="px-4">
+              <div className="px-1">
                 <div 
                   className="relative overflow-hidden rounded-2xl border-4 border-white shadow-md" 
                   style={{ 
-                    height: '220px',
+                    height: '286px',
                     backgroundImage: `url(${card.photo})`,
                     backgroundSize: 'cover',
                     backgroundPosition: card.imagePosition
