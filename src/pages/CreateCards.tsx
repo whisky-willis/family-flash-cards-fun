@@ -103,7 +103,6 @@ const CreateCards = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <img src={kindredLogo} alt="Kindred Cards" className="h-12 w-32 object-cover object-center" />
-              <span className="text-xl font-bold text-foreground tracking-tight">Kindred Cards</span>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="outline" onClick={() => navigate('/')} className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold uppercase text-sm tracking-wide">
