@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
-import kindredLogo from "@/assets/kindred-cards-logo.png";
+const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
   id: string;
@@ -102,7 +102,7 @@ const CreateCards = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <img src={kindredLogo} alt="Kindred Cards" className="h-8 w-8" />
+              <img src={kindredLogo} alt="Kindred Cards" className="h-12 w-32 object-cover object-center" />
               <span className="text-xl font-bold text-foreground tracking-tight">Kindred Cards</span>
             </div>
             <div className="flex items-center space-x-4">
