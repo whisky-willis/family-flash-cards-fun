@@ -33,18 +33,22 @@ export const ImagePositionAdjuster = ({
   const handleGlobalMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
     
+    console.log('Mouse move detected', e.clientX, e.clientY);
     const newX = e.clientX - dragStart.x;
     const newY = e.clientY - dragStart.y;
+    console.log('New position calculated:', newX, newY);
     
     setPosition(prev => {
       // Scale-aware bounds - higher zoom levels get more movement range
       const maxBound = Math.min(150, 100 * prev.scale);
       
-      return {
+      const result = {
         ...prev,
         x: Math.max(-maxBound, Math.min(maxBound, newX)),
         y: Math.max(-maxBound, Math.min(maxBound, newY))
       };
+      console.log('Position updated:', result);
+      return result;
     });
   }, [isDragging, dragStart]);
 
@@ -65,12 +69,15 @@ export const ImagePositionAdjuster = ({
   }, [isDragging, handleGlobalMouseMove, handleGlobalMouseUp]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    console.log('Mouse down detected', e.clientX, e.clientY);
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
     setDragStart({
       x: e.clientX - position.x,
       y: e.clientY - position.y
     });
+    console.log('Drag started, isDragging set to true');
   };
 
   const handleScaleChange = (delta: number) => {
