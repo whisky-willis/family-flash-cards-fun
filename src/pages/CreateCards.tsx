@@ -136,12 +136,7 @@ const CreateCards = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              {isAnonymous && (
-                <div className="text-sm text-muted-foreground bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">
-                  🚧 Draft Mode - Sign up to save permanently
-                </div>
-              )}
-              <Button 
+              <Button
                 onClick={handleSaveCollection}
                 variant="outline"
                 className="px-6 py-2 text-sm font-medium uppercase tracking-wide"
