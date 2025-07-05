@@ -30,6 +30,34 @@ export const ImagePositionAdjuster = ({
     stableOnPositionChange(position);
   }, [position, stableOnPositionChange]);
 
+  const handleGlobalTouchMove = useCallback((e: TouchEvent) => {
+    if (!isDragging || e.touches.length === 0) return;
+    
+    console.log('Touch move detected');
+    const touch = e.touches[0];
+    const newX = touch.clientX - dragStart.x;
+    const newY = touch.clientY - dragStart.y;
+    console.log('New touch position calculated:', newX, newY);
+    
+    setPosition(prev => {
+      // Scale-aware bounds - higher zoom levels get more movement range
+      const maxBound = Math.min(150, 100 * prev.scale);
+      
+      const result = {
+        ...prev,
+        x: Math.max(-maxBound, Math.min(maxBound, newX)),
+        y: Math.max(-maxBound, Math.min(maxBound, newY))
+      };
+      console.log('Touch position updated:', result);
+      return result;
+    });
+  }, [isDragging, dragStart]);
+
+  const handleGlobalTouchEnd = useCallback(() => {
+    console.log('Touch end detected');
+    setIsDragging(false);
+  }, []);
+
   const handleGlobalMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
     
@@ -60,13 +88,17 @@ export const ImagePositionAdjuster = ({
     if (isDragging) {
       document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalMouseUp);
+      document.addEventListener('touchmove', handleGlobalTouchMove);
+      document.addEventListener('touchend', handleGlobalTouchEnd);
       
       return () => {
         document.removeEventListener('mousemove', handleGlobalMouseMove);
         document.removeEventListener('mouseup', handleGlobalMouseUp);
+        document.removeEventListener('touchmove', handleGlobalTouchMove);
+        document.removeEventListener('touchend', handleGlobalTouchEnd);
       };
     }
-  }, [isDragging, handleGlobalMouseMove, handleGlobalMouseUp]);
+  }, [isDragging, handleGlobalMouseMove, handleGlobalMouseUp, handleGlobalTouchMove, handleGlobalTouchEnd]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     console.log('Mouse down detected', e.clientX, e.clientY);
@@ -78,6 +110,19 @@ export const ImagePositionAdjuster = ({
       y: e.clientY - position.y
     });
     console.log('Drag started, isDragging set to true');
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    console.log('Touch start detected');
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setDragStart({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y
+    });
+    console.log('Touch drag started, isDragging set to true');
   };
 
   const handleScaleChange = (delta: number) => {
@@ -112,6 +157,7 @@ export const ImagePositionAdjuster = ({
           background: '#f8f9fa'
         }}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <div
           className="w-full h-full pointer-events-none select-none"
