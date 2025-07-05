@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
+import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardPreview } from "@/components/CardPreview";
+import { useAuth } from "@/hooks/useAuth";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 const Index = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const names = ['George', 'Baileigh', 'Nick', 'Sarah'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
@@ -65,6 +67,25 @@ const Index = () => {
               <Button onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium uppercase tracking-wide">
                 Create Cards
               </Button>
+              {user ? (
+                <Button 
+                  onClick={signOut} 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign Out</span>
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => navigate('/auth')} 
+                  variant="outline" 
+                  size="sm"
+                >
+                  Sign In
+                </Button>
+              )}
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
                 0
               </div>
