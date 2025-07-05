@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/pages/CreateCards";
+import { validateImageFile, sanitizeInput } from "@/lib/validation";
 
 interface CardFormProps {
   initialData?: Partial<FamilyCard>;
@@ -17,6 +19,8 @@ interface CardFormProps {
 
 export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEditing = false }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadError, setUploadError] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     photo: '',
@@ -59,7 +63,17 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    onSubmit(formData);
+    // Sanitize all text inputs
+    const sanitizedData = {
+      ...formData,
+      name: sanitizeInput(formData.name),
+      whereTheyLive: sanitizeInput(formData.whereTheyLive),
+      favoriteColor: sanitizeInput(formData.favoriteColor),
+      hobbies: sanitizeInput(formData.hobbies),
+      funFact: sanitizeInput(formData.funFact)
+    };
+    
+    onSubmit(sanitizedData);
     
     if (!isEditing) {
       setFormData(prev => ({
@@ -81,21 +95,55 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError('');
+
+    try {
+      // Validate file
+      const validation = await validateImageFile(file);
+      if (!validation.isValid) {
+        setUploadError(validation.error || 'Invalid file');
+        setUploading(false);
+        return;
+      }
+
+      // Create secure file reader
       const reader = new FileReader();
       reader.onload = (event) => {
+        const result = event.target?.result as string;
+        
+        // Additional security check on the data URL
+        if (!result.startsWith('data:image/')) {
+          setUploadError('Invalid image format');
+          setUploading(false);
+          return;
+        }
+
         setFormData(prev => ({ 
           ...prev, 
-          photo: event.target?.result as string,
+          photo: result,
           imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
         }));
+        setUploading(false);
       };
+      
+      reader.onerror = () => {
+        setUploadError('Failed to read file');
+        setUploading(false);
+      };
+
       reader.readAsDataURL(file);
-      // Clear the input value so the same file can be selected again
-      e.target.value = '';
+    } catch (error) {
+      setUploadError('File validation failed');
+      setUploading(false);
     }
+
+    // Clear the input value so the same file can be selected again
+    e.target.value = '';
   };
 
   // Added: Function to remove the uploaded image
@@ -143,11 +191,26 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
             key={formData.photo ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
             id="photo"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/gif,image/webp"
             onChange={handleImageUpload}
+            disabled={uploading}
             className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
           />
-          {formData.photo && (
+          
+          {uploading && (
+            <div className="flex items-center text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg p-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+              <span>Uploading and validating image...</span>
+            </div>
+          )}
+          
+          {uploadError && (
+            <Alert variant="destructive">
+              <AlertDescription>{uploadError}</AlertDescription>
+            </Alert>
+          )}
+          
+          {formData.photo && !uploading && (
             <div className="flex justify-between items-center text-sm bg-green-50 border border-green-200 rounded-lg p-2">
               <span className="text-green-700 font-medium">✓ Image uploaded successfully</span>
               <div className="flex space-x-2">
@@ -172,8 +235,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
               </div>
             </div>
           )}
-          {!formData.photo && (
-            <p className="text-sm text-muted-foreground">Upload a photo to get started</p>
+          
+          {!formData.photo && !uploading && (
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>Upload a photo to get started</p>
+              <p className="text-xs">Supported formats: JPEG, PNG, GIF, WebP (max 5MB)</p>
+            </div>
           )}
         </div>
         {formData.photo && (
