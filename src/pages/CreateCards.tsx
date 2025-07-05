@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,21 @@ const CreateCards = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
+  // Load cards from localStorage on component mount
+  useEffect(() => {
+    const savedCards = localStorage.getItem('kindred_draft_cards');
+    if (savedCards) {
+      try {
+        const parsedCards = JSON.parse(savedCards);
+        setCards(parsedCards);
+        console.log('📋 Loaded cards from localStorage:', parsedCards.length);
+      } catch (error) {
+        console.error('❌ Failed to parse saved cards:', error);
+        localStorage.removeItem('kindred_draft_cards');
+      }
+    }
+  }, []);
+
   // Auto-save collection for new users
   useAutoSaveCollection({ 
     cards,
@@ -54,7 +69,13 @@ const CreateCards = () => {
       ...card,
       id: Date.now().toString(),
     };
-    setCards([...cards, newCard]);
+    const updatedCards = [...cards, newCard];
+    setCards(updatedCards);
+    
+    // Save to localStorage for global auto-save
+    localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
+    console.log('💾 Saved cards to localStorage after add:', updatedCards.length);
+    
     setCurrentCard({});
     toast({
       title: "Card Added!",
@@ -68,11 +89,17 @@ const CreateCards = () => {
   };
 
   const handleUpdateCard = (updatedCard: Omit<FamilyCard, 'id'>) => {
-    setCards(cards.map(card => 
+    const updatedCards = cards.map(card => 
       card.id === currentCard.id 
         ? { ...updatedCard, id: card.id }
         : card
-    ));
+    );
+    setCards(updatedCards);
+    
+    // Save to localStorage for global auto-save
+    localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
+    console.log('💾 Saved cards to localStorage after update:', updatedCards.length);
+    
     setCurrentCard({});
     setIsEditing(false);
     toast({
@@ -82,7 +109,18 @@ const CreateCards = () => {
   };
 
   const handleDeleteCard = (cardId: string) => {
-    setCards(cards.filter(card => card.id !== cardId));
+    const updatedCards = cards.filter(card => card.id !== cardId);
+    setCards(updatedCards);
+    
+    // Update localStorage after delete
+    if (updatedCards.length > 0) {
+      localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
+      console.log('💾 Saved cards to localStorage after delete:', updatedCards.length);
+    } else {
+      localStorage.removeItem('kindred_draft_cards');
+      console.log('🗑️ Removed cards from localStorage (no cards left)');
+    }
+    
     toast({
       title: "Card Removed",
       description: "The card has been removed from your collection.",
