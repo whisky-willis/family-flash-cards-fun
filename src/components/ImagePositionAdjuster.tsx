@@ -70,7 +70,7 @@ export const ImagePositionAdjuster = ({
         ref={containerRef}
         className="relative overflow-hidden rounded-lg border-4 border-white shadow-md bg-gray-50"
         style={{ 
-          height: '180px',
+          height: '286px',
           background: '#f8f9fa'
         }}
       >
