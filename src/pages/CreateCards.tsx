@@ -10,9 +10,7 @@ import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { SaveCollectionDialog } from "@/components/SaveCollectionDialog";
-import { useAutoSaveCollection } from "@/hooks/useAutoSaveCollection";
-import { usePersistentCards } from "@/hooks/usePersistentCards";
-import { StorageDebug } from "@/components/StorageDebug";
+import { useSupabaseCards } from "@/hooks/useSupabaseCards";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
@@ -32,37 +30,23 @@ export interface FamilyCard {
 const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
-  const { cards, updateCards, clearCards, isLoaded } = usePersistentCards();
+  const { user, isAnonymous } = useAuth();
+  const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-  // Auto-save collection for new users
-  useAutoSaveCollection({ 
-    cards,
-    onSaveComplete: () => {
-      // Clear localStorage after successful auto-save to database
-      clearCards();
-    }
-  });
-
   const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
-  }, []); // Empty dependency array since setCurrentCard is stable
+  }, []);
 
-  const handleAddCard = (card: Omit<FamilyCard, 'id'>) => {
-    const newCard = {
-      ...card,
-      id: Date.now().toString(),
-    };
-    const updatedCards = [...cards, newCard];
-    updateCards(updatedCards);
-    
+  const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
+    await addCard(card);
     setCurrentCard({});
+    
     toast({
       title: "Card Added!",
-      description: `${card.name}'s card has been added to your collection.`,
+      description: `${card.name}'s card has been ${isAnonymous ? 'saved to your draft' : 'added to your collection'}.`,
     });
   };
 
@@ -71,26 +55,21 @@ const CreateCards = () => {
     setIsEditing(true);
   };
 
-  const handleUpdateCard = (updatedCard: Omit<FamilyCard, 'id'>) => {
-    const updatedCards = cards.map(card => 
-      card.id === currentCard.id 
-        ? { ...updatedCard, id: card.id }
-        : card
-    );
-    updateCards(updatedCards);
-    
-    setCurrentCard({});
-    setIsEditing(false);
-    toast({
-      title: "Card Updated!",
-      description: `${updatedCard.name}'s card has been updated.`,
-    });
+  const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
+    if (currentCard.id) {
+      await updateCard(currentCard.id, updatedCard);
+      setCurrentCard({});
+      setIsEditing(false);
+      
+      toast({
+        title: "Card Updated!",
+        description: `${updatedCard.name}'s card has been updated.`,
+      });
+    }
   };
 
-  const handleDeleteCard = (cardId: string) => {
-    const updatedCards = cards.filter(card => card.id !== cardId);
-    updateCards(updatedCards);
-    
+  const handleDeleteCard = async (cardId: string) => {
+    await removeCard(cardId);
     toast({
       title: "Card Removed",
       description: "The card has been removed from your collection.",
@@ -157,6 +136,11 @@ const CreateCards = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {isAnonymous && (
+                <div className="text-sm text-muted-foreground bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">
+                  🚧 Draft Mode - Sign up to save permanently
+                </div>
+              )}
               <Button 
                 onClick={handleSaveCollection}
                 variant="outline"
@@ -164,7 +148,7 @@ const CreateCards = () => {
                 disabled={cards.length === 0}
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save Collection
+                {isAnonymous ? 'Sign Up to Save' : 'Save Collection'}
               </Button>
               <Button 
                 onClick={handleProceedToOrder}
@@ -176,6 +160,11 @@ const CreateCards = () => {
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
                 {cards.length}
               </div>
+              {isSaving && (
+                <div className="text-sm text-muted-foreground">
+                  Saving...
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -260,9 +249,6 @@ const CreateCards = () => {
           cards={cards}
           onAuthRequired={handleAuthRequired}
         />
-
-        {/* Storage Debug Component */}
-        <StorageDebug />
       </div>
     </div>
   );
