@@ -446,10 +446,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
 
           {/* Attributes with white background for visibility */}
           <div className="space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm font-fredoka">
-            {card.relationship && card.relationship.trim() && (
+            {card.whereTheyLive && card.whereTheyLive.trim() && (
               <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Relationship:</span>
-                <span className={`capitalize font-semibold ${card.theme === 'organic' ? 'text-yellow-600' : 'text-orange-500'}`}>{card.relationship}</span>
+                <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Where they live:</span>
+                <span className={`capitalize font-semibold ${card.theme === 'organic' ? 'text-yellow-600' : 'text-orange-500'}`}>{card.whereTheyLive}</span>
               </div>
             )}
             

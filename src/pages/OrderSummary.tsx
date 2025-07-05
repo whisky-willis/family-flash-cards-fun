@@ -213,7 +213,7 @@ const OrderSummary = () => {
                       )}
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-800">{card.name}</h4>
-                        <p className="text-sm text-gray-600 capitalize">{card.relationship}</p>
+                        <p className="text-sm text-gray-600 capitalize">{card.whereTheyLive}</p>
                       </div>
                       <span className="text-sm font-medium text-gray-700">
                         ${pricePerCard.toFixed(2)}

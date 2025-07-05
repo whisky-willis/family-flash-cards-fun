@@ -156,9 +156,9 @@ const Index = () => {
                 <span className="text-2xl font-black text-foreground">2</span>
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Customize Cards</h3>
-              <p className="text-foreground/80 font-medium leading-relaxed">
-                Add names, relationships, fun facts, and conversation starters for each person
-              </p>
+                <p className="text-foreground/80 font-medium leading-relaxed">
+                  Add names, locations, fun facts, and conversation starters for each person
+                </p>
             </div>
 
             <div className="text-center group">
@@ -191,7 +191,7 @@ const Index = () => {
                   <CardPreview 
                     card={{
                       name: "Uncle Mike",
-                      relationship: "uncle",
+                      whereTheyLive: "Boston, MA",
                       dateOfBirth: "1985-03-15",
                       favoriteColor: "green",
                       hobbies: "Guitar, Hiking",
@@ -208,7 +208,7 @@ const Index = () => {
                   <CardPreview 
                     card={{
                       name: "Grandma Rose",
-                      relationship: "grandmother",
+                      whereTheyLive: "Portland, OR",
                       dateOfBirth: "1952-09-22",
                       favoriteColor: "purple",
                       hobbies: "Gardening, Baking",
@@ -225,7 +225,7 @@ const Index = () => {
                   <CardPreview 
                     card={{
                       name: "Cousin Alex",
-                      relationship: "cousin",
+                      whereTheyLive: "Austin, TX",
                       dateOfBirth: "2010-07-08",
                       favoriteColor: "orange",
                       hobbies: "Soccer, Video Games",
@@ -242,7 +242,7 @@ const Index = () => {
                   <CardPreview 
                     card={{
                       name: "Aunt Sarah",
-                      relationship: "aunt",
+                      whereTheyLive: "Denver, CO",
                       dateOfBirth: "1978-12-03",
                       favoriteColor: "pink",
                       hobbies: "Photography, Yoga",
@@ -258,7 +258,7 @@ const Index = () => {
                   <CardPreview 
                     card={{
                       name: "Uncle Tom",
-                      relationship: "uncle",
+                      whereTheyLive: "Seattle, WA",
                       dateOfBirth: "1980-06-18",
                       favoriteColor: "blue",
                       hobbies: "Cooking, Fishing",
@@ -274,7 +274,7 @@ const Index = () => {
                   <CardPreview 
                     card={{
                       name: "Big Sister Emma",
-                      relationship: "sister",
+                      whereTheyLive: "Miami, FL",
                       dateOfBirth: "2005-11-14",
                       favoriteColor: "yellow",
                       hobbies: "Dancing, Reading",

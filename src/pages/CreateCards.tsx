@@ -18,7 +18,7 @@ export interface FamilyCard {
   favoriteColor: string;
   hobbies: string;
   funFact: string;
-  relationship: string;
+  whereTheyLive: string;
   theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
   imagePosition?: { x: number; y: number; scale: number };
 }

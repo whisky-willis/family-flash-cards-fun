@@ -24,7 +24,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     favoriteColor: '',
     hobbies: '',
     funFact: '',
-    relationship: '',
+    whereTheyLive: '',
     theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
@@ -40,7 +40,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         favoriteColor: '',
         hobbies: '',
         funFact: '',
-        relationship: '',
+        whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
@@ -67,7 +67,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         favoriteColor: '',
         hobbies: '',
         funFact: '',
-        relationship: '',
+        whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
@@ -187,12 +187,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
       </div>
 
       <div>
-        <Label htmlFor="relationship">Relationship</Label>
+        <Label htmlFor="whereTheyLive">Where they live</Label>
         <Input
-          id="relationship"
-          value={formData.relationship}
-          onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-          placeholder="e.g., Daddy, Mommy, Nanna, Grandpa, Uncle Tom"
+          id="whereTheyLive"
+          value={formData.whereTheyLive}
+          onChange={(e) => setFormData({ ...formData, whereTheyLive: e.target.value })}
+          placeholder="e.g., New York, California, Down the street, Next door"
         />
       </div>
 
