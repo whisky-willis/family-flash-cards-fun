@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useGlobalAutoSave } from "@/hooks/useGlobalAutoSave";
+import DisableOldAutoSave from "@/components/DisableOldAutoSave";
 import Index from "./pages/Index";
 import CreateCards from "./pages/CreateCards";
 import OrderSummary from "./pages/OrderSummary";
@@ -20,6 +21,7 @@ const AppContent = () => {
   
   return (
     <>
+      <DisableOldAutoSave />
       <Toaster />
       <Sonner />
       <BrowserRouter>

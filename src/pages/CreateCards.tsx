@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { SaveCollectionDialog } from "@/components/SaveCollectionDialog";
 import { useAutoSaveCollection } from "@/hooks/useAutoSaveCollection";
 import { usePersistentCards } from "@/hooks/usePersistentCards";
+import { StorageDebug } from "@/components/StorageDebug";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
@@ -259,6 +260,9 @@ const CreateCards = () => {
           cards={cards}
           onAuthRequired={handleAuthRequired}
         />
+
+        {/* Storage Debug Component */}
+        <StorageDebug />
       </div>
     </div>
   );
