@@ -26,6 +26,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     funFact: '',
     whereTheyLive: '',
     theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
+    font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
@@ -42,6 +43,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         funFact: '',
         whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
+        font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
@@ -69,6 +71,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         funFact: '',
         whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
+        font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
       // Reset the file input
@@ -256,6 +259,24 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
             <SelectItem value="mosaic">Mosaic</SelectItem>
             <SelectItem value="space">Space</SelectItem>
             <SelectItem value="sports">Sports</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="font">Card Font</Label>
+        <Select value={formData.font || ''} onValueChange={(value: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => setFormData({ ...formData, font: value })}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a font" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="fredoka">Fredoka</SelectItem>
+            <SelectItem value="comic-neue">Comic Neue</SelectItem>
+            <SelectItem value="bubblegum">Bubblegum Sans</SelectItem>
+            <SelectItem value="kalam">Kalam</SelectItem>
+            <SelectItem value="pangolin">Pangolin</SelectItem>
+            <SelectItem value="boogaloo">Boogaloo</SelectItem>
+            <SelectItem value="luckiest-guy">Luckiest Guy</SelectItem>
           </SelectContent>
         </Select>
       </div>

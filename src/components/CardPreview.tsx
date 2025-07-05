@@ -231,6 +231,22 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
   const [customBackground, setCustomBackground] = useState<string>('');
   const [isGeneratingBg, setIsGeneratingBg] = useState(false);
 
+  // Function to get font class name
+  const getFontClass = (font?: string) => {
+    switch (font) {
+      case 'fredoka': return 'font-fredoka';
+      case 'comic-neue': return 'font-comic-neue';
+      case 'bubblegum': return 'font-bubblegum';
+      case 'kalam': return 'font-kalam';
+      case 'pangolin': return 'font-pangolin';
+      case 'boogaloo': return 'font-boogaloo';
+      case 'luckiest-guy': return 'font-luckiest-guy';
+      default: return nameFont || 'font-fredoka-one'; // fallback to nameFont prop or default
+    }
+  };
+
+  const fontClass = getFontClass(card.font);
+
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
 
@@ -439,14 +455,14 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
           </div>
 
           {/* Name */}
-          <h3 className={`text-4xl ${nameFont} text-center mb-4 text-foreground`} style={{
+          <h3 className={`text-4xl ${fontClass} text-center mb-4 text-foreground`} style={{
             textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4), 0 0 50px rgba(255, 255, 255, 0.2)',
           }}>
             {card.name}
           </h3>
 
           {/* Attributes with white background for visibility */}
-          <div className={`space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm ${nameFont}`}>
+          <div className={`space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm ${fontClass}`}>
             {card.whereTheyLive && card.whereTheyLive.trim() && (
               <div className="flex items-center justify-between">
                 <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Where they live:</span>
