@@ -247,6 +247,13 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
 
   const fontClass = getFontClass(card.font);
 
+  // Debug image position updates
+  useEffect(() => {
+    if (card.imagePosition) {
+      console.log('CardPreview received position update:', card.imagePosition);
+    }
+  }, [card.imagePosition]);
+
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
 

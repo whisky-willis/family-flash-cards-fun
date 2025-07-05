@@ -33,7 +33,7 @@ const CreateCards = () => {
 
   const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
-  }, []);
+  }, []); // Empty dependency array since setCurrentCard is stable
 
   const handleAddCard = (card: Omit<FamilyCard, 'id'>) => {
     const newCard = {

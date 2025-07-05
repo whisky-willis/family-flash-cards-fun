@@ -119,8 +119,9 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   };
 
   const handlePositionChange = useCallback((position: { x: number; y: number; scale: number }) => {
+    console.log('Position changed:', position);
     setFormData(prev => ({ ...prev, imagePosition: position }));
-  }, []); // Fixed: Memoized the callback to prevent infinite re-renders
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
