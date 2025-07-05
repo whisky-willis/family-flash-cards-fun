@@ -30,69 +30,87 @@ export function useGlobalAutoSave() {
                 return;
               }
               
-              // Check localStorage for any saved cards
-              const savedCards = localStorage.getItem('kindred_draft_cards');
-              console.log('📋 Checking localStorage for saved cards:', !!savedCards);
+              // Check localStorage for any saved cards using both old and new keys
+              let savedCards = localStorage.getItem('kindred-cards-persistent-v2');
+              let cards = [];
               
               if (savedCards) {
-                const cards = JSON.parse(savedCards);
-                console.log('📋 Found saved cards in localStorage:', cards.length);
-                
-                if (cards.length > 0) {
-                  // Check if this is a new user by checking if they have any existing collections
-                  const { data: existingCollections, error: fetchError } = await supabase
-                    .from('card_collections')
-                    .select('id')
-                    .eq('user_id', session.user.id)
-                    .limit(1);
+                try {
+                  const data = JSON.parse(savedCards);
+                  cards = data.cards || data; // Handle both old and new format
+                  console.log('📋 Found saved cards in new persistent storage:', cards.length);
+                } catch (error) {
+                  console.error('❌ Failed to parse new storage format:', error);
+                }
+              } else {
+                // Fallback to old storage key
+                const oldSavedCards = localStorage.getItem('kindred_draft_cards');
+                if (oldSavedCards) {
+                  try {
+                    cards = JSON.parse(oldSavedCards);
+                    console.log('📋 Found saved cards in legacy storage:', cards.length);
+                  } catch (error) {
+                    console.error('❌ Failed to parse legacy storage:', error);
+                  }
+                }
+              }
+              console.log('📋 Checking localStorage for saved cards:', cards.length > 0);
+              
+              if (cards.length > 0) {
+                // Check if this is a new user by checking if they have any existing collections
+                const { data: existingCollections, error: fetchError } = await supabase
+                  .from('card_collections')
+                  .select('id')
+                  .eq('user_id', session.user.id)
+                  .limit(1);
 
-                  if (fetchError) {
-                    console.error('❌ Error checking existing collections:', fetchError);
+                if (fetchError) {
+                  console.error('❌ Error checking existing collections:', fetchError);
+                  toast({
+                    title: "Authentication Error",
+                    description: "Unable to verify your account. Please try signing in again.",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+
+                console.log('📊 Existing collections for user:', existingCollections?.length || 0);
+
+                // If no existing collections and we have cards to save, auto-save
+                if (!existingCollections || existingCollections.length === 0) {
+                  console.log('💾 Auto-saving first collection for new user:', session.user.id);
+                  
+                  const { error } = await supabase
+                    .from('card_collections')
+                    .insert({
+                      user_id: session.user.id,
+                      name: 'My First Collection',
+                      description: 'Collection created during sign-up',
+                      cards: cards
+                    });
+
+                  if (error) {
+                    console.error('❌ Auto-save error:', error);
                     toast({
-                      title: "Authentication Error",
-                      description: "Unable to verify your account. Please try signing in again.",
+                      title: "Save Error",
+                      description: "Failed to auto-save your cards. Please save manually from the create page.",
                       variant: "destructive",
                     });
                     return;
                   }
 
-                  console.log('📊 Existing collections for user:', existingCollections?.length || 0);
-
-                  // If no existing collections and we have cards to save, auto-save
-                  if (!existingCollections || existingCollections.length === 0) {
-                    console.log('💾 Auto-saving first collection for new user:', session.user.id);
-                    
-                    const { error } = await supabase
-                      .from('card_collections')
-                      .insert({
-                        user_id: session.user.id,
-                        name: 'My First Collection',
-                        description: 'Collection created during sign-up',
-                        cards: cards
-                      });
-
-                    if (error) {
-                      console.error('❌ Auto-save error:', error);
-                      toast({
-                        title: "Save Error",
-                        description: "Failed to auto-save your cards. Please save manually from the create page.",
-                        variant: "destructive",
-                      });
-                      return;
-                    }
-
-                    console.log('✅ Auto-save completed successfully!');
-                    
-                    // Clear the localStorage after successful save
-                    localStorage.removeItem('kindred_draft_cards');
-                    
-                    toast({
-                      title: "Collection Saved!",
-                      description: "Your cards have been automatically saved to your account.",
-                    });
-                  } else {
-                    console.log('ℹ️ User already has collections, skipping auto-save');
-                  }
+                  console.log('✅ Auto-save completed successfully!');
+                  
+                  // Clear both localStorage keys after successful save
+                  localStorage.removeItem('kindred_draft_cards');
+                  localStorage.removeItem('kindred-cards-persistent-v2');
+                  
+                  toast({
+                    title: "Collection Saved!",
+                    description: "Your cards have been automatically saved to your account.",
+                  });
+                } else {
+                  console.log('ℹ️ User already has collections, skipping auto-save');
                 }
               } else {
                 console.log('📋 No saved cards found in localStorage');

@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { SaveCollectionDialog } from "@/components/SaveCollectionDialog";
 import { useAutoSaveCollection } from "@/hooks/useAutoSaveCollection";
+import { usePersistentCards } from "@/hooks/usePersistentCards";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
@@ -31,32 +32,17 @@ const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [cards, setCards] = useState<FamilyCard[]>([]);
+  const { cards, updateCards, clearCards, isLoaded } = usePersistentCards();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-
-  // Load cards from localStorage on component mount
-  useEffect(() => {
-    const savedCards = localStorage.getItem('kindred_draft_cards');
-    if (savedCards) {
-      try {
-        const parsedCards = JSON.parse(savedCards);
-        setCards(parsedCards);
-        console.log('📋 Loaded cards from localStorage:', parsedCards.length);
-      } catch (error) {
-        console.error('❌ Failed to parse saved cards:', error);
-        localStorage.removeItem('kindred_draft_cards');
-      }
-    }
-  }, []);
 
   // Auto-save collection for new users
   useAutoSaveCollection({ 
     cards,
     onSaveComplete: () => {
-      // Optionally refresh the page or show a notification
-      // that the collection was auto-saved
+      // Clear localStorage after successful auto-save to database
+      clearCards();
     }
   });
 
@@ -70,28 +56,7 @@ const CreateCards = () => {
       id: Date.now().toString(),
     };
     const updatedCards = [...cards, newCard];
-    setCards(updatedCards);
-    
-    // Save to localStorage for global auto-save with error handling
-    try {
-      localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
-      console.log('💾 Saved cards to localStorage after add:', updatedCards.length);
-    } catch (error) {
-      console.warn('⚠️ localStorage quota exceeded, clearing old data and trying again');
-      // Clear localStorage and try again
-      localStorage.removeItem('kindred_draft_cards');
-      try {
-        localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
-        console.log('💾 Saved cards to localStorage after clearing old data');
-      } catch (secondError) {
-        console.error('❌ Failed to save to localStorage even after clearing:', secondError);
-        toast({
-          title: "Storage Warning",
-          description: "Unable to auto-save cards locally. Please save your collection manually to avoid losing your work.",
-          variant: "destructive",
-        });
-      }
-    }
+    updateCards(updatedCards);
     
     setCurrentCard({});
     toast({
@@ -111,27 +76,7 @@ const CreateCards = () => {
         ? { ...updatedCard, id: card.id }
         : card
     );
-    setCards(updatedCards);
-    
-    // Save to localStorage for global auto-save with error handling
-    try {
-      localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
-      console.log('💾 Saved cards to localStorage after update:', updatedCards.length);
-    } catch (error) {
-      console.warn('⚠️ localStorage quota exceeded on update, clearing old data and trying again');
-      localStorage.removeItem('kindred_draft_cards');
-      try {
-        localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
-        console.log('💾 Saved cards to localStorage after clearing old data');
-      } catch (secondError) {
-        console.error('❌ Failed to save to localStorage even after clearing:', secondError);
-        toast({
-          title: "Storage Warning", 
-          description: "Unable to auto-save cards locally. Please save your collection manually to avoid losing your work.",
-          variant: "destructive",
-        });
-      }
-    }
+    updateCards(updatedCards);
     
     setCurrentCard({});
     setIsEditing(false);
@@ -143,32 +88,7 @@ const CreateCards = () => {
 
   const handleDeleteCard = (cardId: string) => {
     const updatedCards = cards.filter(card => card.id !== cardId);
-    setCards(updatedCards);
-    
-    // Update localStorage after delete with error handling
-    if (updatedCards.length > 0) {
-      try {
-        localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
-        console.log('💾 Saved cards to localStorage after delete:', updatedCards.length);
-      } catch (error) {
-        console.warn('⚠️ localStorage quota exceeded on delete, clearing old data and trying again');
-        localStorage.removeItem('kindred_draft_cards');
-        try {
-          localStorage.setItem('kindred_draft_cards', JSON.stringify(updatedCards));
-          console.log('💾 Saved cards to localStorage after clearing old data');
-        } catch (secondError) {
-          console.error('❌ Failed to save to localStorage even after clearing:', secondError);
-          toast({
-            title: "Storage Warning",
-            description: "Unable to auto-save cards locally. Please save your collection manually.",
-            variant: "destructive",
-          });
-        }
-      }
-    } else {
-      localStorage.removeItem('kindred_draft_cards');
-      console.log('🗑️ Removed cards from localStorage (no cards left)');
-    }
+    updateCards(updatedCards);
     
     toast({
       title: "Card Removed",
