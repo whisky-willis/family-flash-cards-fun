@@ -37,7 +37,7 @@ export default function Auth() {
       return;
     }
 
-    const { error } = await signUp(email, password, name);
+    const { data, error } = await signUp(email, password, name);
     
     if (error) {
       if (error.message.includes('already registered')) {
@@ -50,6 +50,14 @@ export default function Auth() {
         title: "Account created!",
         description: "Please check your email to verify your account.",
       });
+      
+      // If user was created successfully, trigger callback for card collection save
+      if (data?.user && window.opener) {
+        window.opener.postMessage({ 
+          type: 'NEW_USER_SIGNUP', 
+          user: data.user 
+        }, window.location.origin);
+      }
     }
     
     setLoading(false);

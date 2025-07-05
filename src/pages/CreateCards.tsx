@@ -10,6 +10,7 @@ import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { SaveCollectionDialog } from "@/components/SaveCollectionDialog";
+import { useAutoSaveCollection } from "@/hooks/useAutoSaveCollection";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
@@ -34,6 +35,15 @@ const CreateCards = () => {
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+  // Auto-save collection for new users
+  useAutoSaveCollection({ 
+    cards,
+    onSaveComplete: () => {
+      // Optionally refresh the page or show a notification
+      // that the collection was auto-saved
+    }
+  });
 
   const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
