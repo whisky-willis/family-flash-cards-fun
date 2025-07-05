@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { Move, RotateCcw } from "lucide-react";
+import { RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface ImagePositionAdjusterProps {
   imageSrc: string;
@@ -16,8 +16,6 @@ export const ImagePositionAdjuster = ({
   initialPosition = { x: 0, y: 0, scale: 1 } 
 }: ImagePositionAdjusterProps) => {
   const [position, setPosition] = useState(initialPosition);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,99 +28,18 @@ export const ImagePositionAdjuster = ({
     stableOnPositionChange(position);
   }, [position, stableOnPositionChange]);
 
-  const handleGlobalTouchMove = useCallback((e: TouchEvent) => {
-    if (!isDragging || e.touches.length === 0) return;
-    
-    console.log('Touch move detected');
-    const touch = e.touches[0];
-    const newX = touch.clientX - dragStart.x;
-    const newY = touch.clientY - dragStart.y;
-    console.log('New touch position calculated:', newX, newY);
-    
+  const handlePositionChange = (deltaX: number, deltaY: number) => {
     setPosition(prev => {
       // Scale-aware bounds - higher zoom levels get more movement range
       const maxBound = Math.min(150, 100 * prev.scale);
+      const moveStep = 10; // pixels to move per click
       
-      const result = {
+      return {
         ...prev,
-        x: Math.max(-maxBound, Math.min(maxBound, newX)),
-        y: Math.max(-maxBound, Math.min(maxBound, newY))
+        x: Math.max(-maxBound, Math.min(maxBound, prev.x + (deltaX * moveStep))),
+        y: Math.max(-maxBound, Math.min(maxBound, prev.y + (deltaY * moveStep)))
       };
-      console.log('Touch position updated:', result);
-      return result;
     });
-  }, [isDragging, dragStart]);
-
-  const handleGlobalTouchEnd = useCallback(() => {
-    console.log('Touch end detected');
-    setIsDragging(false);
-  }, []);
-
-  const handleGlobalMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    console.log('Mouse move detected', e.clientX, e.clientY);
-    const newX = e.clientX - dragStart.x;
-    const newY = e.clientY - dragStart.y;
-    console.log('New position calculated:', newX, newY);
-    
-    setPosition(prev => {
-      // Scale-aware bounds - higher zoom levels get more movement range
-      const maxBound = Math.min(150, 100 * prev.scale);
-      
-      const result = {
-        ...prev,
-        x: Math.max(-maxBound, Math.min(maxBound, newX)),
-        y: Math.max(-maxBound, Math.min(maxBound, newY))
-      };
-      console.log('Position updated:', result);
-      return result;
-    });
-  }, [isDragging, dragStart]);
-
-  const handleGlobalMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-      document.addEventListener('touchmove', handleGlobalTouchMove);
-      document.addEventListener('touchend', handleGlobalTouchEnd);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleGlobalMouseMove);
-        document.removeEventListener('mouseup', handleGlobalMouseUp);
-        document.removeEventListener('touchmove', handleGlobalTouchMove);
-        document.removeEventListener('touchend', handleGlobalTouchEnd);
-      };
-    }
-  }, [isDragging, handleGlobalMouseMove, handleGlobalMouseUp, handleGlobalTouchMove, handleGlobalTouchEnd]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    console.log('Mouse down detected', e.clientX, e.clientY);
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    });
-    console.log('Drag started, isDragging set to true');
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    console.log('Touch start detected');
-    e.preventDefault();
-    e.stopPropagation();
-    const touch = e.touches[0];
-    setIsDragging(true);
-    setDragStart({
-      x: touch.clientX - position.x,
-      y: touch.clientY - position.y
-    });
-    console.log('Touch drag started, isDragging set to true');
   };
 
   const handleScaleChange = (delta: number) => {
@@ -151,13 +68,11 @@ export const ImagePositionAdjuster = ({
     <div className="space-y-3">
       <div 
         ref={containerRef}
-        className="relative overflow-hidden rounded-lg border-4 border-white shadow-md cursor-move bg-gray-50"
+        className="relative overflow-hidden rounded-lg border-4 border-white shadow-md bg-gray-50"
         style={{ 
           height: '180px',
           background: '#f8f9fa'
         }}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
       >
         <div
           className="w-full h-full pointer-events-none select-none"
@@ -166,19 +81,74 @@ export const ImagePositionAdjuster = ({
             backgroundSize: `${100 * position.scale}%`,
             backgroundPosition: `${50 + (position.x / (3.6 * position.scale))}% ${50 + (position.y / (3.6 * position.scale))}%`,
             backgroundRepeat: 'no-repeat',
-            transition: isDragging ? 'none' : 'background-position 0.1s ease-out, background-size 0.1s ease-out'
+            transition: 'background-position 0.1s ease-out, background-size 0.1s ease-out'
           }}
         />
-        {isDragging && (
-          <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
-            <Move className="h-8 w-8 text-white" />
-          </div>
-        )}
-        {!isDragging && (
-          <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-            Drag to reposition
-          </div>
-        )}
+        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+          Use arrows to reposition
+        </div>
+      </div>
+      
+      {/* Arrow Controls */}
+      <div className="flex items-center justify-center">
+        <div className="grid grid-cols-3 gap-1">
+          <div></div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handlePositionChange(0, -1)}
+            className="h-8 w-8 p-0"
+            title="Move up"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <div></div>
+          
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handlePositionChange(-1, 0)}
+            className="h-8 w-8 p-0"
+            title="Move left"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={handleReset}
+            className="h-8 w-8 p-0"
+            title="Reset position"
+          >
+            <RotateCcw className="h-3 w-3" />
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handlePositionChange(1, 0)}
+            className="h-8 w-8 p-0"
+            title="Move right"
+          >
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+          
+          <div></div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => handlePositionChange(0, 1)}
+            className="h-8 w-8 p-0"
+            title="Move down"
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+          <div></div>
+        </div>
       </div>
       
       <div className="flex items-center justify-between text-xs">
@@ -227,17 +197,6 @@ export const ImagePositionAdjuster = ({
             ++
           </Button>
         </div>
-        
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={handleReset}
-          className="h-7 px-2"
-          title="Reset position and scale"
-        >
-          <RotateCcw className="h-3 w-3" />
-        </Button>
       </div>
     </div>
   );
