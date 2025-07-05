@@ -16,8 +16,8 @@ export const useSupabaseCards = () => {
     const initializeSession = async () => {
       console.log('🚀 Initializing card session...');
       
-      // If no user exists, create anonymous user
-      if (!user) {
+      // Only create anonymous user if we're on the create page and no user exists
+      if (!user && window.location.pathname === '/create') {
         console.log('👤 No user found, creating anonymous user...');
         const { error } = await createAnonymousUser();
         if (error) {
@@ -31,8 +31,12 @@ export const useSupabaseCards = () => {
         }
       }
       
-      // Load cards from database
-      await loadCardsFromDatabase();
+      // Load cards from database if user exists
+      if (user) {
+        await loadCardsFromDatabase();
+      } else {
+        setIsLoaded(true);
+      }
     };
 
     initializeSession();
