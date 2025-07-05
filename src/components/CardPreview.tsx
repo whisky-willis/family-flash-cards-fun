@@ -446,7 +446,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
           </h3>
 
           {/* Attributes with white background for visibility */}
-          <div className="space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm font-fredoka">
+          <div className={`space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm ${nameFont}`}>
             {card.whereTheyLive && card.whereTheyLive.trim() && (
               <div className="flex items-center justify-between">
                 <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Where they live:</span>
