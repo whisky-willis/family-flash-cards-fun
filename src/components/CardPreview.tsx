@@ -247,13 +247,6 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
 
   const fontClass = getFontClass(card.font);
 
-  // Debug image position updates
-  useEffect(() => {
-    if (card.imagePosition) {
-      console.log('CardPreview received position update:', card.imagePosition);
-    }
-  }, [card.imagePosition]);
-
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
 
@@ -445,7 +438,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
                   style={{ 
                     height: '286px',
                     backgroundImage: `url(${card.photo})`,
-                    backgroundSize: 'cover',
+                    backgroundSize: card.imagePosition ? `${100 * card.imagePosition.scale}%` : 'cover',
                     backgroundPosition: card.imagePosition
                       ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`
                       : 'center center',

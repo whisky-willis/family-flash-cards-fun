@@ -119,7 +119,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   };
 
   const handlePositionChange = useCallback((position: { x: number; y: number; scale: number }) => {
-    console.log('Position changed:', position);
     setFormData(prev => ({ ...prev, imagePosition: position }));
   }, []);
 
