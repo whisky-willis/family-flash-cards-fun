@@ -44,11 +44,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
+        emailRedirectTo: undefined, // Disable email confirmation
         data: {
           name: name
         }
       }
     });
+    
+    // If signup successful, send OTP manually
+    if (!error && data.user) {
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false // Don't create user since we already did
+        }
+      });
+      if (otpError) console.log('OTP send error:', otpError);
+    }
+    
     return { data, error };
   };
 
@@ -56,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token,
-      type: 'signup'
+      type: 'email'
     });
     return { data, error };
   };
