@@ -14,13 +14,22 @@ export function useGlobalAutoSave() {
     // Listen for auth state changes to handle new user signups
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('🔐 Global auth state change:', event, 'user:', session?.user?.id);
+        console.log('🔐 Global auth state change:', event, 'user:', session?.user?.id, 'session valid:', !!session);
         
         // Handle sign-ins (including first-time after email verification)
         if (event === 'SIGNED_IN' && session?.user) {
           // Use setTimeout to ensure the session is fully established
           setTimeout(async () => {
             try {
+              // Verify auth session is working
+              const { data: testAuth, error: authError } = await supabase.auth.getUser();
+              console.log('🔐 Auth verification:', { user: testAuth.user?.id, error: authError });
+              
+              if (authError || !testAuth.user) {
+                console.error('❌ Auth session not properly established:', authError);
+                return;
+              }
+              
               // Check localStorage for any saved cards
               const savedCards = localStorage.getItem('kindred_draft_cards');
               console.log('📋 Checking localStorage for saved cards:', !!savedCards);
@@ -39,6 +48,11 @@ export function useGlobalAutoSave() {
 
                   if (fetchError) {
                     console.error('❌ Error checking existing collections:', fetchError);
+                    toast({
+                      title: "Authentication Error",
+                      description: "Unable to verify your account. Please try signing in again.",
+                      variant: "destructive",
+                    });
                     return;
                   }
 
@@ -59,6 +73,11 @@ export function useGlobalAutoSave() {
 
                     if (error) {
                       console.error('❌ Auto-save error:', error);
+                      toast({
+                        title: "Save Error",
+                        description: "Failed to auto-save your cards. Please save manually from the create page.",
+                        variant: "destructive",
+                      });
                       return;
                     }
 
@@ -80,8 +99,13 @@ export function useGlobalAutoSave() {
               }
             } catch (err: any) {
               console.error('❌ Failed to parse or save cards from localStorage:', err);
+              toast({
+                title: "Auto-save Error",
+                description: "Failed to automatically save your cards. Please save manually.",
+                variant: "destructive",
+              });
             }
-          }, 1000); // Wait 1 second to ensure session is fully established
+          }, 2000); // Wait 2 seconds to ensure session is fully established
         }
       }
     );
