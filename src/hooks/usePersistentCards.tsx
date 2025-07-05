@@ -1,95 +1,111 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FamilyCard } from '@/pages/CreateCards';
-
-const STORAGE_KEY = 'kindred-cards-persistent-v2';
+import { 
+  saveCardsToLocalStorage, 
+  loadCardsFromLocalStorage, 
+  clearCardsFromLocalStorage,
+  hasCardsInLocalStorage,
+  getStorageInfo,
+  cleanupLocalStorage
+} from '@/lib/persistentStorage';
 
 export const usePersistentCards = () => {
   const [cards, setCards] = useState<FamilyCard[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  // Load cards on mount
+  // Load cards from localStorage on mount
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const data = JSON.parse(stored);
-        const parsedCards = data.cards || data; // Handle both old and new format
-        setCards(parsedCards);
-        console.log('📋 Loaded cards from persistent storage:', parsedCards.length);
-      }
-    } catch (error) {
-      console.error('❌ Failed to parse stored cards:', error);
-      // Try to load from old key as fallback
-      try {
-        const oldStored = localStorage.getItem('kindred_draft_cards');
-        if (oldStored) {
-          const oldCards = JSON.parse(oldStored);
-          setCards(oldCards);
-          console.log('📋 Loaded cards from legacy storage:', oldCards.length);
-          // Save to new format
-          saveCardsToStorage(oldCards);
-          localStorage.removeItem('kindred_draft_cards');
-        }
-      } catch (oldError) {
-        console.error('❌ Failed to load from legacy storage:', oldError);
-      }
+    console.log('🔄 usePersistentCards: Loading cards from localStorage...');
+    const storedCards = loadCardsFromLocalStorage();
+    
+    if (storedCards.length > 0) {
+      setCards(storedCards);
+      console.log('✅ usePersistentCards: Loaded', storedCards.length, 'cards from localStorage');
+    } else {
+      console.log('📭 usePersistentCards: No cards found in localStorage');
     }
+    
     setIsLoaded(true);
   }, []);
 
-  const saveCardsToStorage = (cardsToSave: FamilyCard[]) => {
-    try {
-      const dataToStore = {
-        cards: cardsToSave,
-        timestamp: Date.now(),
-        version: '2.0'
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
-      console.log('💾 Saved cards to persistent storage:', cardsToSave.length);
-      return true;
-    } catch (error) {
-      console.warn('⚠️ localStorage quota exceeded, clearing old data');
-      try {
-        // Clear old storage keys
-        localStorage.removeItem('kindred_draft_cards');
-        localStorage.removeItem('kindred-cards-backup');
-        // Try again
-        const dataToStore = {
-          cards: cardsToSave,
-          timestamp: Date.now(),
-          version: '2.0'
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
-        console.log('💾 Saved cards after clearing old data');
-        return true;
-      } catch (secondError) {
-        console.error('❌ Failed to save even after clearing:', secondError);
-        return false;
+  // Auto-save cards to localStorage whenever they change
+  useEffect(() => {
+    if (isLoaded && cards.length > 0) {
+      const success = saveCardsToLocalStorage(cards);
+      if (success) {
+        setLastSaved(new Date());
+        console.log('💾 usePersistentCards: Auto-saved', cards.length, 'cards to localStorage');
+      } else {
+        // If save failed, try cleanup and retry once
+        console.warn('⚠️ usePersistentCards: Auto-save failed, attempting cleanup...');
+        const cleanupResult = cleanupLocalStorage();
+        
+        if (cleanupResult.cleaned) {
+          console.log('🧹 usePersistentCards: Cleanup freed', cleanupResult.freedSpace);
+          
+          // Retry save after cleanup
+          const retrySuccess = saveCardsToLocalStorage(cards);
+          if (retrySuccess) {
+            setLastSaved(new Date());
+            console.log('✅ usePersistentCards: Auto-save succeeded after cleanup');
+          } else {
+            console.error('❌ usePersistentCards: Auto-save still failing after cleanup');
+          }
+        }
       }
     }
-  };
+  }, [cards, isLoaded]);
 
-  // Update cards with automatic persistence
-  const updateCards = (newCards: FamilyCard[]) => {
-    setCards(newCards);
-    if (isLoaded) {
-      saveCardsToStorage(newCards);
+  // Enhanced setCards function with logging
+  const updateCards = useCallback((newCards: FamilyCard[] | ((prev: FamilyCard[]) => FamilyCard[])) => {
+    if (typeof newCards === 'function') {
+      setCards(prev => {
+        const updated = newCards(prev);
+        console.log('📝 usePersistentCards: Cards updated via function, new count:', updated.length);
+        return updated;
+      });
+    } else {
+      console.log('📝 usePersistentCards: Cards set directly, count:', newCards.length);
+      setCards(newCards);
     }
-  };
+  }, []);
 
-  // Clear all stored cards
-  const clearCards = () => {
+  // Clear all cards
+  const clearCards = useCallback(() => {
     setCards([]);
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem('kindred_draft_cards'); // Clear legacy key too
-    console.log('🗑️ Cleared all stored cards');
-  };
+    clearCardsFromLocalStorage();
+    console.log('🧹 usePersistentCards: Cleared all cards');
+  }, []);
 
-  return { 
-    cards, 
-    updateCards, 
-    clearCards,
+  // Get debug info including storage quota
+  const getDebugInfo = useCallback(() => {
+    const storageInfo = getStorageInfo();
+    return {
+      inMemory: {
+        cardCount: cards.length,
+        isLoaded,
+        lastSaved: lastSaved?.toISOString()
+      },
+      localStorage: storageInfo,
+      actions: {
+        cleanupLocalStorage: () => cleanupLocalStorage()
+      }
+    };
+  }, [cards.length, isLoaded, lastSaved]);
+
+  return {
+    // State
+    cards,
     isLoaded,
-    saveCardsToStorage 
+    lastSaved,
+    
+    // Actions
+    updateCards,
+    clearCards,
+    
+    // Utilities
+    hasCardsInStorage: hasCardsInLocalStorage,
+    getDebugInfo
   };
 };

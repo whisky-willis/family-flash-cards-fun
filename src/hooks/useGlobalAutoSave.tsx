@@ -30,8 +30,8 @@ export function useGlobalAutoSave() {
                 return;
               }
               
-              // Check localStorage for any saved cards using both old and new keys
-              let savedCards = localStorage.getItem('kindred-cards-persistent-v2');
+              // Check localStorage for any saved cards using the new persistent storage
+              let savedCards = localStorage.getItem('kindred-cards-temp-storage');
               let cards = [];
               
               if (savedCards) {
@@ -43,11 +43,12 @@ export function useGlobalAutoSave() {
                   console.error('❌ Failed to parse new storage format:', error);
                 }
               } else {
-                // Fallback to old storage key
-                const oldSavedCards = localStorage.getItem('kindred_draft_cards');
+                // Fallback to old storage keys
+                const oldSavedCards = localStorage.getItem('kindred_draft_cards') || localStorage.getItem('kindred-cards-persistent-v2');
                 if (oldSavedCards) {
                   try {
-                    cards = JSON.parse(oldSavedCards);
+                    const data = JSON.parse(oldSavedCards);
+                    cards = data.cards || data; // Handle both old and new format
                     console.log('📋 Found saved cards in legacy storage:', cards.length);
                   } catch (error) {
                     console.error('❌ Failed to parse legacy storage:', error);
@@ -101,9 +102,10 @@ export function useGlobalAutoSave() {
 
                   console.log('✅ Auto-save completed successfully!');
                   
-                  // Clear both localStorage keys after successful save
+                  // Clear all localStorage keys after successful save
                   localStorage.removeItem('kindred_draft_cards');
                   localStorage.removeItem('kindred-cards-persistent-v2');
+                  localStorage.removeItem('kindred-cards-temp-storage');
                   
                   toast({
                     title: "Collection Saved!",
