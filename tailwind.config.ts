@@ -26,6 +26,7 @@ export default {
 				'kalam': ['Kalam', 'cursive'],
 				'pangolin': ['Pangolin', 'cursive'],
 				'boogaloo': ['Boogaloo', 'cursive'],
+				'luckiest-guy': ['Luckiest Guy', 'cursive'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

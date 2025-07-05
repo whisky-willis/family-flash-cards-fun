@@ -199,7 +199,7 @@ const Index = () => {
                        photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
                        theme: "geometric"
                      }}
-                     nameFont="font-comic-neue"
+                     nameFont="font-luckiest-guy"
                    />
                 </div>
               </CarouselItem>
