@@ -46,6 +46,43 @@ export default function Auth() {
         setError(error.message);
       }
     } else {
+      // Auto-save cards immediately after successful signup
+      if (data.user) {
+        const savedCards = localStorage.getItem('kindred_draft_cards');
+        if (savedCards) {
+          try {
+            const cards = JSON.parse(savedCards);
+            if (cards.length > 0) {
+              console.log('💾 Auto-saving cards for new user immediately after signup:', data.user.id);
+              
+              const { supabase } = await import('@/integrations/supabase/client');
+              const { error: saveError } = await supabase
+                .from('card_collections')
+                .insert({
+                  user_id: data.user.id,
+                  name: 'My First Collection',
+                  description: 'Collection created during sign-up',
+                  cards: cards
+                });
+
+              if (saveError) {
+                console.error('❌ Auto-save error:', saveError);
+              } else {
+                console.log('✅ Cards auto-saved successfully!');
+                // Clear localStorage after successful save
+                localStorage.removeItem('kindred_draft_cards');
+                toast({
+                  title: "Cards Saved!",
+                  description: "Your cards have been saved to your new account.",
+                });
+              }
+            }
+          } catch (err) {
+            console.error('❌ Failed to auto-save cards:', err);
+          }
+        }
+      }
+      
       toast({
         title: "Check your email!",
         description: "We sent you a confirmation link to verify your account.",
