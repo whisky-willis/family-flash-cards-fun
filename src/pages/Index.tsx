@@ -188,100 +188,106 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                  <CardPreview 
-                    card={{
-                      name: "Uncle Mike",
-                      whereTheyLive: "Boston, MA",
-                      dateOfBirth: "1985-03-15",
-                      favoriteColor: "green",
-                      hobbies: "Guitar, Hiking",
-                      funFact: "Plays 5 instruments and climbed Mount Washington!",
-                      photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
-                      theme: "geometric"
-                    }}
-                  />
+                   <CardPreview 
+                     card={{
+                       name: "Uncle Mike",
+                       whereTheyLive: "Boston, MA",
+                       dateOfBirth: "1985-03-15",
+                       favoriteColor: "green",
+                       hobbies: "Guitar, Hiking",
+                       funFact: "Plays 5 instruments and climbed Mount Washington!",
+                       photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
+                       theme: "geometric"
+                     }}
+                     nameFont="font-comic-neue"
+                   />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                  <CardPreview 
-                    card={{
-                      name: "Grandma Rose",
-                      whereTheyLive: "Portland, OR",
-                      dateOfBirth: "1952-09-22",
-                      favoriteColor: "purple",
-                      hobbies: "Gardening, Baking",
-                      funFact: "Traveled to 23 countries and speaks 4 languages!",
-                      photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
-                      theme: "organic"
-                    }}
-                  />
+                   <CardPreview 
+                     card={{
+                       name: "Grandma Rose",
+                       whereTheyLive: "Portland, OR",
+                       dateOfBirth: "1952-09-22",
+                       favoriteColor: "purple",
+                       hobbies: "Gardening, Baking",
+                       funFact: "Traveled to 23 countries and speaks 4 languages!",
+                       photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
+                       theme: "organic"
+                     }}
+                     nameFont="font-bubblegum"
+                   />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                  <CardPreview 
-                    card={{
-                      name: "Cousin Alex",
-                      whereTheyLive: "Austin, TX",
-                      dateOfBirth: "2010-07-08",
-                      favoriteColor: "orange",
-                      hobbies: "Soccer, Video Games",
-                      funFact: "Scored the winning goal in last year's championship!",
-                      photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
-                      theme: "sports"
-                    }}
-                  />
+                   <CardPreview 
+                     card={{
+                       name: "Cousin Alex",
+                       whereTheyLive: "Austin, TX",
+                       dateOfBirth: "2010-07-08",
+                       favoriteColor: "orange",
+                       hobbies: "Soccer, Video Games",
+                       funFact: "Scored the winning goal in last year's championship!",
+                       photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
+                       theme: "sports"
+                     }}
+                     nameFont="font-kalam"
+                   />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                  <CardPreview 
-                    card={{
-                      name: "Aunt Sarah",
-                      whereTheyLive: "Denver, CO",
-                      dateOfBirth: "1978-12-03",
-                      favoriteColor: "pink",
-                      hobbies: "Photography, Yoga",
-                      funFact: "Takes amazing nature photos and teaches kids yoga!",
-                      theme: "rainbow"
-                    }}
-                  />
+                   <CardPreview 
+                     card={{
+                       name: "Aunt Sarah",
+                       whereTheyLive: "Denver, CO",
+                       dateOfBirth: "1978-12-03",
+                       favoriteColor: "pink",
+                       hobbies: "Photography, Yoga",
+                       funFact: "Takes amazing nature photos and teaches kids yoga!",
+                       theme: "rainbow"
+                     }}
+                     nameFont="font-pangolin"
+                   />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                  <CardPreview 
-                    card={{
-                      name: "Uncle Tom",
-                      whereTheyLive: "Seattle, WA",
-                      dateOfBirth: "1980-06-18",
-                      favoriteColor: "blue",
-                      hobbies: "Cooking, Fishing",
-                      funFact: "Makes the best pancakes and caught a 20-pound fish!",
-                      theme: "mosaic"
-                    }}
-                  />
+                   <CardPreview 
+                     card={{
+                       name: "Uncle Tom",
+                       whereTheyLive: "Seattle, WA",
+                       dateOfBirth: "1980-06-18",
+                       favoriteColor: "blue",
+                       hobbies: "Cooking, Fishing",
+                       funFact: "Makes the best pancakes and caught a 20-pound fish!",
+                       theme: "mosaic"
+                     }}
+                     nameFont="font-boogaloo"
+                   />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                  <CardPreview 
-                    card={{
-                      name: "Big Sister Emma",
-                      whereTheyLive: "Miami, FL",
-                      dateOfBirth: "2005-11-14",
-                      favoriteColor: "yellow",
-                      hobbies: "Dancing, Reading",
-                      funFact: "Won first place in the school talent show!",
-                      theme: "space"
-                    }}
-                  />
+                   <CardPreview 
+                     card={{
+                       name: "Big Sister Emma",
+                       whereTheyLive: "Miami, FL",
+                       dateOfBirth: "2005-11-14",
+                       favoriteColor: "yellow",
+                       hobbies: "Dancing, Reading",
+                       funFact: "Won first place in the school talent show!",
+                       theme: "space"
+                     }}
+                     nameFont="font-fredoka-one"
+                   />
                 </div>
               </CarouselItem>
             </CarouselContent>

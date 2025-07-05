@@ -21,6 +21,11 @@ export default {
 			fontFamily: {
 				'fredoka': ['Fredoka', 'sans-serif'],
 				'fredoka-one': ['Fredoka One', 'sans-serif'],
+				'comic-neue': ['Comic Neue', 'cursive'],
+				'bubblegum': ['Bubblegum Sans', 'cursive'],
+				'kalam': ['Kalam', 'cursive'],
+				'pangolin': ['Pangolin', 'cursive'],
+				'boogaloo': ['Boogaloo', 'cursive'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

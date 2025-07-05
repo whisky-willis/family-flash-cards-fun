@@ -9,6 +9,7 @@ interface CardPreviewProps {
   onEdit?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
+  nameFont?: string;
 }
 
 // Comprehensive color mapping function that handles color variations
@@ -226,7 +227,7 @@ const getColorValue = (colorName: string): string => {
   return colorMap[normalizedColor] || '#666666'; // Default to gray if color not found
 };
 
-export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: CardPreviewProps) => {
+export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one' }: CardPreviewProps) => {
   const [customBackground, setCustomBackground] = useState<string>('');
   const [isGeneratingBg, setIsGeneratingBg] = useState(false);
 
@@ -438,7 +439,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           </div>
 
           {/* Name */}
-          <h3 className="text-4xl font-fredoka-one text-center mb-4 text-foreground" style={{
+          <h3 className={`text-4xl ${nameFont} text-center mb-4 text-foreground`} style={{
             textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4), 0 0 50px rgba(255, 255, 255, 0.2)',
           }}>
             {card.name}
