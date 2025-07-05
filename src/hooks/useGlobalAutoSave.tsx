@@ -16,6 +16,7 @@ export function useGlobalAutoSave() {
       async (event, session) => {
         console.log('🔐 Global auth state change:', event, 'user:', session?.user?.id);
         
+        // Handle sign-ins (including first-time after email verification)
         if (event === 'SIGNED_IN' && session?.user) {
           // Check localStorage for any saved cards
           const savedCards = localStorage.getItem('kindred_draft_cards');
