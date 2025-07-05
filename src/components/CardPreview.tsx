@@ -448,14 +448,14 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
           <div className="space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm font-fredoka">
             {card.whereTheyLive && card.whereTheyLive.trim() && (
               <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Where they live:</span>
+                <span className="font-bold text-black">Where they live:</span>
                 <span className={`capitalize font-semibold ${card.theme === 'organic' ? 'text-yellow-600' : 'text-orange-500'}`}>{card.whereTheyLive}</span>
               </div>
             )}
             
             {card.dateOfBirth && (
               <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-blue-600' : 'text-green-600'}`}>Birthday:</span>
+                <span className="font-bold text-black">Birthday:</span>
                 <span className={`font-semibold ${card.theme === 'organic' ? 'text-red-500' : 'text-red-500'}`}>
                   {(() => {
                     // Parse the date string properly to avoid timezone issues
@@ -475,7 +475,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             
             {card.favoriteColor && card.favoriteColor.trim() && (
               <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-red-500' : 'text-purple-600'}`}>Favorite Color:</span>
+                <span className="font-bold text-black">Favorite Color:</span>
                 <span className={`font-semibold ${card.theme === 'organic' ? 'text-blue-600' : 'text-green-600'}`}>
                   {card.favoriteColor}
                 </span>
@@ -484,14 +484,14 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false }: Car
             
             {card.hobbies && card.hobbies.trim() && (
               <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-yellow-600' : 'text-orange-500'}`}>Hobbies:</span>
+                <span className="font-bold text-black">Hobbies:</span>
                 <span className={`text-right font-semibold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>{card.hobbies}</span>
               </div>
             )}
             
             {card.funFact && card.funFact.trim() && (
               <div className={`mt-3 p-3 rounded-2xl border-2 ${card.theme === 'organic' ? 'bg-pink-100/80 border-pink-300' : 'bg-yellow-100/80 border-yellow-300'}`}>
-                <span className={`font-bold block mb-1 ${card.theme === 'organic' ? 'text-green-700' : 'text-red-600'}`}>Fun Fact:</span>
+                <span className="font-bold block mb-1 text-black">Fun Fact:</span>
                 <p className={`text-sm leading-relaxed font-medium ${card.theme === 'organic' ? 'text-blue-700' : 'text-purple-700'}`}>{card.funFact}</p>
               </div>
             )}
