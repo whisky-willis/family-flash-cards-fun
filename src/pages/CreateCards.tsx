@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart, Users, Image as ImageIcon } from "lucide-react";
+import { Heart, Users, Image as ImageIcon, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { SaveCollectionDialog } from "@/components/SaveCollectionDialog";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
@@ -27,9 +29,11 @@ export interface FamilyCard {
 const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [cards, setCards] = useState<FamilyCard[]>([]);
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
@@ -87,6 +91,23 @@ const CreateCards = () => {
     navigate('/order', { state: { cards } });
   };
 
+  const handleSaveCollection = () => {
+    if (cards.length === 0) {
+      toast({
+        title: "No Cards to Save",
+        description: "Please create at least one card before saving a collection.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setShowSaveDialog(true);
+  };
+
+  const handleAuthRequired = () => {
+    setShowSaveDialog(false);
+    navigate('/auth');
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Organic background shapes */}
@@ -118,6 +139,15 @@ const CreateCards = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                onClick={handleSaveCollection}
+                variant="outline"
+                className="px-6 py-2 text-sm font-medium uppercase tracking-wide"
+                disabled={cards.length === 0}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Save Collection
+              </Button>
               <Button 
                 onClick={handleProceedToOrder}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium uppercase tracking-wide"
@@ -204,6 +234,14 @@ const CreateCards = () => {
             </div>
           </div>
         )}
+
+        {/* Save Collection Dialog */}
+        <SaveCollectionDialog
+          open={showSaveDialog}
+          onOpenChange={setShowSaveDialog}
+          cards={cards}
+          onAuthRequired={handleAuthRequired}
+        />
       </div>
     </div>
   );

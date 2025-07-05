@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import CreateCards from "./pages/CreateCards";
 import OrderSummary from "./pages/OrderSummary";
 import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/create" element={<CreateCards />} />
             <Route path="/order" element={<OrderSummary />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

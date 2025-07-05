@@ -68,15 +68,24 @@ const Index = () => {
                 Create Cards
               </Button>
               {user ? (
-                <Button 
-                  onClick={signOut} 
-                  variant="outline" 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign Out</span>
-                </Button>
+                <>
+                  <Button 
+                    onClick={() => navigate('/profile')} 
+                    variant="outline" 
+                    size="sm"
+                  >
+                    Profile
+                  </Button>
+                  <Button 
+                    onClick={signOut} 
+                    variant="outline" 
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </Button>
+                </>
               ) : (
                 <Button 
                   onClick={() => navigate('/auth')} 
