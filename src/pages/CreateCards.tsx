@@ -9,8 +9,10 @@ import { CardForm } from "@/components/CardForm";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { SaveCollectionDialog } from "@/components/SaveCollectionDialog";
+import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCards } from "@/hooks/useSupabaseCards";
+import { useDraft } from "@/hooks/useDraft";
+import { supabase } from "@/integrations/supabase/client";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
@@ -32,16 +34,22 @@ const CreateCards = () => {
   const { toast } = useToast();
   const { user, isAnonymous } = useAuth();
   const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
+  const { saveDraftToLocal, clearDraft } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
   }, []);
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    await addCard(card);
+    const newCard = await addCard(card);
+    const updatedCards = [...cards, newCard];
+    
+    // Save to draft for persistence
+    saveDraftToLocal(updatedCards);
+    
     setCurrentCard({});
     
     toast({
@@ -58,6 +66,15 @@ const CreateCards = () => {
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
       await updateCard(currentCard.id, updatedCard);
+      
+      // Update draft with modified cards
+      const updatedCards = cards.map(card => 
+        card.id === currentCard.id 
+          ? { ...updatedCard, id: currentCard.id }
+          : card
+      );
+      saveDraftToLocal(updatedCards);
+      
       setCurrentCard({});
       setIsEditing(false);
       
@@ -70,6 +87,11 @@ const CreateCards = () => {
 
   const handleDeleteCard = async (cardId: string) => {
     await removeCard(cardId);
+    
+    // Update draft after deletion
+    const updatedCards = cards.filter(card => card.id !== cardId);
+    saveDraftToLocal(updatedCards);
+    
     toast({
       title: "Card Removed",
       description: "The card has been removed from your collection.",
@@ -97,12 +119,35 @@ const CreateCards = () => {
       });
       return;
     }
-    setShowSaveDialog(true);
+    
+    if (!user || isAnonymous) {
+      setShowAuthModal(true);
+    } else {
+      // User is already authenticated, save directly
+      saveAuthentatedCollection();
+    }
   };
 
-  const handleAuthRequired = () => {
-    setShowSaveDialog(false);
-    navigate('/auth');
+  const saveAuthentatedCollection = async () => {
+    try {
+      const { error } = await supabase.auth.getUser();
+      if (error) throw error;
+
+      toast({
+        title: "Collection Saved!",
+        description: "Your cards have been saved to your profile.",
+      });
+    } catch (error) {
+      console.error('Save error:', error);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    clearDraft();
+    toast({
+      title: "Success!",
+      description: "Your account has been created and cards saved!",
+    });
   };
 
   return (
@@ -237,12 +282,12 @@ const CreateCards = () => {
           </div>
         )}
 
-        {/* Save Collection Dialog */}
-        <SaveCollectionDialog
-          open={showSaveDialog}
-          onOpenChange={setShowSaveDialog}
+        {/* Auth Modal */}
+        <AuthModal
+          open={showAuthModal}
+          onOpenChange={setShowAuthModal}
           cards={cards}
-          onAuthRequired={handleAuthRequired}
+          onSuccess={handleAuthSuccess}
         />
       </div>
     </div>
