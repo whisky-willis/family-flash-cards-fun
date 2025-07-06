@@ -6,8 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { validatePassword } from '@/lib/security';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -15,9 +18,29 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<{ isValid: boolean; errors: string[]; score: number }>({ 
+    isValid: false, 
+    errors: [], 
+    score: 0 
+  });
   const { signUp, signIn, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const handlePasswordChange = (newPassword: string) => {
+    setPassword(newPassword);
+    if (newPassword) {
+      const validation = validatePassword(newPassword);
+      const score = Math.min(100, (5 - validation.errors.length) * 20);
+      setPasswordStrength({ 
+        ...validation, 
+        score: Math.max(0, score) 
+      });
+    } else {
+      setPasswordStrength({ isValid: false, errors: [], score: 0 });
+    }
+  };
 
   // Redirect if already logged in
   useEffect(() => {
@@ -26,6 +49,14 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
+  const getPasswordStrengthColor = () => {
+    if (passwordStrength.score < 20) return 'bg-red-500';
+    if (passwordStrength.score < 40) return 'bg-orange-500';
+    if (passwordStrength.score < 60) return 'bg-yellow-500';
+    if (passwordStrength.score < 80) return 'bg-blue-500';
+    return 'bg-green-500';
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -33,6 +64,13 @@ export default function Auth() {
     
     if (!name.trim()) {
       setError('Name is required');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (!passwordStrength.isValid && password) {
+      setError('Please fix the password requirements below');
       setLoading(false);
       return;
     }
@@ -50,6 +88,11 @@ export default function Auth() {
         title: "Check your email!",
         description: "We sent you a confirmation link to verify your account. Your cards will be saved automatically when you sign in.",
       });
+      // Reset form
+      setEmail('');
+      setPassword('');
+      setName('');
+      setPasswordStrength({ isValid: false, errors: [], score: 0 });
     }
     
     setLoading(false);
@@ -150,17 +193,59 @@ export default function Auth() {
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                  />
-                </div>
+                 <div className="space-y-2">
+                   <Label htmlFor="signup-password">Password</Label>
+                   <div className="relative">
+                     <Input
+                       id="signup-password"
+                       type={showPassword ? "text" : "password"}
+                       value={password}
+                       onChange={(e) => handlePasswordChange(e.target.value)}
+                       required
+                       minLength={8}
+                       className="pr-10"
+                     />
+                     <Button
+                       type="button"
+                       variant="ghost"
+                       size="sm"
+                       className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                       onClick={() => setShowPassword(!showPassword)}
+                     >
+                       {showPassword ? (
+                         <EyeOff className="h-4 w-4" />
+                       ) : (
+                         <Eye className="h-4 w-4" />
+                       )}
+                     </Button>
+                   </div>
+                   {password && (
+                     <div className="space-y-2">
+                       <div className="flex items-center space-x-2">
+                         <div className="flex-1 bg-gray-200 rounded-full h-2">
+                           <div 
+                             className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
+                             style={{ width: `${passwordStrength.score}%` }}
+                           />
+                         </div>
+                         <span className="text-xs text-muted-foreground">
+                           {passwordStrength.score < 40 ? 'Weak' : 
+                            passwordStrength.score < 80 ? 'Good' : 'Strong'}
+                         </span>
+                       </div>
+                       {passwordStrength.errors.length > 0 && (
+                         <div className="text-xs text-muted-foreground space-y-1">
+                           {passwordStrength.errors.map((error, index) => (
+                             <div key={index} className="flex items-center space-x-1">
+                               <span className="text-red-500">•</span>
+                               <span>{error}</span>
+                             </div>
+                           ))}
+                         </div>
+                       )}
+                     </div>
+                   )}
+                 </div>
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>

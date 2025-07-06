@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/pages/CreateCards";
+import { validateImageFile, validateFormData, sanitizeCardData, MAX_TEXT_LENGTH, MAX_NAME_LENGTH } from "@/lib/security";
+import { useToast } from "@/hooks/use-toast";
 
 interface CardFormProps {
   initialData?: Partial<FamilyCard>;
@@ -17,6 +19,7 @@ interface CardFormProps {
 
 export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEditing = false }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     photo: '',
@@ -59,7 +62,20 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    onSubmit(formData);
+    // Validate form data
+    const validation = validateFormData(formData);
+    if (!validation.isValid) {
+      toast({
+        title: "Validation Error",
+        description: validation.errors.join('. '),
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Sanitize form data before submission
+    const sanitizedData = sanitizeCardData(formData);
+    onSubmit(sanitizedData);
     
     if (!isEditing) {
       setFormData(prev => ({
@@ -84,6 +100,19 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file before processing
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast({
+          title: "File Upload Error",
+          description: validation.error,
+          variant: "destructive",
+        });
+        // Reset the file input
+        e.target.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
         setFormData(prev => ({ 
@@ -91,6 +120,13 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           photo: event.target?.result as string,
           imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
         }));
+      };
+      reader.onerror = () => {
+        toast({
+          title: "File Upload Error",
+          description: "Failed to read the selected file. Please try again.",
+          variant: "destructive",
+        });
       };
       reader.readAsDataURL(file);
       // Clear the input value so the same file can be selected again
@@ -131,6 +167,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Enter name"
+          maxLength={MAX_NAME_LENGTH}
           required
         />
       </div>
@@ -196,6 +233,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.whereTheyLive}
           onChange={(e) => setFormData({ ...formData, whereTheyLive: e.target.value })}
           placeholder="e.g., New York, California, Down the street, Next door"
+          maxLength={MAX_TEXT_LENGTH}
         />
       </div>
 
@@ -288,6 +326,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.favoriteColor}
           onChange={(e) => setFormData({ ...formData, favoriteColor: e.target.value })}
           placeholder="e.g., Blue, Red, Green"
+          maxLength={MAX_NAME_LENGTH}
         />
       </div>
 
@@ -298,6 +337,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.hobbies}
           onChange={(e) => setFormData({ ...formData, hobbies: e.target.value })}
           placeholder="e.g., Reading, Cooking, Gardening"
+          maxLength={MAX_TEXT_LENGTH}
         />
       </div>
 
@@ -308,6 +348,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.funFact}
           onChange={(e) => setFormData({ ...formData, funFact: e.target.value })}
           placeholder="Something interesting or fun about this person"
+          maxLength={MAX_TEXT_LENGTH}
           rows={3}
         />
       </div>
