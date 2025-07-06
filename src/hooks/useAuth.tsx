@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { authRateLimiter, sanitizeError } from '@/lib/security';
+import { authRateLimiter, sanitizeError } from '@/lib/validation';
 
 interface AuthContextType {
   user: User | null;

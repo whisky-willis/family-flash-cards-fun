@@ -169,3 +169,59 @@ export function sanitizeInput(input: string): string {
     .replace(/on\w+=/gi, '') // Remove event handlers
     .trim();
 }
+
+// Rate limiting for client-side
+class ClientRateLimiter {
+  private attempts: Map<string, { count: number; resetTime: number }> = new Map();
+  
+  isAllowed(key: string, maxAttempts: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
+    const now = Date.now();
+    const record = this.attempts.get(key);
+    
+    if (!record || now > record.resetTime) {
+      this.attempts.set(key, { count: 1, resetTime: now + windowMs });
+      return true;
+    }
+    
+    if (record.count >= maxAttempts) {
+      return false;
+    }
+    
+    record.count++;
+    return true;
+  }
+  
+  getRemainingTime(key: string): number {
+    const record = this.attempts.get(key);
+    if (!record) return 0;
+    return Math.max(0, record.resetTime - Date.now());
+  }
+}
+
+export const authRateLimiter = new ClientRateLimiter();
+
+// Secure error handling
+export function sanitizeError(error: any): string {
+  if (!error) return 'An unexpected error occurred';
+  
+  const message = error.message || error.toString();
+  
+  // Don't expose sensitive information
+  const sensitivePatterns = [
+    /password/i,
+    /token/i,
+    /key/i,
+    /secret/i,
+    /credential/i,
+    /auth/i,
+    /sql/i,
+    /database/i
+  ];
+  
+  if (sensitivePatterns.some(pattern => pattern.test(message))) {
+    return 'Authentication error occurred';
+  }
+  
+  // Return sanitized message
+  return sanitizeInput(message) || 'An error occurred';
+}
