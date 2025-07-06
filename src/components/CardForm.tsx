@@ -4,11 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/pages/CreateCards";
-import { validateImageFile, sanitizeInput, MAX_TEXT_LENGTH, MAX_NAME_LENGTH } from "@/lib/validation";
-import { useToast } from "@/hooks/use-toast";
 
 interface CardFormProps {
   initialData?: Partial<FamilyCard>;
@@ -20,9 +17,6 @@ interface CardFormProps {
 
 export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEditing = false }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadError, setUploadError] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     photo: '',
@@ -65,38 +59,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    // Validate text lengths
-    if (formData.name.length > MAX_NAME_LENGTH) {
-      toast({
-        title: "Validation Error",
-        description: "Name is too long",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (formData.hobbies.length > MAX_TEXT_LENGTH || 
-        formData.funFact.length > MAX_TEXT_LENGTH || 
-        formData.whereTheyLive.length > MAX_TEXT_LENGTH) {
-      toast({
-        title: "Validation Error",
-        description: "Text fields are too long",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Sanitize all text inputs
-    const sanitizedData = {
-      ...formData,
-      name: sanitizeInput(formData.name),
-      whereTheyLive: sanitizeInput(formData.whereTheyLive),
-      favoriteColor: sanitizeInput(formData.favoriteColor),
-      hobbies: sanitizeInput(formData.hobbies),
-      funFact: sanitizeInput(formData.funFact)
-    };
-    
-    onSubmit(sanitizedData);
+    onSubmit(formData);
     
     if (!isEditing) {
       setFormData(prev => ({
@@ -118,77 +81,21 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    setUploadError('');
-
-    try {
-      // Validate file
-      const validation = await validateImageFile(file);
-      if (!validation.isValid) {
-        setUploadError(validation.error || 'Invalid file');
-        toast({
-          title: "File Upload Error",
-          description: validation.error || 'Invalid file',
-          variant: "destructive",
-        });
-        setUploading(false);
-        // Reset the file input
-        e.target.value = '';
-        return;
-      }
-
-      // Create secure file reader
+    if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const result = event.target?.result as string;
-        
-        // Additional security check on the data URL
-        if (!result.startsWith('data:image/')) {
-          setUploadError('Invalid image format');
-          toast({
-            title: "File Upload Error",
-            description: "Invalid image format",
-            variant: "destructive",
-          });
-          setUploading(false);
-          return;
-        }
-
         setFormData(prev => ({ 
           ...prev, 
-          photo: result,
+          photo: event.target?.result as string,
           imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
         }));
-        setUploading(false);
       };
-      
-      reader.onerror = () => {
-        setUploadError('Failed to read file');
-        toast({
-          title: "File Upload Error",
-          description: "Failed to read the selected file. Please try again.",
-          variant: "destructive",
-        });
-        setUploading(false);
-      };
-
       reader.readAsDataURL(file);
-    } catch (error) {
-      setUploadError('File validation failed');
-      toast({
-        title: "File Upload Error",
-        description: "File validation failed",
-        variant: "destructive",
-      });
-      setUploading(false);
+      // Clear the input value so the same file can be selected again
+      e.target.value = '';
     }
-
-    // Clear the input value so the same file can be selected again
-    e.target.value = '';
   };
 
   // Added: Function to remove the uploaded image
@@ -224,7 +131,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Enter name"
-          maxLength={MAX_NAME_LENGTH}
           required
         />
       </div>
@@ -237,26 +143,11 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
             key={formData.photo ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
             id="photo"
             type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
+            accept="image/*"
             onChange={handleImageUpload}
-            disabled={uploading}
             className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
           />
-          
-          {uploading && (
-            <div className="flex items-center text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg p-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-              <span>Uploading and validating image...</span>
-            </div>
-          )}
-          
-          {uploadError && (
-            <Alert variant="destructive">
-              <AlertDescription>{uploadError}</AlertDescription>
-            </Alert>
-          )}
-          
-          {formData.photo && !uploading && (
+          {formData.photo && (
             <div className="flex justify-between items-center text-sm bg-green-50 border border-green-200 rounded-lg p-2">
               <span className="text-green-700 font-medium">✓ Image uploaded successfully</span>
               <div className="flex space-x-2">
@@ -281,12 +172,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
               </div>
             </div>
           )}
-          
-          {!formData.photo && !uploading && (
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>Upload a photo to get started</p>
-              <p className="text-xs">Supported formats: JPEG, PNG, GIF, WebP (max 5MB)</p>
-            </div>
+          {!formData.photo && (
+            <p className="text-sm text-muted-foreground">Upload a photo to get started</p>
           )}
         </div>
         {formData.photo && (
@@ -309,7 +196,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.whereTheyLive}
           onChange={(e) => setFormData({ ...formData, whereTheyLive: e.target.value })}
           placeholder="e.g., New York, California, Down the street, Next door"
-          maxLength={MAX_TEXT_LENGTH}
         />
       </div>
 
@@ -381,7 +267,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         <Label htmlFor="font">Card Font</Label>
         <Select value={formData.font || ''} onValueChange={(value: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => setFormData({ ...formData, font: value })}>
           <SelectTrigger>
-            <SelectValue placeholder="Select a font" />
+            <SelectValue placeholder="Select a theme" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="fredoka">Fredoka</SelectItem>
@@ -402,7 +288,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.favoriteColor}
           onChange={(e) => setFormData({ ...formData, favoriteColor: e.target.value })}
           placeholder="e.g., Blue, Red, Green"
-          maxLength={MAX_NAME_LENGTH}
         />
       </div>
 
@@ -413,7 +298,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.hobbies}
           onChange={(e) => setFormData({ ...formData, hobbies: e.target.value })}
           placeholder="e.g., Reading, Cooking, Gardening"
-          maxLength={MAX_TEXT_LENGTH}
         />
       </div>
 
@@ -424,7 +308,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.funFact}
           onChange={(e) => setFormData({ ...formData, funFact: e.target.value })}
           placeholder="Something interesting or fun about this person"
-          maxLength={MAX_TEXT_LENGTH}
           rows={3}
         />
       </div>

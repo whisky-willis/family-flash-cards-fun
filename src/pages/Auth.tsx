@@ -8,11 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { validateEmail, validatePassword, RateLimiter, sanitizeInput } from '@/lib/validation';
-
-// Create a singleton rate limiter for auth attempts
-const authRateLimiter = new RateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -20,9 +15,6 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [passwordValid, setPasswordValid] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [rateLimited, setRateLimited] = useState(false);
   const { signUp, signIn, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -38,60 +30,30 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setEmailError('');
     
-    // Rate limiting check
-    const userKey = `signup_${email}`;
-    if (!authRateLimiter.isAllowed(userKey)) {
-      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(userKey) / 1000 / 60);
-      setError(`Too many attempts. Please try again in ${remainingTime} minutes.`);
-      setRateLimited(true);
-      setLoading(false);
-      return;
-    }
-    
-    // Validate inputs
-    const sanitizedName = sanitizeInput(name);
-    const sanitizedEmail = sanitizeInput(email);
-    
-    if (!sanitizedName.trim()) {
+    if (!name.trim()) {
       setError('Name is required');
       setLoading(false);
       return;
     }
 
-    if (!validateEmail(sanitizedEmail)) {
-      setEmailError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-
-    if (!passwordValid) {
-      setError('Please ensure your password meets all requirements');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await signUp(sanitizedEmail, password, sanitizedName);
-      
-      if (error) {
-        // Generic error messages to prevent information disclosure
-        if (error.message.includes('already registered') || error.message.includes('User already registered')) {
-          setError('An account with this email already exists. Please sign in instead.');
-        } else if (error.message.includes('password')) {
-          setError('Password does not meet security requirements. Please try a different password.');
-        } else {
-          setError('Unable to create account. Please try again later.');
-        }
+    const { data, error } = await signUp(email, password, name);
+    
+    if (error) {
+      if (error.message.includes('already registered')) {
+        setError('This email is already registered. Please sign in instead.');
       } else {
-        toast({
-          title: "Check your email!",
-          description: "We sent you a confirmation link to verify your account. Your cards will be saved automatically when you sign in.",
-        });
+        setError(error.message);
       }
-    } catch (error) {
-      setError('An unexpected error occurred. Please try again later.');
+    } else {
+      toast({
+        title: "Check your email!",
+        description: "We sent you a confirmation link to verify your account. Your cards will be saved automatically when you sign in.",
+      });
+      // Reset form
+      setEmail('');
+      setPassword('');
+      setName('');
     }
     
     setLoading(false);
@@ -101,48 +63,21 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setEmailError('');
 
-    // Rate limiting check
-    const userKey = `signin_${email}`;
-    if (!authRateLimiter.isAllowed(userKey)) {
-      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(userKey) / 1000 / 60);
-      setError(`Too many attempts. Please try again in ${remainingTime} minutes.`);
-      setRateLimited(true);
-      setLoading(false);
-      return;
-    }
-
-    // Validate inputs
-    const sanitizedEmail = sanitizeInput(email);
+    const { error } = await signIn(email, password);
     
-    if (!validateEmail(sanitizedEmail)) {
-      setEmailError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-
-    if (!password) {
-      setError('Password is required');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { error } = await signIn(sanitizedEmail, password);
-      
-      if (error) {
-        // Generic error messages to prevent information disclosure
-        setError('Invalid email or password. Please check your credentials and try again.');
+    if (error) {
+      if (error.message.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please try again.');
       } else {
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-        });
-        navigate('/');
+        setError(error.message);
       }
-    } catch (error) {
-      setError('An unexpected error occurred. Please try again later.');
+    } else {
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
+      navigate('/');
     }
     
     setLoading(false);
@@ -172,17 +107,9 @@ export default function Auth() {
                     id="signin-email"
                     type="email"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setEmailError('');
-                      setRateLimited(false);
-                    }}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    className={emailError ? 'border-red-500' : ''}
                   />
-                  {emailError && (
-                    <p className="text-sm text-red-600">{emailError}</p>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signin-password">Password</Label>
@@ -223,16 +150,9 @@ export default function Auth() {
                     id="signup-email"
                     type="email"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setEmailError('');
-                    }}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    className={emailError ? 'border-red-500' : ''}
                   />
-                  {emailError && (
-                    <p className="text-sm text-red-600">{emailError}</p>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
@@ -242,12 +162,7 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={8}
-                    className={!passwordValid && password ? 'border-red-500' : ''}
-                  />
-                  <PasswordStrengthIndicator 
-                    password={password} 
-                    onValidationChange={setPasswordValid}
+                    minLength={6}
                   />
                 </div>
                 {error && (

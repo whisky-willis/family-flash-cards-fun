@@ -1,7 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { authRateLimiter, sanitizeError } from '@/lib/validation';
 
 interface AuthContextType {
   user: User | null;
@@ -49,33 +48,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const createAnonymousUser = async () => {
     console.log('👤 Creating anonymous user...');
-    try {
-      const { data, error } = await supabase.auth.signInAnonymously();
-      if (error) {
-        console.error('❌ Failed to create anonymous user:', error);
-        return { user: null, error };
-      } else {
-        console.log('✅ Anonymous user created:', data.user?.id);
-        
-        // Set a cleanup timeout for anonymous users (24 hours)
-        const cleanup = setTimeout(() => {
-          if (data.user && data.user.is_anonymous) {
-            console.log('🧹 Cleaning up anonymous user session');
-            supabase.auth.signOut();
-          }
-        }, 24 * 60 * 60 * 1000); // 24 hours
-        
-        // Store cleanup timer in session storage
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('anonymousCleanup', cleanup.toString());
-        }
-        
-        return { user: data.user, error: null };
-      }
-    } catch (error) {
-      console.error('❌ Unexpected error creating anonymous user:', error);
-      return { user: null, error };
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error) {
+      console.error('❌ Failed to create anonymous user:', error);
+    } else {
+      console.log('✅ Anonymous user created:', data.user?.id);
     }
+    return { user: data.user, error };
   };
 
   const convertAnonymousUser = async (email: string, password: string, name: string) => {
@@ -90,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error('❌ Failed to convert anonymous user:', error);
-        return { data, error: { message: sanitizeError(error) } };
+        return { data, error };
       } else {
         console.log('✅ Anonymous user converted successfully');
       }
@@ -98,20 +77,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { data, error };
     } catch (error) {
       console.error('❌ Failed to convert anonymous user:', error);
-      return { data: null, error: { message: sanitizeError(error) } };
+      return { data: null, error };
     }
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    // Rate limiting check
-    if (!authRateLimiter.isAllowed(`signup_${email}`, 3, 10 * 60 * 1000)) {
-      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(`signup_${email}`) / 1000 / 60);
-      return { 
-        data: null, 
-        error: { message: `Too many signup attempts. Please try again in ${remainingTime} minutes.` }
-      };
-    }
-
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -124,13 +94,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       });
       
-      if (error) {
-        return { data, error: { message: sanitizeError(error) } };
-      }
-      
       return { data, error };
     } catch (error) {
-      return { data: null, error: { message: sanitizeError(error) } };
+      return { data: null, error };
     }
   };
 
@@ -144,27 +110,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    // Rate limiting check
-    if (!authRateLimiter.isAllowed(`signin_${email}`, 5, 15 * 60 * 1000)) {
-      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(`signin_${email}`) / 1000 / 60);
-      return { 
-        error: { message: `Too many login attempts. Please try again in ${remainingTime} minutes.` }
-      };
-    }
-
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
       
-      if (error) {
-        return { error: { message: sanitizeError(error) } };
-      }
-      
-      return { error: null };
+      return { error };
     } catch (error) {
-      return { error: { message: sanitizeError(error) } };
+      return { error };
     }
   };
 
