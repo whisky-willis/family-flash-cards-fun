@@ -201,7 +201,7 @@ const CreateCards = () => {
           </div>
 
           {/* Card Preview */}
-          <div>
+          <div className="lg:sticky lg:top-8">
             <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-2xl font-black">
