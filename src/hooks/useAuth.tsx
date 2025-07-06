@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { authRateLimiter, sanitizeError } from '@/lib/security';
 
 interface AuthContextType {
   user: User | null;
@@ -79,32 +80,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const convertAnonymousUser = async (email: string, password: string, name: string) => {
     console.log('🔄 Converting anonymous user to permanent account...');
-    const { data, error } = await supabase.auth.updateUser({
-      email,
-      password,
-      data: { name }
-    });
     
-    if (error) {
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        email,
+        password,
+        data: { name }
+      });
+      
+      if (error) {
+        console.error('❌ Failed to convert anonymous user:', error);
+        return { data, error: { message: sanitizeError(error) } };
+      } else {
+        console.log('✅ Anonymous user converted successfully');
+      }
+      
+      return { data, error };
+    } catch (error) {
       console.error('❌ Failed to convert anonymous user:', error);
-    } else {
-      console.log('✅ Anonymous user converted successfully');
+      return { data: null, error: { message: sanitizeError(error) } };
     }
-    return { data, error };
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          name: name
+    // Rate limiting check
+    if (!authRateLimiter.isAllowed(`signup_${email}`, 3, 10 * 60 * 1000)) {
+      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(`signup_${email}`) / 1000 / 60);
+      return { 
+        data: null, 
+        error: { message: `Too many signup attempts. Please try again in ${remainingTime} minutes.` }
+      };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            name: name
+          }
         }
+      });
+      
+      if (error) {
+        return { data, error: { message: sanitizeError(error) } };
       }
-    });
-    return { data, error };
+      
+      return { data, error };
+    } catch (error) {
+      return { data: null, error: { message: sanitizeError(error) } };
+    }
   };
 
   const verifyOtp = async (email: string, token: string) => {
@@ -117,11 +144,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    return { error };
+    // Rate limiting check
+    if (!authRateLimiter.isAllowed(`signin_${email}`, 5, 15 * 60 * 1000)) {
+      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(`signin_${email}`) / 1000 / 60);
+      return { 
+        error: { message: `Too many login attempts. Please try again in ${remainingTime} minutes.` }
+      };
+    }
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) {
+        return { error: { message: sanitizeError(error) } };
+      }
+      
+      return { error: null };
+    } catch (error) {
+      return { error: { message: sanitizeError(error) } };
+    }
   };
 
   const signOut = async () => {

@@ -1,3 +1,7 @@
+// Constants for validation
+export const MAX_TEXT_LENGTH = 500;
+export const MAX_NAME_LENGTH = 100;
+
 // Password validation utility
 export interface PasswordStrength {
   score: number; // 0-4 (very weak to very strong)

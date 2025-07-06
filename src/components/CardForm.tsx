@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/pages/CreateCards";
-import { validateImageFile, sanitizeInput } from "@/lib/validation";
+import { validateImageFile, sanitizeInput, MAX_TEXT_LENGTH, MAX_NAME_LENGTH } from "@/lib/validation";
+import { useToast } from "@/hooks/use-toast";
 
 interface CardFormProps {
   initialData?: Partial<FamilyCard>;
@@ -21,6 +22,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadError, setUploadError] = useState('');
   const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     photo: '',
@@ -52,16 +54,37 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         ...initialData
       });
     }
-  }, [isEditing, initialData]); // Fixed: Added initialData dependency
+  }, [isEditing, initialData]);
 
   // Call onChange whenever formData changes, but only if onChange exists
   useEffect(() => {
     onChange?.(formData);
-  }, [formData, onChange]); // Fixed: Added onChange back but it should be memoized by parent
+  }, [formData, onChange]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
+    
+    // Validate text lengths
+    if (formData.name.length > MAX_NAME_LENGTH) {
+      toast({
+        title: "Validation Error",
+        description: "Name is too long",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (formData.hobbies.length > MAX_TEXT_LENGTH || 
+        formData.funFact.length > MAX_TEXT_LENGTH || 
+        formData.whereTheyLive.length > MAX_TEXT_LENGTH) {
+      toast({
+        title: "Validation Error",
+        description: "Text fields are too long",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Sanitize all text inputs
     const sanitizedData = {
@@ -107,7 +130,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
       const validation = await validateImageFile(file);
       if (!validation.isValid) {
         setUploadError(validation.error || 'Invalid file');
+        toast({
+          title: "File Upload Error",
+          description: validation.error || 'Invalid file',
+          variant: "destructive",
+        });
         setUploading(false);
+        // Reset the file input
+        e.target.value = '';
         return;
       }
 
@@ -119,6 +149,11 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         // Additional security check on the data URL
         if (!result.startsWith('data:image/')) {
           setUploadError('Invalid image format');
+          toast({
+            title: "File Upload Error",
+            description: "Invalid image format",
+            variant: "destructive",
+          });
           setUploading(false);
           return;
         }
@@ -133,12 +168,22 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
       
       reader.onerror = () => {
         setUploadError('Failed to read file');
+        toast({
+          title: "File Upload Error",
+          description: "Failed to read the selected file. Please try again.",
+          variant: "destructive",
+        });
         setUploading(false);
       };
 
       reader.readAsDataURL(file);
     } catch (error) {
       setUploadError('File validation failed');
+      toast({
+        title: "File Upload Error",
+        description: "File validation failed",
+        variant: "destructive",
+      });
       setUploading(false);
     }
 
@@ -179,6 +224,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Enter name"
+          maxLength={MAX_NAME_LENGTH}
           required
         />
       </div>
@@ -263,6 +309,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.whereTheyLive}
           onChange={(e) => setFormData({ ...formData, whereTheyLive: e.target.value })}
           placeholder="e.g., New York, California, Down the street, Next door"
+          maxLength={MAX_TEXT_LENGTH}
         />
       </div>
 
@@ -355,6 +402,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.favoriteColor}
           onChange={(e) => setFormData({ ...formData, favoriteColor: e.target.value })}
           placeholder="e.g., Blue, Red, Green"
+          maxLength={MAX_NAME_LENGTH}
         />
       </div>
 
@@ -365,6 +413,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.hobbies}
           onChange={(e) => setFormData({ ...formData, hobbies: e.target.value })}
           placeholder="e.g., Reading, Cooking, Gardening"
+          maxLength={MAX_TEXT_LENGTH}
         />
       </div>
 
@@ -375,6 +424,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           value={formData.funFact}
           onChange={(e) => setFormData({ ...formData, funFact: e.target.value })}
           placeholder="Something interesting or fun about this person"
+          maxLength={MAX_TEXT_LENGTH}
           rows={3}
         />
       </div>
