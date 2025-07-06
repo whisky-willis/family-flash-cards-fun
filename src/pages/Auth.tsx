@@ -49,13 +49,6 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  const getPasswordStrengthColor = () => {
-    if (passwordStrength.score < 20) return 'bg-red-500';
-    if (passwordStrength.score < 40) return 'bg-orange-500';
-    if (passwordStrength.score < 60) return 'bg-yellow-500';
-    if (passwordStrength.score < 80) return 'bg-blue-500';
-    return 'bg-green-500';
-  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,18 +214,16 @@ export default function Auth() {
                    </div>
                    {password && (
                      <div className="space-y-2">
-                       <div className="flex items-center space-x-2">
-                         <div className="flex-1 bg-gray-200 rounded-full h-2">
-                           <div 
-                             className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
-                             style={{ width: `${passwordStrength.score}%` }}
-                           />
-                         </div>
-                         <span className="text-xs text-muted-foreground">
-                           {passwordStrength.score < 40 ? 'Weak' : 
-                            passwordStrength.score < 80 ? 'Good' : 'Strong'}
-                         </span>
-                       </div>
+                        <div className="flex items-center space-x-2">
+                          <Progress 
+                            value={passwordStrength.score} 
+                            className="flex-1"
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {passwordStrength.score < 40 ? 'Weak' : 
+                             passwordStrength.score < 80 ? 'Good' : 'Strong'}
+                          </span>
+                        </div>
                        {passwordStrength.errors.length > 0 && (
                          <div className="text-xs text-muted-foreground space-y-1">
                            {passwordStrength.errors.map((error, index) => (
