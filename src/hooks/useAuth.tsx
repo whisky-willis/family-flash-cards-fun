@@ -49,33 +49,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const createAnonymousUser = async () => {
     console.log('👤 Creating anonymous user...');
-    try {
-      const { data, error } = await supabase.auth.signInAnonymously();
-      if (error) {
-        console.error('❌ Failed to create anonymous user:', error);
-        return { user: null, error };
-      } else {
-        console.log('✅ Anonymous user created:', data.user?.id);
-        
-        // Set a cleanup timeout for anonymous users (24 hours)
-        const cleanup = setTimeout(() => {
-          if (data.user && data.user.is_anonymous) {
-            console.log('🧹 Cleaning up anonymous user session');
-            supabase.auth.signOut();
-          }
-        }, 24 * 60 * 60 * 1000); // 24 hours
-        
-        // Store cleanup timer in session storage
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('anonymousCleanup', cleanup.toString());
-        }
-        
-        return { user: data.user, error: null };
-      }
-    } catch (error) {
-      console.error('❌ Unexpected error creating anonymous user:', error);
-      return { user: null, error };
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error) {
+      console.error('❌ Failed to create anonymous user:', error);
+    } else {
+      console.log('✅ Anonymous user created:', data.user?.id);
     }
+    return { user: data.user, error };
   };
 
   const convertAnonymousUser = async (email: string, password: string, name: string) => {
