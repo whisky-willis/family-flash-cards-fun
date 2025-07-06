@@ -177,7 +177,7 @@ const CreateCards = () => {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Card Form */}
-          <div>
+          <div className="min-h-screen">
             <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-pink/20 rounded-3xl shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-2xl font-black">
@@ -201,7 +201,7 @@ const CreateCards = () => {
           </div>
 
           {/* Card Preview */}
-          <div className="lg:sticky lg:top-8">
+          <div className="lg:sticky lg:top-8 lg:self-start">
             <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-2xl font-black">
