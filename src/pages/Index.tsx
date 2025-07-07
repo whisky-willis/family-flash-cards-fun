@@ -28,7 +28,7 @@ const Index = () => {
         setIsTyping(false);
         setTimeout(() => {
           setCurrentNameIndex(prevIndex => (prevIndex + 1) % names.length);
-        }, 2000);
+        }, 1500 + currentName.length * 100);
       }
     }, 100);
     return () => clearInterval(typeInterval);
