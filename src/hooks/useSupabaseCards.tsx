@@ -11,37 +11,6 @@ export const useSupabaseCards = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Initialize user session and load cards
-  useEffect(() => {
-    const initializeSession = async () => {
-      console.log('🚀 Initializing card session...');
-      
-      // Only create anonymous user if we're on the create page and no user exists
-      if (!user && window.location.pathname === '/create') {
-        console.log('👤 No user found, creating anonymous user...');
-        const { error } = await createAnonymousUser();
-        if (error) {
-          console.error('❌ Failed to create anonymous user:', error);
-          toast({
-            title: "Session Error",
-            description: "Failed to initialize session. Please refresh the page.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-      
-      // Load cards from database if user exists
-      if (user) {
-        await loadCardsFromDatabase();
-      } else {
-        setIsLoaded(true);
-      }
-    };
-
-    initializeSession();
-  }, [user]);
-
   const loadCardsFromDatabase = async () => {
     if (!user) return;
     
@@ -133,6 +102,69 @@ export const useSupabaseCards = () => {
       setIsSaving(false);
     }
   };
+
+  const migrateDraftToAuthenticated = useCallback(async () => {
+    try {
+      const draftData = localStorage.getItem('kindred-cards-draft');
+      if (draftData && user && !user.is_anonymous) {
+        console.log('🔄 Migrating draft cards to authenticated user...');
+        const draftCards = JSON.parse(draftData) as FamilyCard[];
+        
+        if (draftCards.length > 0) {
+          const success = await saveCardsToDatabase(draftCards);
+          if (success) {
+            setCards(draftCards);
+            localStorage.removeItem('kindred-cards-draft');
+            console.log('✅ Successfully migrated draft cards');
+            toast({
+              title: "Cards Saved!",
+              description: `Successfully saved ${draftCards.length} cards to your account.`,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('❌ Failed to migrate draft cards:', error);
+    }
+  }, [user, toast]);
+
+  // Initialize user session and load cards
+  useEffect(() => {
+    const initializeSession = async () => {
+      console.log('🚀 Initializing card session...');
+      
+      // Only create anonymous user if we're on the create page and no user exists
+      if (!user && window.location.pathname === '/create') {
+        console.log('👤 No user found, creating anonymous user...');
+        const { error } = await createAnonymousUser();
+        if (error) {
+          console.error('❌ Failed to create anonymous user:', error);
+          toast({
+            title: "Session Error",
+            description: "Failed to initialize session. Please refresh the page.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+      
+      // Load cards from database if user exists
+      if (user) {
+        await loadCardsFromDatabase();
+      } else {
+        setIsLoaded(true);
+      }
+    };
+
+    initializeSession();
+  }, [user, createAnonymousUser, toast]);
+
+  // Handle draft migration for authenticated users
+  useEffect(() => {
+    if (user && !user.is_anonymous && isLoaded && cards.length === 0) {
+      migrateDraftToAuthenticated();
+    }
+  }, [user, isLoaded, cards.length, migrateDraftToAuthenticated]);
 
   const updateCards = useCallback(async (newCards: FamilyCard[]) => {
     setCards(newCards);
