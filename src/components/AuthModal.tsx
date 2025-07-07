@@ -54,7 +54,7 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
       const { error } = await supabase.auth.signInWithOtp({
         email: magicEmail,
         options: {
-          emailRedirectTo: `${window.location.origin}/create`
+          emailRedirectTo: `${window.location.origin}/profile`
         }
       });
 
@@ -98,7 +98,7 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
             email,
             password,
             options: {
-              emailRedirectTo: `${window.location.origin}/create`,
+              emailRedirectTo: `${window.location.origin}/profile`,
               data: { name }
             }
           });

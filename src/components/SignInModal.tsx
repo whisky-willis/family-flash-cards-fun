@@ -39,7 +39,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/profile`
         }
       });
 
