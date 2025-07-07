@@ -24,7 +24,17 @@ export const useDraft = () => {
   const saveDraftToLocal = useCallback((cards: FamilyCard[]) => {
     setDraft(cards);
     if (cards.length > 0) {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(cards));
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(cards));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+          console.warn('⚠️ LocalStorage quota exceeded, skipping draft save');
+          // Clear existing draft to free up space
+          localStorage.removeItem(DRAFT_KEY);
+        } else {
+          console.error('Failed to save draft to localStorage:', error);
+        }
+      }
     } else {
       localStorage.removeItem(DRAFT_KEY);
     }
