@@ -180,23 +180,23 @@ const CreateCards = () => {
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
               </div>
             </div>
-            <div className="flex items-center justify-between sm:justify-start sm:space-x-4 w-full">
+            <div className="flex items-center justify-between sm:justify-start sm:space-x-4 w-full gap-2 sm:gap-0">
                 <Button
                   onClick={handleSaveCollection}
                   variant="outline"
-                  className="px-5 py-1.5 text-sm font-medium uppercase tracking-wide"
+                  className="px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
                   disabled={cards.length === 0}
                 >
-                  <Save className="h-3.5 w-3.5 mr-2" />
+                  <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
                   Save for Later
                 </Button>
-              <Button 
-                onClick={handleProceedToOrder}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-1.5 text-sm font-medium uppercase tracking-wide"
-                disabled={cards.length === 0}
-              >
-                Order Cards
-              </Button>
+                <Button 
+                  onClick={handleProceedToOrder}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
+                  disabled={cards.length === 0}
+                >
+                  Order Cards
+                </Button>
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
                 {cards.length}
               </div>
