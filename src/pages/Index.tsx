@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck, LogOut } from "lucide-react";
+import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardPreview } from "@/components/CardPreview";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +10,7 @@ import { SignInModal } from "@/components/SignInModal";
 const kindredLogo = "/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png";
 const Index = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const names = ['Sofia', 'Henry', 'Mia', 'James', 'William', 'Charlotte', 'Sophia', 'Ava', 'Mateo', 'Amelia', 'Evelyn', 'Olivia', 'Noah', 'Emma', 'Oliver', 'Isabella', 'Elijah', 'Lucas', 'Liam', 'Theodore'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
@@ -75,24 +75,13 @@ const Index = () => {
                 Create Cards
               </Button>
               {user ? (
-                <>
-                  <Button 
-                    onClick={() => navigate('/profile')} 
-                    variant="outline" 
-                    size="sm"
-                  >
-                    Profile
-                  </Button>
-                  <Button 
-                    onClick={signOut} 
-                    variant="outline" 
-                    size="sm"
-                    className="flex items-center space-x-2"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Sign Out</span>
-                  </Button>
-                </>
+                <Button 
+                  onClick={() => navigate('/profile')} 
+                  variant="outline" 
+                  size="sm"
+                >
+                  Profile
+                </Button>
               ) : (
                 <Button 
                   onClick={() => setShowSignInModal(true)} 
