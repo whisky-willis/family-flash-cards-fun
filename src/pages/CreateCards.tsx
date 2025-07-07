@@ -181,18 +181,18 @@ const CreateCards = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-                <Button
-                  onClick={handleSaveCollection}
-                  variant="outline"
-                  className="px-6 py-2 text-sm font-medium uppercase tracking-wide"
-                  disabled={cards.length === 0}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save for Later
-                </Button>
+              <Button
+                onClick={handleSaveCollection}
+                variant="outline"
+                className="px-5 py-1.5 text-xs font-medium uppercase tracking-wide"
+                disabled={cards.length === 0}
+              >
+                <Save className="h-3 w-3 mr-2" />
+                Save for Later
+              </Button>
               <Button 
                 onClick={handleProceedToOrder}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium uppercase tracking-wide"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-1.5 text-xs font-medium uppercase tracking-wide"
                 disabled={cards.length === 0}
               >
                 Order Cards
