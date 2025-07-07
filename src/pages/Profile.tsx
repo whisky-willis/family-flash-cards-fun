@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useDraft } from '@/hooks/useDraft';
 import { CardPreview } from '@/components/CardPreview';
 import { FamilyCard } from '@/pages/CreateCards';
 import { User, Calendar, Trash2 } from 'lucide-react';
@@ -30,6 +31,7 @@ export default function Profile() {
   const [error, setError] = useState('');
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const { saveDraftToLocal } = useDraft();
   const navigate = useNavigate();
 
   // Redirect to auth if not logged in
@@ -103,6 +105,19 @@ export default function Profile() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleLoadCollection = (collection: CardCollection) => {
+    // Load the collection's cards into draft
+    saveDraftToLocal(collection.cards);
+    
+    // Navigate to create page
+    navigate('/create');
+    
+    toast({
+      title: "Collection Loaded",
+      description: `Loaded ${collection.cards.length} cards from "${collection.name}" into draft.`,
+    });
   };
 
   if (!user) {
@@ -209,7 +224,11 @@ export default function Profile() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {collections.map((collection) => (
-                <Card key={collection.id} className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg hover:scale-105 transition-transform duration-300">
+                <Card 
+                  key={collection.id} 
+                  className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  onClick={() => handleLoadCollection(collection)}
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -227,7 +246,10 @@ export default function Profile() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeleteCollection(collection.id, collection.name)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCollection(collection.id, collection.name);
+                        }}
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash2 className="h-4 w-4" />
