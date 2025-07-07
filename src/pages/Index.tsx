@@ -59,7 +59,12 @@ const Index = () => {
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
-                <span className="text-foreground/70 hover:text-foreground cursor-pointer">Examples</span>
+                <span 
+                  className="text-foreground/70 hover:text-foreground cursor-pointer"
+                  onClick={() => document.getElementById('card-examples')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Examples
+                </span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
               </div>
             </div>
@@ -205,7 +210,7 @@ const Index = () => {
       </section>
 
       {/* Card Examples - Art Center style */}
-      <section className="relative py-20 z-10">
+      <section id="card-examples" className="relative py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">See Example Family Cards</h2>
