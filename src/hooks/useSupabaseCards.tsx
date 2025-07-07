@@ -105,10 +105,19 @@ export const useSupabaseCards = () => {
 
   const migrateDraftToAuthenticated = useCallback(async () => {
     try {
+      console.log('🔍 Checking for draft migration...', { 
+        hasUser: !!user, 
+        isAnonymous: user?.is_anonymous, 
+        cardsLength: cards.length 
+      });
+      
       const draftData = localStorage.getItem('kindred-cards-draft');
+      console.log('📦 Draft data found:', !!draftData);
+      
       if (draftData && user && !user.is_anonymous) {
         console.log('🔄 Migrating draft cards to authenticated user...');
         const draftCards = JSON.parse(draftData) as FamilyCard[];
+        console.log('📝 Draft cards to migrate:', draftCards.length);
         
         if (draftCards.length > 0) {
           const success = await saveCardsToDatabase(draftCards);
@@ -126,7 +135,7 @@ export const useSupabaseCards = () => {
     } catch (error) {
       console.error('❌ Failed to migrate draft cards:', error);
     }
-  }, [user, toast]);
+  }, [user, toast, cards.length]);
 
   // Initialize user session and load cards
   useEffect(() => {
