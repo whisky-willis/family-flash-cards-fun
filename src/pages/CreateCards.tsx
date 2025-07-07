@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart, Users, Image as ImageIcon, Save } from "lucide-react";
+import { Heart, Users, Image as ImageIcon, Save, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { CardPreview } from "@/components/CardPreview";
@@ -167,10 +167,21 @@ const CreateCards = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-3">
+                {/* Back arrow on mobile, logo on desktop */}
+                <div className="sm:hidden">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => navigate('/')}
+                    className="p-2"
+                  >
+                    <ArrowLeft className="h-6 w-6" />
+                  </Button>
+                </div>
                 <img 
                   src={kindredLogo} 
                   alt="Kindred Cards" 
-                  className="h-12 w-32 object-cover object-center cursor-pointer hover:opacity-80 transition-opacity" 
+                  className="hidden sm:block h-12 w-32 object-cover object-center cursor-pointer hover:opacity-80 transition-opacity" 
                   onClick={() => navigate('/')}
                 />
               </div>
