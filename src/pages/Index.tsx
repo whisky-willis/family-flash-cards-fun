@@ -6,6 +6,7 @@ import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCh
 import { useNavigate } from "react-router-dom";
 import { CardPreview } from "@/components/CardPreview";
 import { useAuth } from "@/hooks/useAuth";
+import { SignInModal } from "@/components/SignInModal";
 const kindredLogo = "/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png";
 const Index = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Index = () => {
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
+  const [showSignInModal, setShowSignInModal] = useState(false);
   useEffect(() => {
     const currentName = names[currentNameIndex];
     let charIndex = 0;
@@ -93,7 +95,7 @@ const Index = () => {
                 </>
               ) : (
                 <Button 
-                  onClick={() => navigate('/auth')} 
+                  onClick={() => setShowSignInModal(true)} 
                   variant="outline" 
                   size="sm"
                 >
@@ -456,6 +458,11 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      <SignInModal 
+        open={showSignInModal} 
+        onOpenChange={setShowSignInModal} 
+      />
     </div>;
 };
 export default Index;
