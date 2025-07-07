@@ -133,8 +133,13 @@ export const useSupabaseCards = () => {
     const initializeSession = async () => {
       console.log('🚀 Initializing card session...');
       
-      // Only create anonymous user if we're on the create page and no user exists
-      if (!user && window.location.pathname === '/create') {
+      // Check if we're in the middle of an auth flow (magic link, etc.)
+      const isAuthFlow = window.location.search.includes('token=') || 
+                        window.location.search.includes('code=') ||
+                        window.location.hash.includes('access_token');
+      
+      // Only create anonymous user if we're on the create page, no user exists, and not in auth flow
+      if (!user && window.location.pathname === '/create' && !isAuthFlow) {
         console.log('👤 No user found, creating anonymous user...');
         const { error } = await createAnonymousUser();
         if (error) {
