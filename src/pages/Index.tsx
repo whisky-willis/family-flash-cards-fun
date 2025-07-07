@@ -71,7 +71,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium uppercase tracking-wide">
+              <Button onClick={() => navigate('/create')} size="sm">
                 Create Cards
               </Button>
               {user ? (
