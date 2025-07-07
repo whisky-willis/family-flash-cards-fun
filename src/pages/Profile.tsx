@@ -27,20 +27,20 @@ const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 export default function Profile() {
   const [collections, setCollections] = useState<CardCollection[]>([]);
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const { toast } = useToast();
   const { saveDraftToLocal } = useDraft();
   const navigate = useNavigate();
 
-  // Redirect to auth if not logged in
+  // Redirect to auth if not logged in (but wait for auth to finish loading)
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       navigate('/auth');
       return;
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   // Fetch user profile and collections
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Profile() {
       } catch (err: any) {
         setError(err.message || 'Failed to load profile data');
       } finally {
-        setLoading(false);
+        setDataLoading(false);
       }
     };
 
@@ -190,7 +190,7 @@ export default function Profile() {
             </Button>
           </div>
 
-          {loading ? (
+          {dataLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <Card key={i} className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg">
