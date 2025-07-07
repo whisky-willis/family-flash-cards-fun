@@ -197,7 +197,7 @@ const CreateCards = () => {
                 >
                   Order Cards
                 </Button>
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
+              <div className="hidden sm:flex w-8 h-8 bg-primary rounded-full items-center justify-center text-primary-foreground text-sm font-bold">
                 {cards.length}
               </div>
               {isSaving && (
