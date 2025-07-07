@@ -10,7 +10,7 @@ const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 const Index = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const names = ['George', 'Baileigh', 'Nick', 'Sarah'];
+  const names = ['Sofia', 'Henry', 'Mia', 'James', 'William', 'Charlotte', 'Sophia', 'Ava', 'Mateo', 'Amelia', 'Evelyn', 'Olivia', 'Noah', 'Emma', 'Oliver', 'Isabella', 'Elijah', 'Lucas', 'Liam', 'Theodore'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
