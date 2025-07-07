@@ -241,17 +241,15 @@ export default function Profile() {
                   </CardHeader>
                   <CardContent>
                     {collection.cards.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-2">
-                        {collection.cards.slice(0, 4).map((card, index) => (
-                          <div key={card.id || index} className="transform scale-50 origin-top-left">
-                            <CardPreview card={card} />
+                      <div className="space-y-2">
+                        {collection.cards.map((card, index) => (
+                          <div key={card.id || index} className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded-lg">
+                            <span className="font-medium text-sm">{card.name}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {card.theme ? card.theme.charAt(0).toUpperCase() + card.theme.slice(1) : 'Card'}
+                            </Badge>
                           </div>
                         ))}
-                        {collection.cards.length > 4 && (
-                          <div className="col-span-2 text-center text-sm text-muted-foreground">
-                            +{collection.cards.length - 4} more cards
-                          </div>
-                        )}
                       </div>
                     ) : (
                       <div className="text-center py-4 text-muted-foreground">
