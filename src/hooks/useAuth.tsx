@@ -123,7 +123,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    // Set flag to prevent anonymous user creation after sign out
+    sessionStorage.setItem('just-signed-out', 'true');
+    
     await supabase.auth.signOut();
+    
+    // Clear the flag after a delay
+    setTimeout(() => {
+      sessionStorage.removeItem('just-signed-out');
+    }, 2000);
   };
 
   const value = {

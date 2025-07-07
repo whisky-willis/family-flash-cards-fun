@@ -147,8 +147,20 @@ export const useSupabaseCards = () => {
                         window.location.search.includes('code=') ||
                         window.location.hash.includes('access_token');
       
-      // Only create anonymous user if we're on the create page, no user exists, and not in auth flow
-      if (!user && window.location.pathname === '/create' && !isAuthFlow) {
+      // Check if user explicitly signed out (prevent anonymous creation after sign out)
+      const justSignedOut = sessionStorage.getItem('just-signed-out') === 'true';
+      
+      // Only create anonymous user if:
+      // 1. We're on the create page
+      // 2. No user exists
+      // 3. Not in auth flow
+      // 4. User didn't just sign out
+      const shouldCreateAnonymous = !user && 
+                                   window.location.pathname === '/create' && 
+                                   !isAuthFlow && 
+                                   !justSignedOut;
+      
+      if (shouldCreateAnonymous) {
         console.log('👤 No user found, creating anonymous user...');
         const { error } = await createAnonymousUser();
         if (error) {
