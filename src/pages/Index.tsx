@@ -6,7 +6,7 @@ import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCh
 import { useNavigate } from "react-router-dom";
 import { CardPreview } from "@/components/CardPreview";
 import { useAuth } from "@/hooks/useAuth";
-const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
+const kindredLogo = "/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png";
 const Index = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -54,7 +54,7 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-3">
-                <img src="/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png" alt="Kindred Cards" className="h-12 w-32 object-cover object-center" />
+                <img src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png" alt="Kindred Cards" className="h-12 w-32 object-cover object-center" />
                 
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
