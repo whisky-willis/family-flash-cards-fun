@@ -5,6 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
+import { FormattingPresetSelector } from "./FormattingPresetSelector";
+import { FormattingPreset, getPresetById } from "@/types/FormattingPreset";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface CardFormProps {
@@ -28,6 +30,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
     font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
+    formattingPresetId: undefined as string | undefined,
     ...initialData
   });
 
@@ -45,6 +48,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
+        formattingPresetId: undefined as string | undefined,
         ...initialData
       });
     }
@@ -73,6 +77,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
+        formattingPresetId: undefined as string | undefined,
       }));
       // Reset the file input
       if (fileInputRef.current) {
@@ -120,6 +125,26 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
 
   const handlePositionChange = useCallback((position: { x: number; y: number; scale: number }) => {
     setFormData(prev => ({ ...prev, imagePosition: position }));
+  }, []);
+
+  // Handler for preset selection
+  const handlePresetSelect = useCallback((preset: FormattingPreset) => {
+    setFormData(prev => ({
+      ...prev,
+      formattingPresetId: preset.id,
+      theme: preset.theme,
+      font: preset.font
+    }));
+  }, []);
+
+  // Handler for theme override in advanced mode
+  const handleThemeChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => {
+    setFormData(prev => ({ ...prev, theme }));
+  }, []);
+
+  // Handler for font override in advanced mode
+  const handleFontChange = useCallback((font: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => {
+    setFormData(prev => ({ ...prev, font }));
   }, []);
 
   return (
@@ -246,40 +271,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="theme">Card Theme</Label>
-        <Select value={formData.theme || ''} onValueChange={(value: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => setFormData({ ...formData, theme: value })}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a theme" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="geometric">Confetti</SelectItem>
-            <SelectItem value="organic">Lava Lamp</SelectItem>
-            <SelectItem value="rainbow">Rainbow</SelectItem>
-            <SelectItem value="mosaic">Mosaic</SelectItem>
-            <SelectItem value="space">Space</SelectItem>
-            <SelectItem value="sports">Sports</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="font">Card Font</Label>
-        <Select value={formData.font || ''} onValueChange={(value: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => setFormData({ ...formData, font: value })}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a theme" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="fredoka">Fredoka</SelectItem>
-            <SelectItem value="comic-neue">Comic Neue</SelectItem>
-            <SelectItem value="bubblegum">Bubblegum Sans</SelectItem>
-            <SelectItem value="kalam">Kalam</SelectItem>
-            <SelectItem value="pangolin">Pangolin</SelectItem>
-            <SelectItem value="boogaloo">Boogaloo</SelectItem>
-            <SelectItem value="luckiest-guy">Luckiest Guy</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <FormattingPresetSelector
+        selectedPresetId={formData.formattingPresetId}
+        selectedTheme={formData.theme}
+        selectedFont={formData.font}
+        onPresetSelect={handlePresetSelect}
+        onThemeChange={handleThemeChange}
+        onFontChange={handleFontChange}
+      />
 
       <div>
         <Label htmlFor="favoriteColor">Favorite Color</Label>
