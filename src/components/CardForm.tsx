@@ -28,7 +28,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     funFact: '',
     whereTheyLive: '',
     theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-    font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
+    font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
     formattingPresetId: undefined as string | undefined,
     ...initialData
@@ -46,7 +46,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         funFact: '',
         whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-        font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
+        font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         formattingPresetId: undefined as string | undefined,
         ...initialData
@@ -75,7 +75,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         funFact: '',
         whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-        font: undefined as 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy' | undefined,
+        font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         formattingPresetId: undefined as string | undefined,
       }));
@@ -143,7 +143,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
   }, []);
 
   // Handler for font override in advanced mode
-  const handleFontChange = useCallback((font: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => {
+  const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy') => {
     setFormData(prev => ({ ...prev, font }));
   }, []);
 

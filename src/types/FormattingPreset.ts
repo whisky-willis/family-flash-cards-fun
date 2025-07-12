@@ -3,101 +3,119 @@ export interface FormattingPreset {
   name: string;
   description: string;
   theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-  font: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy';
+  font: 'bubblegum' | 'luckiest-guy';
   primaryColor: string;
   accentColor: string;
 }
 
 export const FORMATTING_PRESETS: FormattingPreset[] = [
   {
-    id: 'classic-elegance',
-    name: 'Classic Elegance',
-    description: 'Timeless geometric patterns with clean typography',
+    id: 'confetti-playful',
+    name: 'Confetti Playful',
+    description: 'Geometric confetti patterns with fun, bubbly typography',
     theme: 'geometric',
-    font: 'fredoka',
-    primaryColor: 'art-blue',
-    accentColor: 'art-pink'
-  },
-  {
-    id: 'modern-minimalist',
-    name: 'Modern Minimalist',
-    description: 'Clean lines with contemporary font styling',
-    theme: 'mosaic',
-    font: 'comic-neue',
-    primaryColor: 'art-green',
+    font: 'bubblegum',
+    primaryColor: 'art-pink',
     accentColor: 'art-yellow'
   },
   {
-    id: 'warm-family',
-    name: 'Warm Family',
-    description: 'Organic shapes with friendly, approachable fonts',
+    id: 'confetti-bold',
+    name: 'Confetti Bold',
+    description: 'Dynamic confetti background with strong, impactful text',
+    theme: 'geometric',
+    font: 'luckiest-guy',
+    primaryColor: 'art-red',
+    accentColor: 'art-orange'
+  },
+  {
+    id: 'lava-lamp-sweet',
+    name: 'Lava Lamp Sweet',
+    description: 'Organic flowing shapes with friendly, approachable fonts',
     theme: 'organic',
     font: 'bubblegum',
     primaryColor: 'art-orange',
     accentColor: 'art-red'
   },
   {
-    id: 'playful-rainbow',
-    name: 'Playful Rainbow',
-    description: 'Vibrant colors perfect for children and fun personalities',
-    theme: 'rainbow',
+    id: 'lava-lamp-strong',
+    name: 'Lava Lamp Strong',
+    description: 'Flowing organic patterns with bold, confident typography',
+    theme: 'organic',
     font: 'luckiest-guy',
-    primaryColor: 'art-pink',
-    accentColor: 'art-yellow'
-  },
-  {
-    id: 'adventure-space',
-    name: 'Adventure Space',
-    description: 'Cosmic themes for dreamers and explorers',
-    theme: 'space',
-    font: 'boogaloo',
-    primaryColor: 'art-blue',
-    accentColor: 'art-green'
-  },
-  {
-    id: 'active-sports',
-    name: 'Active Sports',
-    description: 'Dynamic patterns for athletic family members',
-    theme: 'sports',
-    font: 'kalam',
-    primaryColor: 'art-red',
-    accentColor: 'art-orange'
-  },
-  {
-    id: 'artistic-expression',
-    name: 'Artistic Expression',
-    description: 'Creative mosaic patterns with expressive typography',
-    theme: 'mosaic',
-    font: 'pangolin',
-    primaryColor: 'art-pink',
+    primaryColor: 'art-green',
     accentColor: 'art-blue'
   },
   {
-    id: 'gentle-nature',
-    name: 'Gentle Nature',
-    description: 'Soft organic flows with calm, readable fonts',
-    theme: 'organic',
-    font: 'fredoka',
-    primaryColor: 'art-green',
-    accentColor: 'art-yellow'
-  },
-  {
-    id: 'bold-statement',
-    name: 'Bold Statement',
-    description: 'Strong geometric patterns with impactful typography',
-    theme: 'geometric',
-    font: 'luckiest-guy',
-    primaryColor: 'art-red',
-    accentColor: 'art-orange'
-  },
-  {
-    id: 'joyful-celebration',
-    name: 'Joyful Celebration',
-    description: 'Rainbow themes with festive, cheerful fonts',
+    id: 'rainbow-cheerful',
+    name: 'Rainbow Cheerful',
+    description: 'Vibrant rainbow colors with playful, bubbly text',
     theme: 'rainbow',
     font: 'bubblegum',
     primaryColor: 'art-yellow',
     accentColor: 'art-pink'
+  },
+  {
+    id: 'rainbow-festive',
+    name: 'Rainbow Festive',
+    description: 'Colorful rainbow theme with celebratory, fun typography',
+    theme: 'rainbow',
+    font: 'luckiest-guy',
+    primaryColor: 'art-pink',
+    accentColor: 'art-yellow'
+  },
+  {
+    id: 'mosaic-artistic',
+    name: 'Mosaic Artistic',
+    description: 'Creative mosaic patterns with soft, rounded typography',
+    theme: 'mosaic',
+    font: 'bubblegum',
+    primaryColor: 'art-blue',
+    accentColor: 'art-green'
+  },
+  {
+    id: 'mosaic-creative',
+    name: 'Mosaic Creative',
+    description: 'Artistic mosaic design with expressive, bold lettering',
+    theme: 'mosaic',
+    font: 'luckiest-guy',
+    primaryColor: 'art-green',
+    accentColor: 'art-orange'
+  },
+  {
+    id: 'space-dreamy',
+    name: 'Space Dreamy',
+    description: 'Cosmic space theme with gentle, floating typography',
+    theme: 'space',
+    font: 'bubblegum',
+    primaryColor: 'art-blue',
+    accentColor: 'art-pink'
+  },
+  {
+    id: 'space-adventure',
+    name: 'Space Adventure',
+    description: 'Galactic exploration theme with bold, heroic fonts',
+    theme: 'space',
+    font: 'luckiest-guy',
+    primaryColor: 'art-blue',
+    accentColor: 'art-red'
+  },
+  {
+    id: 'sports-fun',
+    name: 'Sports Fun',
+    description: 'Athletic patterns with friendly, approachable typography',
+    theme: 'sports',
+    font: 'bubblegum',
+    primaryColor: 'art-green',
+    accentColor: 'art-yellow'
+  },
+  {
+    id: 'sports-champion',
+    name: 'Sports Champion',
+    description: 'Dynamic sports theme with winning, powerful lettering',
+    theme: 'sports',
+    font: 'luckiest-guy',
+    primaryColor: 'art-red',
+    accentColor: 'art-orange'
   }
 ];
 

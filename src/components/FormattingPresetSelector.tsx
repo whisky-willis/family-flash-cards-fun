@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 interface FormattingPresetSelectorProps {
   selectedPresetId?: string;
   selectedTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-  selectedFont?: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy';
+  selectedFont?: 'bubblegum' | 'luckiest-guy';
   onPresetSelect: (preset: FormattingPreset) => void;
   onThemeChange?: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => void;
-  onFontChange?: (font: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => void;
+  onFontChange?: (font: 'bubblegum' | 'luckiest-guy') => void;
 }
 
 export const FormattingPresetSelector = ({
@@ -32,14 +32,9 @@ export const FormattingPresetSelector = ({
   // Function to get font class name
   const getFontClass = (font?: string) => {
     switch (font) {
-      case 'fredoka': return 'font-fredoka';
-      case 'comic-neue': return 'font-comic-neue';
       case 'bubblegum': return 'font-bubblegum';
-      case 'kalam': return 'font-kalam';
-      case 'pangolin': return 'font-pangolin';
-      case 'boogaloo': return 'font-boogaloo';
       case 'luckiest-guy': return 'font-luckiest-guy';
-      default: return 'font-fredoka';
+      default: return 'font-bubblegum';
     }
   };
 
@@ -249,25 +244,20 @@ export const FormattingPresetSelector = ({
               <Label htmlFor="font-override" className="text-sm font-medium">
                 Override Font
               </Label>
-              <Select 
-                value={selectedFont || ''} 
-                onValueChange={(value: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy') => {
-                  onFontChange?.(value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select font" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fredoka">Fredoka</SelectItem>
-                  <SelectItem value="comic-neue">Comic Neue</SelectItem>
-                  <SelectItem value="bubblegum">Bubblegum Sans</SelectItem>
-                  <SelectItem value="kalam">Kalam</SelectItem>
-                  <SelectItem value="pangolin">Pangolin</SelectItem>
-                  <SelectItem value="boogaloo">Boogaloo</SelectItem>
-                  <SelectItem value="luckiest-guy">Luckiest Guy</SelectItem>
-                </SelectContent>
-              </Select>
+                             <Select 
+                 value={selectedFont || ''} 
+                 onValueChange={(value: 'bubblegum' | 'luckiest-guy') => {
+                   onFontChange?.(value);
+                 }}
+               >
+                 <SelectTrigger>
+                   <SelectValue placeholder="Select font" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="bubblegum">Bubblegum Sans</SelectItem>
+                   <SelectItem value="luckiest-guy">Luckiest Guy</SelectItem>
+                 </SelectContent>
+               </Select>
             </div>
           </div>
           
