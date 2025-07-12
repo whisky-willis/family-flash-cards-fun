@@ -425,11 +425,6 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                   )}
                   
                 </div>
-                
-                {/* Click instruction */}
-                <div className="text-center mt-4">
-                  <p className="text-xs text-foreground/50 font-medium">Click to flip back</p>
-                </div>
               </div>
             </CardContent>
           </Card>
