@@ -221,7 +221,7 @@ const Index = () => {
                        dateOfBirth: "1985-03-15",
                        favoriteColor: "green",
                        hobbies: "Guitar, Hiking",
-                       funFact: "Plays 5 instruments and climbed Mount Washington!",
+                       funFact: "Plays 5 instruments!",
                        photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
                        theme: "geometric"
                      }}
@@ -239,7 +239,7 @@ const Index = () => {
                        dateOfBirth: "1952-09-22",
                        favoriteColor: "purple",
                        hobbies: "Gardening, Baking",
-                       funFact: "Traveled to 23 countries and speaks 4 languages!",
+                       funFact: "Visited 23 countries and speaks 4 languages",
                        photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
                        theme: "organic"
                      }}
@@ -257,7 +257,7 @@ const Index = () => {
                        dateOfBirth: "2010-07-08",
                        favoriteColor: "orange",
                        hobbies: "Soccer, Video Games",
-                       funFact: "Scored the winning goal in last year's championship!",
+                       funFact: "Scored the winning goal last year!",
                        photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
                        theme: "sports"
                      }}
@@ -275,7 +275,7 @@ const Index = () => {
                        dateOfBirth: "1978-12-03",
                        favoriteColor: "pink",
                        hobbies: "Photography, Yoga",
-                       funFact: "Takes amazing nature photos and teaches kids yoga!",
+                       funFact: "Takes amazing nature photos!",
                        theme: "rainbow"
                      }}
                      nameFont="font-pangolin"
@@ -292,7 +292,7 @@ const Index = () => {
                        dateOfBirth: "1980-06-18",
                        favoriteColor: "blue",
                        hobbies: "Cooking, Fishing",
-                       funFact: "Makes the best pancakes and caught a 20-pound fish!",
+                       funFact: "Makes the best pancakes in town!",
                        theme: "mosaic"
                      }}
                      nameFont="font-boogaloo"
@@ -309,7 +309,7 @@ const Index = () => {
                        dateOfBirth: "2005-11-14",
                        favoriteColor: "yellow",
                        hobbies: "Dancing, Reading",
-                       funFact: "Won first place in the school talent show!",
+                       funFact: "Won first place in talent show!",
                        theme: "space"
                      }}
                      nameFont="font-fredoka-one"
