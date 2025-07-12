@@ -428,16 +428,13 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
           className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg h-full overflow-hidden"
           style={getBackgroundStyle()}
         >
-        
-        <CardContent className="p-4 relative z-10">
-          {/* Photo Section */}
-          <div className="text-center mb-4">
-            {card.photo ? (
-              <div className="px-1">
+          <CardContent className="p-4 relative z-10 h-full flex flex-col">
+            {/* Photo Section */}
+            <div className="flex-1 flex items-center justify-center">
+              {card.photo ? (
                 <div 
-                  className="relative overflow-hidden rounded-2xl border-4 border-white shadow-md" 
+                  className="w-full h-full rounded-2xl border-4 border-white shadow-md" 
                   style={{ 
-                    height: '286px',
                     backgroundImage: `url(${card.photo})`,
                     backgroundSize: card.imagePosition ? `${100 * card.imagePosition.scale}%` : 'cover',
                     backgroundPosition: card.imagePosition
@@ -445,100 +442,47 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
                       : 'center center',
                     backgroundRepeat: 'no-repeat'
                   }}
-                >
+                />
+              ) : (
+                <div className="w-32 h-32 bg-art-yellow/20 rounded-full border-4 border-white shadow-md flex items-center justify-center">
+                  <Users className="h-12 w-12 text-art-yellow" />
                 </div>
-              </div>
-            ) : (
-              <div className="w-32 h-32 bg-art-yellow/20 rounded-full mx-auto border-4 border-white shadow-md flex items-center justify-center">
-                <Users className="h-12 w-12 text-art-yellow" />
-              </div>
-            )}
-          </div>
-
-          {/* Name */}
-          <h3 className={`text-4xl ${fontClass} text-center mb-4 text-foreground`} style={{
-            textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4), 0 0 50px rgba(255, 255, 255, 0.2)',
-          }}>
-            {card.name}
-          </h3>
-
-          {/* Attributes with white background for visibility */}
-          <div className={`space-y-2 text-base bg-white/95 rounded-2xl p-2 backdrop-blur-sm shadow-sm ${fontClass}`}>
-            {card.whereTheyLive && card.whereTheyLive.trim() && (
-              <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>Where they live:</span>
-                <span className={`capitalize font-semibold ${card.theme === 'organic' ? 'text-yellow-600' : 'text-orange-500'}`}>{card.whereTheyLive}</span>
-              </div>
-            )}
-            
-            {card.dateOfBirth && (
-              <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-blue-600' : 'text-green-600'}`}>Birthday:</span>
-                <span className={`font-semibold ${card.theme === 'organic' ? 'text-red-500' : 'text-red-500'}`}>
-                  {(() => {
-                    // Parse the date string properly to avoid timezone issues
-                    const [year, month, day] = card.dateOfBirth.split('-').map(Number);
-                    const date = new Date(year, month - 1, day); // month is 0-indexed
-                    const dayNum = date.getDate();
-                    const monthName = date.toLocaleDateString('en-US', { month: 'long' });
-                    const suffix = dayNum === 1 || dayNum === 21 || dayNum === 31 ? 'st' 
-                                 : dayNum === 2 || dayNum === 22 ? 'nd'
-                                 : dayNum === 3 || dayNum === 23 ? 'rd'
-                                 : 'th';
-                    return `${monthName} ${dayNum}${suffix}`;
-                  })()}
-                </span>
-              </div>
-            )}
-            
-            {card.favoriteColor && card.favoriteColor.trim() && (
-              <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-red-500' : 'text-purple-600'}`}>Favorite Color:</span>
-                <span className={`font-semibold ${card.theme === 'organic' ? 'text-blue-600' : 'text-green-600'}`}>
-                  {card.favoriteColor}
-                </span>
-              </div>
-            )}
-            
-            {card.hobbies && card.hobbies.trim() && (
-              <div className="flex items-center justify-between">
-                <span className={`font-bold ${card.theme === 'organic' ? 'text-yellow-600' : 'text-orange-500'}`}>Hobbies:</span>
-                <span className={`text-right font-semibold ${card.theme === 'organic' ? 'text-green-600' : 'text-blue-600'}`}>{card.hobbies}</span>
-              </div>
-            )}
-            
-            {card.funFact && card.funFact.trim() && (
-              <div className={`mt-3 p-3 rounded-2xl border-2 ${card.theme === 'organic' ? 'bg-pink-100/80 border-pink-300' : 'bg-yellow-100/80 border-yellow-300'}`}>
-                <span className={`font-bold block mb-1 ${card.theme === 'organic' ? 'text-green-700' : 'text-red-600'}`}>Fun Fact:</span>
-                <p className={`text-sm leading-relaxed font-medium ${card.theme === 'organic' ? 'text-blue-700' : 'text-purple-700'}`}>{card.funFact}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Actions */}
-          {showActions && (
-            <div className="flex space-x-2 mt-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onEdit}
-                className="flex-1 border-2 border-art-green text-art-green hover:bg-art-green hover:text-white font-bold uppercase text-xs tracking-wide"
-              >
-                Edit
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onDelete}
-                className="flex-1 border-2 border-art-red text-art-red hover:bg-art-red hover:text-white font-bold uppercase text-xs tracking-wide"
-              >
-                Delete
-              </Button>
+              )}
             </div>
-          )}
-        </CardContent>
+
+            {/* Name at bottom */}
+            <div className="mt-4">
+              <h3 className={`text-3xl ${fontClass} text-center text-foreground`} style={{
+                textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)',
+              }}>
+                {card.name}
+              </h3>
+            </div>
+          </CardContent>
         </Card>
       </div>
+
+      {/* Actions */}
+      {showActions && (
+        <div className="flex space-x-2 mt-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onEdit}
+            className="flex-1 border-2 border-art-green text-art-green hover:bg-art-green hover:text-white font-bold uppercase text-xs tracking-wide"
+          >
+            Edit
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onDelete}
+            className="flex-1 border-2 border-art-red text-art-red hover:bg-art-red hover:text-white font-bold uppercase text-xs tracking-wide"
+          >
+            Delete
+          </Button>
+        </div>
+      )}
 
       {/* Card Brand */}
       <div className="text-center mt-2">
