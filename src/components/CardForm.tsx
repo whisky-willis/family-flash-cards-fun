@@ -54,6 +54,16 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
+      
+      // Initialize preview data with theme/font from initialData when editing
+      if (isEditing && initialData) {
+        setPreviewData({
+          theme: initialData.theme,
+          font: initialData.font
+        });
+      } else {
+        setPreviewData({});
+      }
     }
   }, [isEditing, initialData]);
 
@@ -73,7 +83,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    onSubmit(formData);
+    // Merge formData with preview data for final submission
+    const finalData = {
+      ...formData,
+      ...(previewData.theme && { theme: previewData.theme }),
+      ...(previewData.font && { font: previewData.font })
+    };
+    
+    onSubmit(finalData);
     
     if (!isEditing) {
       setFormData(prev => ({
@@ -88,7 +105,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
-      // Reset preview data
+      // Reset preview data after successful submission
       setPreviewData({});
       // Reset the file input
       if (fileInputRef.current) {
@@ -138,18 +155,18 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     setFormData(prev => ({ ...prev, imagePosition: position }));
   }, []);
 
-  // Handler for theme selection
+  // Handler for theme selection - NO formData updates, only for final submission
   const handleThemeChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => {
-    setFormData(prev => ({ ...prev, theme }));
-    // Clear preview when making actual selection
-    setPreviewData(prev => ({ ...prev, theme: undefined }));
+    // DON'T update formData here to prevent auto-save
+    // Only update preview data - formData will be updated on submit
+    setPreviewData(prev => ({ ...prev, theme }));
   }, []);
 
-  // Handler for font selection
+  // Handler for font selection - NO formData updates, only for final submission  
   const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy') => {
-    setFormData(prev => ({ ...prev, font }));
-    // Clear preview when making actual selection
-    setPreviewData(prev => ({ ...prev, font: undefined }));
+    // DON'T update formData here to prevent auto-save
+    // Only update preview data - formData will be updated on submit
+    setPreviewData(prev => ({ ...prev, font }));
   }, []);
 
   // Handler for preview changes when hovering
@@ -313,8 +330,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       </div>
 
       <BackgroundThemeSelector
-        selectedTheme={formData.theme}
-        selectedFont={formData.font}
+        selectedTheme={previewData.theme || formData.theme}
+        selectedFont={previewData.font || formData.font}
         onThemeChange={handleThemeChange}
         onFontChange={handleFontChange}
         onPreviewChange={handlePreviewChange}
