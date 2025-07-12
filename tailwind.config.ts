@@ -124,7 +124,8 @@ export default {
 				'.rotate-y-180': {
 					transform: 'rotateY(180deg)',
 				},
-			}
-			addUtilities(newUtilities)
+			};
+			addUtilities(newUtilities);
 		}
+	],
 } satisfies Config;
