@@ -269,15 +269,16 @@ const Index = () => {
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
-                     card={{
-                       name: "Aunt Sarah",
-                       whereTheyLive: "Denver, CO",
-                       dateOfBirth: "1978-12-03",
-                       favoriteColor: "pink",
-                       hobbies: "Photography, Yoga",
-                       funFact: "Takes amazing nature photos!",
-                       theme: "rainbow"
-                     }}
+                      card={{
+                        name: "Aunt Sarah",
+                        whereTheyLive: "Denver, CO",
+                        dateOfBirth: "1978-12-03",
+                        favoriteColor: "pink",
+                        hobbies: "Photography, Yoga",
+                        funFact: "Takes amazing nature photos!",
+                        photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
+                        theme: "rainbow"
+                      }}
                      nameFont="font-pangolin"
                    />
                 </div>
@@ -286,15 +287,16 @@ const Index = () => {
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
-                     card={{
-                       name: "Uncle Tom",
-                       whereTheyLive: "Seattle, WA",
-                       dateOfBirth: "1980-06-18",
-                       favoriteColor: "blue",
-                       hobbies: "Cooking, Fishing",
-                       funFact: "Makes the best pancakes in town!",
-                       theme: "mosaic"
-                     }}
+                      card={{
+                        name: "Uncle Tom",
+                        whereTheyLive: "Seattle, WA",
+                        dateOfBirth: "1980-06-18",
+                        favoriteColor: "blue",
+                        hobbies: "Cooking, Fishing",
+                        funFact: "Makes the best pancakes in town!",
+                        photo: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
+                        theme: "mosaic"
+                      }}
                      nameFont="font-boogaloo"
                    />
                 </div>
@@ -303,15 +305,16 @@ const Index = () => {
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
-                     card={{
-                       name: "Big Sister Emma",
-                       whereTheyLive: "Miami, FL",
-                       dateOfBirth: "2005-11-14",
-                       favoriteColor: "yellow",
-                       hobbies: "Dancing, Reading",
-                       funFact: "Won first place in talent show!",
-                       theme: "space"
-                     }}
+                      card={{
+                        name: "Big Sister Emma",
+                        whereTheyLive: "Miami, FL",
+                        dateOfBirth: "2005-11-14",
+                        favoriteColor: "yellow",
+                        hobbies: "Dancing, Reading",
+                        funFact: "Won first place in talent show!",
+                        photo: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
+                        theme: "space"
+                      }}
                      nameFont="font-fredoka-one"
                    />
                 </div>
