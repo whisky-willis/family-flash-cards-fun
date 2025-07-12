@@ -379,13 +379,6 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
             <CardContent className="p-4 relative z-10 h-full">
               {/* Attributes with white background for visibility */}
               <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${getFontClass(card.font)} h-full flex flex-col`}>
-                {/* Name */}
-                <div className="text-center mb-4">
-                  <h3 className={`text-2xl ${fontClass} text-foreground font-bold`}>
-                    {card.name}
-                  </h3>
-                </div>
-
                 <div className="grid grid-cols-2 gap-3 flex-1 content-start">
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
