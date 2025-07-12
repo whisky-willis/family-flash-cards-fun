@@ -322,8 +322,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
           placeholder="e.g., Reading, Cooking, Gardening"
           maxLength={30}
         />
-        <div className="flex justify-between items-center mt-1">
-          <p className="text-xs text-muted-foreground">List 1-3 hobbies</p>
+        <div className="flex justify-end items-center mt-1">
           <div className="flex items-center space-x-2">
             <span className={`text-xs ${formData.hobbies.length >= 30 ? 'text-destructive' : 'text-muted-foreground'}`}>
               {formData.hobbies.length}/30
