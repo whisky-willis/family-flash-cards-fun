@@ -192,17 +192,17 @@ const CreateCards = () => {
                   onClick={() => navigate('/')}
                 />
               </div>
-              <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
+              <div className="hidden lg:flex space-x-6 text-sm font-medium uppercase tracking-wide">
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Examples</span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
               </div>
             </div>
-            <div className="flex items-center justify-between sm:justify-end sm:space-x-4 gap-2 sm:gap-0">
+            <div className="flex items-center justify-between sm:justify-center md:justify-end sm:space-x-3 md:space-x-4 gap-2 sm:gap-0 md:gap-3">
                 <Button
                   onClick={handleSaveCollection}
                   variant="outline"
-                  className="px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
+                  className="px-3 py-1 sm:px-4 md:px-4 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none md:flex-none"
                   disabled={cards.length === 0}
                 >
                   <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
