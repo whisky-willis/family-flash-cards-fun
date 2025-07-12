@@ -295,7 +295,7 @@ const Index = () => {
                         hobbies: "Cooking, Fishing",
                         funFact: "Makes the best pancakes in town!",
                         photo: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
-                        imagePosition: { x: 0, y: -50, scale: 1.1 },
+                        imagePosition: { x: 0, y: -100, scale: 1.1 },
                         theme: "mosaic"
                       }}
                      nameFont="font-boogaloo"
