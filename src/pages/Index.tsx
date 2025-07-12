@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CardPreview } from "@/components/CardPreview";
+import { FlippableCardPreview } from "@/components/FlippableCardPreview";
 import { useAuth } from "@/hooks/useAuth";
 import { SignInModal } from "@/components/SignInModal";
 const kindredLogo = "/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png";
@@ -214,7 +214,7 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <CardPreview 
+                   <FlippableCardPreview 
                      card={{
                        name: "Uncle Mike",
                        whereTheyLive: "Boston, MA",
@@ -232,7 +232,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <CardPreview 
+                   <FlippableCardPreview 
                      card={{
                        name: "Grandma Rose",
                        whereTheyLive: "Portland, OR",
@@ -250,7 +250,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <CardPreview 
+                   <FlippableCardPreview 
                      card={{
                        name: "Cousin Alex",
                        whereTheyLive: "Austin, TX",
@@ -268,7 +268,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <CardPreview 
+                   <FlippableCardPreview 
                      card={{
                        name: "Aunt Sarah",
                        whereTheyLive: "Denver, CO",
@@ -285,7 +285,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <CardPreview 
+                   <FlippableCardPreview 
                      card={{
                        name: "Uncle Tom",
                        whereTheyLive: "Seattle, WA",
@@ -302,7 +302,7 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <CardPreview 
+                   <FlippableCardPreview 
                      card={{
                        name: "Big Sister Emma",
                        whereTheyLive: "Miami, FL",

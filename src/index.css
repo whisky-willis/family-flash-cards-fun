@@ -117,6 +117,21 @@
   }
 }
 
+/* 3D Flip Animation Utilities */
+@layer utilities {
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
