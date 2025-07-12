@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Heart, Users, Image as ImageIcon, Save, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
+import { FlipCardPreview } from "@/components/FlipCardPreview";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -273,7 +274,7 @@ const CreateCards = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CardPreview card={previewCard} />
+                <FlipCardPreview card={previewCard} />
               </CardContent>
             </Card>
           </div>
