@@ -5,8 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
-import { FormattingPresetSelector } from "./FormattingPresetSelector";
-import { FormattingPreset, getPresetById } from "@/types/FormattingPreset";
+import { BackgroundThemeSelector } from "./BackgroundThemeSelector";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface CardFormProps {
@@ -30,9 +29,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
     font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
-    formattingPresetId: undefined as string | undefined,
     ...initialData
   });
+
+  // Preview state for hover effects
+  const [previewData, setPreviewData] = useState<{
+    theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+    font?: 'bubblegum' | 'luckiest-guy';
+  }>({});
 
   // Only update form data when we're switching to edit mode or resetting
   useEffect(() => {
@@ -48,16 +52,21 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
-        formattingPresetId: undefined as string | undefined,
         ...initialData
       });
     }
   }, [isEditing, initialData]);
 
   // Call onChange whenever formData changes, but only if onChange exists
+  // Also merge preview data for hover effects
   useEffect(() => {
-    onChange?.(formData);
-  }, [formData, onChange]);
+    const dataToSend = {
+      ...formData,
+      ...(previewData.theme && { theme: previewData.theme }),
+      ...(previewData.font && { font: previewData.font })
+    };
+    onChange?.(dataToSend);
+  }, [formData, previewData, onChange]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,8 +86,9 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
         font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
-        formattingPresetId: undefined as string | undefined,
       }));
+      // Reset preview data
+      setPreviewData({});
       // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -127,24 +137,23 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     setFormData(prev => ({ ...prev, imagePosition: position }));
   }, []);
 
-  // Handler for preset selection
-  const handlePresetSelect = useCallback((preset: FormattingPreset) => {
-    setFormData(prev => ({
-      ...prev,
-      formattingPresetId: preset.id,
-      theme: preset.theme,
-      font: preset.font
-    }));
-  }, []);
-
-  // Handler for theme override in advanced mode
+  // Handler for theme selection
   const handleThemeChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => {
     setFormData(prev => ({ ...prev, theme }));
+    // Clear preview when making actual selection
+    setPreviewData(prev => ({ ...prev, theme: undefined }));
   }, []);
 
-  // Handler for font override in advanced mode
+  // Handler for font selection
   const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy') => {
     setFormData(prev => ({ ...prev, font }));
+    // Clear preview when making actual selection
+    setPreviewData(prev => ({ ...prev, font: undefined }));
+  }, []);
+
+  // Handler for preview changes when hovering
+  const handlePreviewChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy') => {
+    setPreviewData({ theme, font });
   }, []);
 
   return (
@@ -271,13 +280,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         </div>
       </div>
 
-      <FormattingPresetSelector
-        selectedPresetId={formData.formattingPresetId}
+      <BackgroundThemeSelector
         selectedTheme={formData.theme}
         selectedFont={formData.font}
-        onPresetSelect={handlePresetSelect}
         onThemeChange={handleThemeChange}
         onFontChange={handleFontChange}
+        onPreviewChange={handlePreviewChange}
       />
 
       <div>

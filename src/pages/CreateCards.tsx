@@ -25,9 +25,8 @@ export interface FamilyCard {
   funFact: string;
   whereTheyLive: string;
   theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-  font?: 'fredoka' | 'comic-neue' | 'bubblegum' | 'kalam' | 'pangolin' | 'boogaloo' | 'luckiest-guy';
+  font?: 'bubblegum' | 'luckiest-guy';
   imagePosition?: { x: number; y: number; scale: number };
-  formattingPresetId?: string; // New field to track selected preset
 }
 
 const CreateCards = () => {
