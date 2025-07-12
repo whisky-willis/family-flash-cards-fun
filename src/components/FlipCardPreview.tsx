@@ -167,7 +167,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
-                      <div className="font-bold text-blue-400 text-sm mb-1">Where they live</div>
+                      <div className="text-blue-400 text-sm mb-1">Where they live</div>
                       <div className="capitalize font-semibold text-black text-base">{card.whereTheyLive}</div>
                     </div>
                   )}
@@ -175,7 +175,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.dateOfBirth && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🎂</div>
-                      <div className="font-bold text-green-400 text-sm mb-1">Birthday</div>
+                      <div className="text-green-400 text-sm mb-1">Birthday</div>
                       <div className="font-semibold text-black text-base">
                         {(() => {
                           const [year, month, day] = card.dateOfBirth.split('-').map(Number);
@@ -195,7 +195,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.favoriteColor && card.favoriteColor.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🎨</div>
-                      <div className="font-bold text-purple-400 text-sm mb-1">Favorite Color</div>
+                      <div className="text-purple-400 text-sm mb-1">Favorite Color</div>
                       <div className="font-semibold text-black text-base">{card.favoriteColor}</div>
                     </div>
                   )}
@@ -203,7 +203,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.hobbies && card.hobbies.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🌟</div>
-                      <div className="font-bold text-orange-400 text-sm mb-1">Hobbies</div>
+                      <div className="text-orange-400 text-sm mb-1">Hobbies</div>
                       <div className="font-semibold text-black text-base">{card.hobbies}</div>
                     </div>
                   )}
@@ -211,7 +211,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.funFact && card.funFact.trim() && (
                     <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
                       <div className="text-xl mb-1">✨</div>
-                      <div className="font-bold text-red-400 text-sm mb-1">Fun Fact</div>
+                      <div className="text-red-400 text-sm mb-1">Fun Fact</div>
                       <p className="text-sm leading-relaxed font-medium text-black">{card.funFact}</p>
                     </div>
                   )}
