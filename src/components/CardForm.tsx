@@ -313,9 +313,26 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <Input
           id="hobbies"
           value={formData.hobbies}
-          onChange={(e) => setFormData({ ...formData, hobbies: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value.length <= 30) {
+              setFormData({ ...formData, hobbies: value });
+            }
+          }}
           placeholder="e.g., Reading, Cooking, Gardening"
+          maxLength={30}
         />
+        <div className="flex justify-between items-center mt-1">
+          <p className="text-xs text-muted-foreground">List 1-3 hobbies</p>
+          <div className="flex items-center space-x-2">
+            <span className={`text-xs ${formData.hobbies.length >= 30 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              {formData.hobbies.length}/30
+            </span>
+            {formData.hobbies.length >= 30 && (
+              <span className="text-xs text-destructive">Character limit reached</span>
+            )}
+          </div>
+        </div>
       </div>
 
       <div>
