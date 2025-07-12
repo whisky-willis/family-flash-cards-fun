@@ -420,7 +420,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                     <div className="text-center">
                       <div className="text-xl mb-1">🌟</div>
                       <div className={`text-orange-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Hobbies</div>
-                      <div className="font-semibold text-black text-base">{card.hobbies}</div>
+                      <div className="font-semibold text-black text-base">{card.hobbies.split(',')[0].trim()}</div>
                     </div>
                   )}
                   
