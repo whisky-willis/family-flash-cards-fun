@@ -85,7 +85,9 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
   };
 
   const handleFlip = () => {
+    console.log('Flip button clicked, current isFlipped:', isFlipped);
     setIsFlipped(!isFlipped);
+    console.log('New isFlipped state will be:', !isFlipped);
   };
 
   return (
