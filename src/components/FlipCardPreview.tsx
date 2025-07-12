@@ -162,8 +162,8 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
           >
             <CardContent className="p-4 relative z-10 h-full">
               {/* Attributes with white background for visibility */}
-              <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${fontClass} h-full flex flex-col`}>
-                <div className="grid grid-cols-2 gap-3 flex-1 content-start pb-4">
+              <div className={`bg-white/95 rounded-2xl p-6 backdrop-blur-sm shadow-sm ${fontClass} h-full flex flex-col`}>
+                <div className="grid grid-cols-2 gap-3 flex-1 content-start pb-6">
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
