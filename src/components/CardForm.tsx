@@ -309,7 +309,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       </div>
 
       <div>
-        <Label htmlFor="hobbies">Hobbies</Label>
+        <Label htmlFor="hobbies">Hobbies (list 1-3 hobbies)</Label>
         <Input
           id="hobbies"
           value={formData.hobbies}
