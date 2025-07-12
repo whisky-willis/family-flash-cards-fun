@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, MapPin, Calendar, Heart, Gamepad2 } from "lucide-react";
+import { Users, MapPin, Calendar, Heart, Gamepad2, RotateCcw } from "lucide-react";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface FlippableCardPreviewProps {
@@ -313,12 +313,22 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
     <div className="w-full max-w-sm mx-auto">
       <div className="aspect-square">
         <div 
-          className="w-full h-full cursor-pointer relative"
+          className="w-full h-full cursor-pointer relative group hover:scale-105 transition-transform duration-300"
           style={{ perspective: '1000px' }}
           onClick={() => setIsFlipped(!isFlipped)}
         >
+          {/* Floating hint indicator */}
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+            <div className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full shadow-lg animate-bounce">
+              <span className="flex items-center gap-1">
+                <RotateCcw className="h-3 w-3" />
+                Click to flip
+              </span>
+            </div>
+          </div>
+
         <div 
-          className={`w-full h-full relative transition-transform duration-700 ease-in-out ${
+          className={`w-full h-full relative transition-transform duration-700 ease-in-out animate-float group-hover:animate-none ${
             isFlipped ? 'rotate-y-180' : ''
           }`}
           style={{ 
