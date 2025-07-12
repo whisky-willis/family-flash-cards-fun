@@ -161,13 +161,6 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
             style={getBackgroundStyle()}
           >
             <CardContent className="p-4 relative z-10 h-full">
-              {/* Name at top */}
-              <h3 className={`text-2xl ${fontClass} text-center mb-4 text-foreground`} style={{
-                textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8)',
-              }}>
-                {card.name}
-              </h3>
-
               {/* Attributes with white background for visibility */}
               <div className={`space-y-3 text-sm bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${fontClass} h-full overflow-y-auto`}>
                 {card.whereTheyLive && card.whereTheyLive.trim() && (
