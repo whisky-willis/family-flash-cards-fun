@@ -198,7 +198,7 @@ const CreateCards = () => {
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
               </div>
             </div>
-            <div className="flex items-center justify-between sm:justify-start sm:space-x-4 w-full gap-2 sm:gap-0">
+            <div className="flex items-center justify-between sm:justify-end sm:space-x-4 gap-2 sm:gap-0">
                 <Button
                   onClick={handleSaveCollection}
                   variant="outline"
