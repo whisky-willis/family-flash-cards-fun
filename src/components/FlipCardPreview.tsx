@@ -202,7 +202,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   
                   {card.hobbies && card.hobbies.trim() && (
                     <div className="text-center">
-                      <div className="text-xl mb-1">🎯</div>
+                      <div className="text-xl mb-1">🌟</div>
                       <div className="font-bold text-orange-400 text-sm mb-1">Hobbies</div>
                       <div className="font-semibold text-black text-base">{card.hobbies}</div>
                     </div>
