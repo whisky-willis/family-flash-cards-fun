@@ -370,7 +370,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
           <Card 
             className="absolute inset-0 backdrop-blur-sm border-2 border-art-blue/30 rounded-3xl shadow-lg overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%)',
+              ...getBackgroundStyle(),
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)'
             }}
