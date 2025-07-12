@@ -168,7 +168,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
                       <div className="font-bold text-blue-600 text-sm mb-1">Where they live</div>
-                      <div className="capitalize font-semibold text-orange-500 text-base">{card.whereTheyLive}</div>
+                      <div className="capitalize font-semibold text-black text-base">{card.whereTheyLive}</div>
                     </div>
                   )}
                   
@@ -176,7 +176,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                     <div className="text-center">
                       <div className="text-xl mb-1">🎂</div>
                       <div className="font-bold text-green-600 text-sm mb-1">Birthday</div>
-                      <div className="font-semibold text-red-500 text-base">
+                      <div className="font-semibold text-black text-base">
                         {(() => {
                           const [year, month, day] = card.dateOfBirth.split('-').map(Number);
                           const date = new Date(year, month - 1, day);
@@ -196,7 +196,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                     <div className="text-center">
                       <div className="text-xl mb-1">🎨</div>
                       <div className="font-bold text-purple-600 text-sm mb-1">Favorite Color</div>
-                      <div className="font-semibold text-green-600 text-base">{card.favoriteColor}</div>
+                      <div className="font-semibold text-black text-base">{card.favoriteColor}</div>
                     </div>
                   )}
                   
@@ -204,7 +204,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                     <div className="text-center">
                       <div className="text-xl mb-1">🎯</div>
                       <div className="font-bold text-orange-500 text-sm mb-1">Hobbies</div>
-                      <div className="font-semibold text-blue-600 text-base">{card.hobbies}</div>
+                      <div className="font-semibold text-black text-base">{card.hobbies}</div>
                     </div>
                   )}
                   
@@ -212,7 +212,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                     <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
                       <div className="text-xl mb-1">✨</div>
                       <div className="font-bold text-red-600 text-sm mb-1">Fun Fact</div>
-                      <p className="text-sm leading-relaxed font-medium text-purple-700">{card.funFact}</p>
+                      <p className="text-sm leading-relaxed font-medium text-black">{card.funFact}</p>
                     </div>
                   )}
                 </div>
