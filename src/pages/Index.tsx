@@ -212,7 +212,7 @@ const Index = () => {
 
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
                    <FlippableCardPreview 
                      card={{
@@ -230,9 +230,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <FlippableCardPreview 
+                   <FlippableCardPreview
                      card={{
                        name: "Grandma Rose",
                        whereTheyLive: "Portland, OR",
@@ -248,9 +248,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <FlippableCardPreview 
+                   <FlippableCardPreview
                      card={{
                        name: "Cousin Alex",
                        whereTheyLive: "Austin, TX",
@@ -266,9 +266,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <FlippableCardPreview 
+                   <FlippableCardPreview
                      card={{
                        name: "Aunt Sarah",
                        whereTheyLive: "Denver, CO",
@@ -283,9 +283,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <FlippableCardPreview 
+                   <FlippableCardPreview
                      card={{
                        name: "Uncle Tom",
                        whereTheyLive: "Seattle, WA",
@@ -300,9 +300,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                 <div className="p-2">
-                   <FlippableCardPreview 
+                   <FlippableCardPreview
                      card={{
                        name: "Big Sister Emma",
                        whereTheyLive: "Miami, FL",

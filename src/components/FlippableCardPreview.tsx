@@ -311,11 +311,12 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <div 
-        className="aspect-square cursor-pointer relative"
-        style={{ perspective: '1000px' }}
-        onClick={() => setIsFlipped(!isFlipped)}
-      >
+      <div className="aspect-square">
+        <div 
+          className="w-full h-full cursor-pointer relative"
+          style={{ perspective: '1000px' }}
+          onClick={() => setIsFlipped(!isFlipped)}
+        >
         <div 
           className={`w-full h-full relative transition-transform duration-700 ease-in-out ${
             isFlipped ? 'rotate-y-180' : ''
@@ -447,6 +448,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
               </div>
             </CardContent>
           </Card>
+        </div>
         </div>
       </div>
     </div>
