@@ -339,10 +339,26 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <Textarea
           id="funFact"
           value={formData.funFact}
-          onChange={(e) => setFormData({ ...formData, funFact: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value.length <= 124) {
+              setFormData({ ...formData, funFact: value });
+            }
+          }}
           placeholder="Something interesting or fun about this person"
           rows={3}
+          maxLength={124}
         />
+        <div className="flex justify-end items-center mt-1">
+          <div className="flex items-center space-x-2">
+            <span className={`text-xs ${formData.funFact.length >= 124 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              {formData.funFact.length}/124
+            </span>
+            {formData.funFact.length >= 124 && (
+              <span className="text-xs text-destructive">Character limit reached</span>
+            )}
+          </div>
+        </div>
       </div>
 
       <BackgroundThemeSelector
