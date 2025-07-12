@@ -69,17 +69,27 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
 
   // Only send preview data for real-time preview updates
   useEffect(() => {
+    console.log('🔄 PREVIEW EFFECT TRIGGERED');
+    console.log('🔄 formData changed:', formData);
+    console.log('🔄 previewData changed:', previewData);
+    console.log('🔄 onPreviewChange exists:', !!onPreviewChange);
+    
     if (onPreviewChange) {
       const displayData = {
         ...formData,
         ...(previewData.theme && { theme: previewData.theme }),
         ...(previewData.font && { font: previewData.font })
       };
+      console.log('🔄 Calling onPreviewChange with:', displayData);
       onPreviewChange(displayData);
     }
   }, [formData, previewData, onPreviewChange]);
 
   const handleSubmit = (e: React.FormEvent) => {
+    console.log('📝 FORM SUBMIT HANDLER CALLED');
+    console.log('📝 Event:', e);
+    console.log('📝 Call stack:', new Error().stack);
+    
     e.preventDefault();
     if (!formData.name.trim()) return;
     
@@ -90,6 +100,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       ...(previewData.font && { font: previewData.font })
     };
     
+    console.log('📝 Final data being submitted:', finalData);
     onSubmit(finalData);
     
     if (!isEditing) {
@@ -157,10 +168,20 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
 
   // Handler for theme selection - NO formData updates, only for final submission
   const handleThemeChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => {
+    console.log('🎨 THEME CHANGE CALLED:', theme);
+    console.log('🎨 Current formData:', formData);
+    console.log('🎨 Current previewData:', previewData);
+    
     // DON'T update formData here to prevent auto-save
     // Only update preview data - formData will be updated on submit
-    setPreviewData(prev => ({ ...prev, theme }));
-  }, []);
+    setPreviewData(prev => {
+      const newPreviewData = { ...prev, theme };
+      console.log('🎨 NEW previewData:', newPreviewData);
+      return newPreviewData;
+    });
+    
+    console.log('🎨 Theme change handler complete - NO formData changed');
+  }, [formData, previewData]);
 
   // Handler for font selection - NO formData updates, only for final submission  
   const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy') => {
