@@ -212,7 +212,7 @@ const Index = () => {
 
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
-              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview 
                      card={{
@@ -230,7 +230,7 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
                      card={{
@@ -248,7 +248,7 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
                      card={{
@@ -266,7 +266,7 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
                      card={{
@@ -283,7 +283,7 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
                      card={{
@@ -300,7 +300,7 @@ const Index = () => {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
                    <FlippableCardPreview
                      card={{
