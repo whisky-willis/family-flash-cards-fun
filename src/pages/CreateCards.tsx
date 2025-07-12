@@ -26,7 +26,7 @@ export interface FamilyCard {
   funFact: string;
   whereTheyLive: string;
   theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-  font?: 'bubblegum' | 'luckiest-guy';
+  font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
   imagePosition?: { x: number; y: number; scale: number };
 }
 

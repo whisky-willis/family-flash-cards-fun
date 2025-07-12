@@ -27,7 +27,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     funFact: '',
     whereTheyLive: '',
     theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-    font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
+    font: undefined as 'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
@@ -35,7 +35,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
   // Preview state for hover effects
   const [previewData, setPreviewData] = useState<{
     theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-    font?: 'bubblegum' | 'luckiest-guy';
+    font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
   }>({});
 
   // Only update form data when we're switching to edit mode or resetting
@@ -50,7 +50,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         funFact: '',
         whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-        font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
+        font: undefined as 'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
@@ -102,7 +102,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         funFact: '',
         whereTheyLive: '',
         theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-        font: undefined as 'bubblegum' | 'luckiest-guy' | undefined,
+        font: undefined as 'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
       // Reset preview data after successful submission
@@ -163,14 +163,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
   }, []);
 
   // Handler for font selection - NO formData updates, only for final submission  
-  const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy') => {
+  const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => {
     // DON'T update formData here to prevent auto-save
     // Only update preview data - formData will be updated on submit
     setPreviewData(prev => ({ ...prev, font }));
   }, []);
 
   // Handler for preview changes when hovering
-  const handlePreviewChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy') => {
+  const handlePreviewChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => {
     setPreviewData({ theme, font });
   }, []);
 

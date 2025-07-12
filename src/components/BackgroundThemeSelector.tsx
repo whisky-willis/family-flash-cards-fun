@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 
 interface BackgroundThemeSelectorProps {
   selectedTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-  selectedFont?: 'bubblegum' | 'luckiest-guy';
+  selectedFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
   onThemeChange: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => void;
-  onFontChange: (font: 'bubblegum' | 'luckiest-guy') => void;
-  onPreviewChange?: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy') => void;
+  onFontChange: (font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
+  onPreviewChange?: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
 }
 
 const THEMES = [
@@ -99,7 +99,7 @@ export const BackgroundThemeSelector = ({
         </Label>
         <Select 
           value={selectedFont || ''} 
-          onValueChange={(value: 'bubblegum' | 'luckiest-guy') => {
+          onValueChange={(value: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => {
             onFontChange(value);
           }}
         >
@@ -122,6 +122,15 @@ export const BackgroundThemeSelector = ({
                 <div>
                   <div className="font-medium">High Impact (Luckiest Guy)</div>
                   <div className="text-sm text-gray-500">Bold and impactful</div>
+                </div>
+              </div>
+            </SelectItem>
+            <SelectItem value="fredoka-one">
+              <div className="flex items-center gap-3 py-2">
+                <div className="font-fredoka-one text-lg font-bold text-art-blue">Aa</div>
+                <div>
+                  <div className="font-medium">Classic (Fredoka One)</div>
+                  <div className="text-sm text-gray-500">Clean and readable</div>
                 </div>
               </div>
             </SelectItem>
@@ -238,7 +247,7 @@ export const BackgroundThemeSelector = ({
               <div className="bg-white/90 rounded px-1 py-0.5">
                 <span className={cn(
                   "text-xs font-bold",
-                  selectedFont === 'bubblegum' ? 'font-bubblegum' : 'font-luckiest-guy'
+                  selectedFont === 'bubblegum' ? 'font-bubblegum' : selectedFont === 'luckiest-guy' ? 'font-luckiest-guy' : 'font-fredoka-one'
                 )}>
                   Aa
                 </span>
@@ -246,10 +255,10 @@ export const BackgroundThemeSelector = ({
             </div>
             <div>
               <div className="font-semibold text-art-pink text-sm">
-                {selectedFont === 'bubblegum' ? 'Playful' : 'High Impact'} + {THEMES.find(t => t.id === selectedTheme)?.name}
+                {selectedFont === 'bubblegum' ? 'Playful' : selectedFont === 'luckiest-guy' ? 'High Impact' : 'Classic'} + {THEMES.find(t => t.id === selectedTheme)?.name}
               </div>
               <div className="text-xs text-gray-600">
-                {selectedFont === 'bubblegum' ? 'Friendly Bubblegum Sans' : 'Bold Luckiest Guy'} with {THEMES.find(t => t.id === selectedTheme)?.description}
+                {selectedFont === 'bubblegum' ? 'Friendly Bubblegum Sans' : selectedFont === 'luckiest-guy' ? 'Bold Luckiest Guy' : 'Clean Fredoka One'} with {THEMES.find(t => t.id === selectedTheme)?.description}
               </div>
             </div>
           </div>
