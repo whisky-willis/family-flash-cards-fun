@@ -34,14 +34,6 @@ const CreateCards = () => {
   const { toast } = useToast();
   const { user, isAnonymous } = useAuth();
   const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
-  
-  // Debug cards array changes
-  useEffect(() => {
-    console.log('📊 CARDS ARRAY CHANGED');
-    console.log('📊 New cards length:', cards.length);
-    console.log('📊 Cards:', cards);
-    console.log('📊 Call stack:', new Error().stack);
-  }, [cards]);
   const { saveDraftToLocal, clearDraft } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
@@ -51,21 +43,10 @@ const CreateCards = () => {
 
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
-    console.log('🖼️ HANDLE PREVIEW CHANGE CALLED in CreateCards');
-    console.log('🖼️ Preview data received:', previewData);
-    console.log('🖼️ Current cards length:', cards.length);
-    console.log('🖼️ Current currentCard:', currentCard);
-    
     setPreviewCard(previewData);
-    
-    console.log('🖼️ Preview change complete - should NOT trigger any saves');
-  }, [cards.length, currentCard]);
+  }, []);
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    console.log('💾 HANDLE ADD CARD CALLED - THIS SHOULD ONLY HAPPEN ON FORM SUBMIT');
-    console.log('💾 Card being added:', card);
-    console.log('💾 Call stack:', new Error().stack);
-    
     const newCard = await addCard(card);
     const updatedCards = [...cards, newCard];
     

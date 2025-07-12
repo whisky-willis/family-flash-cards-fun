@@ -141,6 +141,7 @@ export const BackgroundThemeSelector = ({
         >
           {THEMES.map((theme) => (
             <button
+              type="button"
               key={theme.id}
               onClick={() => handleThemeSelect(theme.id)}
               onMouseEnter={() => handleThemeHover(theme.id)}
