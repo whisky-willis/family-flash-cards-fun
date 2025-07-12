@@ -384,47 +384,46 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
               </div>
 
               {/* Attributes */}
-              <div className="space-y-3 text-sm">
-                {card.whereTheyLive && (
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-art-blue flex-shrink-0" />
-                    <span className="text-foreground/80 font-medium">{card.whereTheyLive}</span>
-                  </div>
-                )}
-
-                {card.dateOfBirth && (
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-art-green flex-shrink-0" />
-                    <span className="text-foreground/80 font-medium">{formatAge(card.dateOfBirth)}</span>
-                  </div>
-                )}
-
-                {card.favoriteColor && (
-                  <div className="flex items-center space-x-2">
-                    <Heart className="h-4 w-4 text-art-pink flex-shrink-0" />
-                    <span className="text-foreground/80 font-medium">
-                      Favorite color: 
-                      <span 
-                        className="inline-block w-4 h-4 rounded-full ml-2 border border-gray-300"
-                        style={{ backgroundColor: getColorValue(card.favoriteColor) }}
-                      ></span>
-                      <span className="ml-1">{card.favoriteColor}</span>
-                    </span>
-                  </div>
-                )}
-
-                {card.hobbies && (
-                  <div className="flex items-start space-x-2">
-                    <Gamepad2 className="h-4 w-4 text-art-orange flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground/80 font-medium">Hobbies: {card.hobbies}</span>
-                  </div>
-                )}
-
+              <div className="bg-white/95 backdrop-blur-sm rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  {card.whereTheyLive && (
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🏠</div>
+                      <div className="text-blue-400 font-medium text-xs mb-1">HOME</div>
+                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{card.whereTheyLive}</div>
+                    </div>
+                  )}
+                  
+                  {card.dateOfBirth && (
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🎂</div>
+                      <div className="text-green-400 font-medium text-xs mb-1">AGE</div>
+                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{formatAge(card.dateOfBirth)}</div>
+                    </div>
+                  )}
+                  
+                  {card.favoriteColor && (
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🎨</div>
+                      <div className="text-pink-400 font-medium text-xs mb-1">COLOR</div>
+                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{card.favoriteColor}</div>
+                    </div>
+                  )}
+                  
+                  {card.hobbies && (
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🌟</div>
+                      <div className="text-orange-400 font-medium text-xs mb-1">HOBBIES</div>
+                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{card.hobbies}</div>
+                    </div>
+                  )}
+                </div>
+                
                 {card.funFact && (
-                  <div className="bg-art-yellow/20 p-3 rounded-2xl mt-4">
-                    <p className="text-foreground/80 font-medium text-xs leading-relaxed">
-                      <span className="font-bold text-art-orange">Fun Fact:</span> {card.funFact}
-                    </p>
+                  <div className="text-center mt-4 pt-4 border-t border-white/20">
+                    <div className="text-2xl mb-1">✨</div>
+                    <div className="text-yellow-400 font-medium text-xs mb-2">FUN FACT</div>
+                    <div className={`${getFontClass(card.font)} text-sm font-medium text-center px-2`}>{card.funFact}</div>
                   </div>
                 )}
               </div>
