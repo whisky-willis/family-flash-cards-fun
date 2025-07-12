@@ -423,10 +423,11 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <Card 
-        className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
-        style={getBackgroundStyle()}
-      >
+      <div className="aspect-square">
+        <Card 
+          className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg h-full overflow-hidden"
+          style={getBackgroundStyle()}
+        >
         
         <CardContent className="p-4 relative z-10">
           {/* Photo Section */}
@@ -536,7 +537,8 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
             </div>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </div>
 
       {/* Card Brand */}
       <div className="text-center mt-2">
