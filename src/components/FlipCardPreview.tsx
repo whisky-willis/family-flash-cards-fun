@@ -162,21 +162,21 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
           >
             <CardContent className="p-4 relative z-10 h-full">
               {/* Attributes with white background for visibility */}
-              <div className={`bg-white/95 rounded-2xl p-6 backdrop-blur-sm shadow-sm ${fontClass} h-full overflow-y-auto`}>
-                <div className="space-y-6">
+              <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${fontClass} h-full flex flex-col`}>
+                <div className="grid grid-cols-2 gap-3 flex-1 content-start">
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
-                      <div className="text-2xl mb-2">🏠</div>
-                      <div className="font-bold text-blue-600 text-sm mb-1">Where they live</div>
-                      <div className="capitalize font-semibold text-orange-500 text-lg">{card.whereTheyLive}</div>
+                      <div className="text-xl mb-1">🏠</div>
+                      <div className="font-bold text-blue-600 text-xs mb-1">Where they live</div>
+                      <div className="capitalize font-semibold text-orange-500 text-sm">{card.whereTheyLive}</div>
                     </div>
                   )}
                   
                   {card.dateOfBirth && (
                     <div className="text-center">
-                      <div className="text-2xl mb-2">🎂</div>
-                      <div className="font-bold text-green-600 text-sm mb-1">Birthday</div>
-                      <div className="font-semibold text-red-500 text-lg">
+                      <div className="text-xl mb-1">🎂</div>
+                      <div className="font-bold text-green-600 text-xs mb-1">Birthday</div>
+                      <div className="font-semibold text-red-500 text-sm">
                         {(() => {
                           const [year, month, day] = card.dateOfBirth.split('-').map(Number);
                           const date = new Date(year, month - 1, day);
@@ -194,25 +194,25 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   
                   {card.favoriteColor && card.favoriteColor.trim() && (
                     <div className="text-center">
-                      <div className="text-2xl mb-2">🎨</div>
-                      <div className="font-bold text-purple-600 text-sm mb-1">Favorite Color</div>
-                      <div className="font-semibold text-green-600 text-lg">{card.favoriteColor}</div>
+                      <div className="text-xl mb-1">🎨</div>
+                      <div className="font-bold text-purple-600 text-xs mb-1">Favorite Color</div>
+                      <div className="font-semibold text-green-600 text-sm">{card.favoriteColor}</div>
                     </div>
                   )}
                   
                   {card.hobbies && card.hobbies.trim() && (
                     <div className="text-center">
-                      <div className="text-2xl mb-2">🎯</div>
-                      <div className="font-bold text-orange-500 text-sm mb-1">Hobbies</div>
-                      <div className="font-semibold text-blue-600 text-lg">{card.hobbies}</div>
+                      <div className="text-xl mb-1">🎯</div>
+                      <div className="font-bold text-orange-500 text-xs mb-1">Hobbies</div>
+                      <div className="font-semibold text-blue-600 text-sm">{card.hobbies}</div>
                     </div>
                   )}
                   
                   {card.funFact && card.funFact.trim() && (
-                    <div className="text-center p-4 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
-                      <div className="text-2xl mb-2">✨</div>
-                      <div className="font-bold text-red-600 text-sm mb-2">Fun Fact</div>
-                      <p className="text-sm leading-relaxed font-medium text-purple-700">{card.funFact}</p>
+                    <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
+                      <div className="text-xl mb-1">✨</div>
+                      <div className="font-bold text-red-600 text-xs mb-1">Fun Fact</div>
+                      <p className="text-xs leading-relaxed font-medium text-purple-700">{card.funFact}</p>
                     </div>
                   )}
                 </div>
