@@ -328,8 +328,8 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
           </div>
 
         <div 
-          className={`w-full h-full relative transition-transform duration-700 ease-in-out animate-float group-hover:animate-none ${
-            isFlipped ? 'rotate-y-180' : ''
+          className={`w-full h-full relative transition-transform duration-700 ease-in-out ${
+            !isFlipped ? 'animate-float group-hover:animate-none' : ''
           }`}
           style={{ 
             transformStyle: 'preserve-3d',
