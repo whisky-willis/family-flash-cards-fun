@@ -341,20 +341,20 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
           value={formData.funFact}
           onChange={(e) => {
             const value = e.target.value;
-            if (value.length <= 124) {
+            if (value.length <= 80) {
               setFormData({ ...formData, funFact: value });
             }
           }}
           placeholder="Something interesting or fun about this person"
           rows={3}
-          maxLength={124}
+          maxLength={80}
         />
         <div className="flex justify-end items-center mt-1">
           <div className="flex items-center space-x-2">
-            <span className={`text-xs ${formData.funFact.length >= 124 ? 'text-destructive' : 'text-muted-foreground'}`}>
-              {formData.funFact.length}/124
+            <span className={`text-xs ${formData.funFact.length >= 80 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              {formData.funFact.length}/80
             </span>
-            {formData.funFact.length >= 124 && (
+            {formData.funFact.length >= 80 && (
               <span className="text-xs text-destructive">Character limit reached</span>
             )}
           </div>
