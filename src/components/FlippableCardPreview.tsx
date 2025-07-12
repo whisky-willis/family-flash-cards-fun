@@ -384,48 +384,60 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
               </div>
 
               {/* Attributes */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-lg p-4 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {card.whereTheyLive && (
+              <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${getFontClass(card.font)} h-full flex flex-col`}>
+                <div className="grid grid-cols-2 gap-3 flex-1 content-start">
+                  {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
-                      <div className="text-2xl mb-1">🏠</div>
-                      <div className="text-blue-400 font-medium text-xs mb-1">HOME</div>
-                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{card.whereTheyLive}</div>
+                      <div className="text-xl mb-1">🏠</div>
+                      <div className={`text-blue-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Where they live</div>
+                      <div className="capitalize font-semibold text-black text-base">{card.whereTheyLive}</div>
                     </div>
                   )}
                   
                   {card.dateOfBirth && (
                     <div className="text-center">
-                      <div className="text-2xl mb-1">🎂</div>
-                      <div className="text-green-400 font-medium text-xs mb-1">AGE</div>
-                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{formatAge(card.dateOfBirth)}</div>
+                      <div className="text-xl mb-1">🎂</div>
+                      <div className={`text-green-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Birthday</div>
+                      <div className="font-semibold text-black text-base">
+                        {(() => {
+                          const [year, month, day] = card.dateOfBirth.split('-').map(Number);
+                          const date = new Date(year, month - 1, day);
+                          const dayNum = date.getDate();
+                          const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+                          const suffix = dayNum === 1 || dayNum === 21 || dayNum === 31 ? 'st' 
+                                       : dayNum === 2 || dayNum === 22 ? 'nd'
+                                       : dayNum === 3 || dayNum === 23 ? 'rd'
+                                       : 'th';
+                          return `${monthName} ${dayNum}${suffix}`;
+                        })()}
+                      </div>
                     </div>
                   )}
                   
-                  {card.favoriteColor && (
+                  {card.favoriteColor && card.favoriteColor.trim() && (
                     <div className="text-center">
-                      <div className="text-2xl mb-1">🎨</div>
-                      <div className="text-pink-400 font-medium text-xs mb-1">COLOR</div>
-                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{card.favoriteColor}</div>
+                      <div className="text-xl mb-1">🎨</div>
+                      <div className={`text-purple-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Favorite Color</div>
+                      <div className="font-semibold text-black text-base">{card.favoriteColor}</div>
                     </div>
                   )}
                   
-                  {card.hobbies && (
+                  {card.hobbies && card.hobbies.trim() && (
                     <div className="text-center">
-                      <div className="text-2xl mb-1">🌟</div>
-                      <div className="text-orange-400 font-medium text-xs mb-1">HOBBIES</div>
-                      <div className={`${getFontClass(card.font)} text-sm font-medium`}>{card.hobbies}</div>
+                      <div className="text-xl mb-1">🌟</div>
+                      <div className={`text-orange-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Hobbies</div>
+                      <div className="font-semibold text-black text-base">{card.hobbies}</div>
+                    </div>
+                  )}
+                  
+                  {card.funFact && card.funFact.trim() && (
+                    <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
+                      <div className="text-xl mb-1">✨</div>
+                      <div className={`text-red-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
+                      <p className="text-sm leading-relaxed font-medium text-black">{card.funFact}</p>
                     </div>
                   )}
                 </div>
-                
-                {card.funFact && (
-                  <div className="text-center mt-4 pt-4 border-t border-white/20">
-                    <div className="text-2xl mb-1">✨</div>
-                    <div className="text-yellow-400 font-medium text-xs mb-2">FUN FACT</div>
-                    <div className={`${getFontClass(card.font)} text-sm font-medium text-center px-2`}>{card.funFact}</div>
-                  </div>
-                )}
               </div>
 
               {/* Click instruction */}
