@@ -27,8 +27,8 @@
     --muted: 45 15% 85%;
     --muted-foreground: 0 0% 45%;
 
-    /* Art Center pink - lighter for better dropdown highlighting */
-    --accent: 350 60% 90%;
+    /* Art Center pink - very light for subtle dropdown highlighting */
+    --accent: 350 40% 95%;
     --accent-foreground: 0 0% 10%;
 
     --destructive: 0 84% 60%;
