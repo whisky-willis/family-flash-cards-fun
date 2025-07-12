@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Users, RotateCcw } from "lucide-react";
+import { Heart, Users, RotateCcw, RefreshCw } from "lucide-react";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface FlipCardPreviewProps {
@@ -90,11 +90,21 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
 
   return (
     <div className="w-full max-w-sm mx-auto">
+      {/* Flip Button */}
+      <div className="mb-4 text-center">
+        <Button
+          onClick={handleFlip}
+          variant="outline"
+          size="sm"
+          className="border-2 border-art-pink text-art-pink hover:bg-art-pink hover:text-white font-bold uppercase text-xs tracking-wide"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          {isFlipped ? 'Show Photo' : 'Show Details'}
+        </Button>
+      </div>
+
       {/* Flip Card Container */}
-      <div 
-        className="aspect-square perspective-1000 cursor-pointer"
-        onClick={handleFlip}
-      >
+      <div className="aspect-square perspective-1000">
         <div 
           className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d ${
             isFlipped ? 'rotate-y-180' : ''
@@ -245,10 +255,6 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
         </div>
       </div>
 
-      {/* Flip Instructions */}
-      <div className="text-center mt-2">
-        <p className="text-xs text-muted-foreground">Click to flip the card</p>
-      </div>
     </div>
   );
 };
