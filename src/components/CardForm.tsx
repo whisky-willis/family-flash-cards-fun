@@ -13,10 +13,11 @@ interface CardFormProps {
   onSubmit: (card: Omit<FamilyCard, 'id'>) => void;
   onCancel?: () => void;
   onChange?: (card: Partial<FamilyCard>) => void;
+  onPreviewChange?: (card: Partial<FamilyCard>) => void;
   isEditing?: boolean;
 }
 
-export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEditing = false }: CardFormProps) => {
+export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, onPreviewChange, isEditing = false }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -57,16 +58,22 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
     }
   }, [isEditing, initialData]);
 
-  // Call onChange whenever formData changes, but only if onChange exists
-  // Also merge preview data for hover effects
+  // Call onChange only for actual formData changes, not preview changes
   useEffect(() => {
-    const dataToSend = {
-      ...formData,
-      ...(previewData.theme && { theme: previewData.theme }),
-      ...(previewData.font && { font: previewData.font })
-    };
-    onChange?.(dataToSend);
-  }, [formData, previewData, onChange]);
+    onChange?.(formData);
+  }, [formData, onChange]);
+
+  // Separate effect for preview data that sends to preview component
+  useEffect(() => {
+    if (onPreviewChange) {
+      const displayData = {
+        ...formData,
+        ...(previewData.theme && { theme: previewData.theme }),
+        ...(previewData.font && { font: previewData.font })
+      };
+      onPreviewChange(displayData);
+    }
+  }, [formData, previewData, onPreviewChange]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -280,14 +287,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
         </div>
       </div>
 
-      <BackgroundThemeSelector
-        selectedTheme={formData.theme}
-        selectedFont={formData.font}
-        onThemeChange={handleThemeChange}
-        onFontChange={handleFontChange}
-        onPreviewChange={handlePreviewChange}
-      />
-
       <div>
         <Label htmlFor="favoriteColor">Favorite Color</Label>
         <Input
@@ -318,6 +317,14 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, isEdi
           rows={3}
         />
       </div>
+
+      <BackgroundThemeSelector
+        selectedTheme={formData.theme}
+        selectedFont={formData.font}
+        onThemeChange={handleThemeChange}
+        onFontChange={handleFontChange}
+        onPreviewChange={handlePreviewChange}
+      />
 
       <div className="flex space-x-4">
         <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 font-bold uppercase text-sm tracking-wide">

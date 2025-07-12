@@ -36,11 +36,16 @@ const CreateCards = () => {
   const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
   const { saveDraftToLocal, clearDraft } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
+  const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
     setCurrentCard(updatedCard);
+  }, []);
+
+  const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
+    setPreviewCard(previewData);
   }, []);
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
@@ -51,6 +56,7 @@ const CreateCards = () => {
     saveDraftToLocal(updatedCards);
     
     setCurrentCard({});
+    setPreviewCard({});
     
     toast({
       title: "Card Added!",
@@ -60,6 +66,7 @@ const CreateCards = () => {
 
   const handleEditCard = (card: FamilyCard) => {
     setCurrentCard(card);
+    setPreviewCard(card);
     setIsEditing(true);
   };
 
@@ -76,6 +83,7 @@ const CreateCards = () => {
       saveDraftToLocal(updatedCards);
       
       setCurrentCard({});
+      setPreviewCard({});
       setIsEditing(false);
       
       toast({
@@ -247,9 +255,11 @@ const CreateCards = () => {
                   onSubmit={isEditing ? handleUpdateCard : handleAddCard}
                   onCancel={() => {
                     setCurrentCard({});
+                    setPreviewCard({});
                     setIsEditing(false);
                   }}
                   onChange={handleFormChange}
+                  onPreviewChange={handlePreviewChange}
                   isEditing={isEditing}
                 />
               </CardContent>
@@ -266,7 +276,7 @@ const CreateCards = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CardPreview card={currentCard} />
+                <CardPreview card={previewCard} />
               </CardContent>
             </Card>
           </div>
