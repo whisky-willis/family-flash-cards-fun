@@ -141,7 +141,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
 
               {/* Name at bottom */}
               <div className="mt-4">
-                <h3 className={`text-3xl ${fontClass} text-center text-foreground`} style={{
+                <h3 className={`${card.font === 'bubblegum' ? 'text-5xl' : 'text-3xl'} ${fontClass} text-center text-foreground`} style={{
                   textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)',
                 }}>
                   {card.name}
