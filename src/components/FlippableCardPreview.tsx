@@ -424,6 +424,14 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                     </div>
                   )}
                   
+                  {card.funFact && card.funFact.trim() && (
+                    <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300 hidden lg:block">
+                      <div className="text-xl mb-1">✨</div>
+                      <div className={`text-red-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
+                      <p className="text-sm leading-relaxed font-medium text-black">{card.funFact}</p>
+                    </div>
+                  )}
+                  
                 </div>
               </div>
             </CardContent>
