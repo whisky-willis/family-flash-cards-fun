@@ -40,9 +40,7 @@ const CreateCards = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const handleFormChange = useCallback((updatedCard: Partial<FamilyCard>) => {
-    setCurrentCard(updatedCard);
-  }, []);
+
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
@@ -258,7 +256,6 @@ const CreateCards = () => {
                     setPreviewCard({});
                     setIsEditing(false);
                   }}
-                  onChange={handleFormChange}
                   onPreviewChange={handlePreviewChange}
                   isEditing={isEditing}
                 />

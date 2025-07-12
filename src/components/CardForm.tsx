@@ -12,12 +12,11 @@ interface CardFormProps {
   initialData?: Partial<FamilyCard>;
   onSubmit: (card: Omit<FamilyCard, 'id'>) => void;
   onCancel?: () => void;
-  onChange?: (card: Partial<FamilyCard>) => void;
   onPreviewChange?: (card: Partial<FamilyCard>) => void;
   isEditing?: boolean;
 }
 
-export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, onPreviewChange, isEditing = false }: CardFormProps) => {
+export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange, isEditing = false }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -58,12 +57,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onChange, onPre
     }
   }, [isEditing, initialData]);
 
-  // Call onChange only for actual formData changes, not preview changes
-  useEffect(() => {
-    onChange?.(formData);
-  }, [formData, onChange]);
-
-  // Separate effect for preview data that sends to preview component
+  // Only send preview data for real-time preview updates
   useEffect(() => {
     if (onPreviewChange) {
       const displayData = {
