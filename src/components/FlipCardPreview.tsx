@@ -163,7 +163,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
             <CardContent className="p-4 relative z-10 h-full">
               {/* Attributes with white background for visibility */}
               <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${fontClass} h-full flex flex-col`}>
-                <div className="grid grid-cols-2 gap-3 flex-1 content-start">
+                <div className="grid grid-cols-2 gap-3 flex-1 content-start pb-4">
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
@@ -209,7 +209,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   )}
                   
                   {card.funFact && card.funFact.trim() && (
-                    <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
+                    <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300 mt-2 mb-2">
                       <div className="text-xl mb-1">✨</div>
                       <div className="font-bold text-red-400 text-sm mb-1">Fun Fact</div>
                       <p className="text-sm leading-relaxed font-medium text-black">{card.funFact}</p>
