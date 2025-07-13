@@ -39,7 +39,7 @@ const Index = () => {
       {/* Organic background shapes inspired by Art Center */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-art-pink rounded-full mix-blend-multiply filter blur-xl opacity-70 -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute top-1/4 right-0 w-80 h-80 bg-art-yellow rounded-full mix-blend-multiply filter blur-xl opacity-70 translate-x-1/3"></div>
+        <div className="absolute top-1/4 right-0 w-80 h-80 rounded-full filter blur-xl translate-x-1/3" style={{ backgroundColor: 'hsl(var(--art-yellow))', mixBlendMode: 'multiply', opacity: 0.7 }}></div>
         <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-art-green rounded-full mix-blend-multiply filter blur-xl opacity-70 translate-y-1/3"></div>
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-art-blue rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
         <div className="absolute top-1/2 left-1/2 w-56 h-56 bg-art-orange rounded-full mix-blend-multiply filter blur-xl opacity-70 -translate-x-1/2 -translate-y-1/2"></div>
@@ -109,8 +109,11 @@ const Index = () => {
         }}></div>
           
           {/* Yellow blob - center large */}
-          <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-70 mix-blend-multiply filter blur-xl transform -translate-x-1/2 -translate-y-1/2" style={{
-          clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
+          <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] filter blur-xl transform -translate-x-1/2 -translate-y-1/2" style={{
+          clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)',
+          backgroundColor: 'hsl(var(--art-yellow))',
+          mixBlendMode: 'multiply',
+          opacity: 0.7
         }}></div>
           
           {/* Green blob - top right */}
@@ -168,7 +171,7 @@ const Index = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center group">
-              <div className="bg-art-yellow opacity-70 mix-blend-multiply rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: 'hsl(var(--art-yellow))', mixBlendMode: 'multiply', opacity: 0.7 }}>
                 <span className="text-2xl font-black text-foreground">1</span>
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Upload Photos</h3>
