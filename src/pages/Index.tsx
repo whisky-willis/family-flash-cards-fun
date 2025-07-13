@@ -108,9 +108,12 @@ const Index = () => {
           clipPath: 'polygon(20% 0%, 80% 10%, 100% 50%, 85% 90%, 30% 100%, 0% 70%, 5% 30%)'
         }}></div>
           
-          {/* Yellow blob - center large */}
+          {/* Yellow blob - center large - DEBUG VERSION */}
           <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-70 transform -translate-x-1/2 -translate-y-1/2" style={{
-          clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
+          // clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)',
+          borderRadius: '50%',
+          willChange: 'opacity, transform',
+          transform: 'translate(-50%, -50%) translateZ(0)'
         }}></div>
           
           {/* Green blob - top right */}
