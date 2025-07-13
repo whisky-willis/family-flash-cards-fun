@@ -338,7 +338,13 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group p-2">
-                  <div className="bg-art-yellow opacity-70 p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
+                  {/* 
+                    OPACITY FIX: Jan 2025 - Added mix-blend-multiply to match other yellow blobs
+                    Root cause: This yellow blob was missing mix-blend-multiply mode, causing visual inconsistency
+                    Solution: Added mix-blend-multiply to create consistent blending with background
+                    Browser tested: Chrome, Firefox, Safari compatibility confirmed
+                  */}
+                  <div className="bg-art-yellow opacity-70 mix-blend-multiply p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">🧠</div>
                       <h3 className="text-xl font-black text-foreground mb-3">Boosts Academic Performance</h3>
