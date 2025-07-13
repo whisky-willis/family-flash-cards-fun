@@ -109,7 +109,7 @@ const Index = () => {
         }}></div>
           
           {/* Yellow blob - center large */}
-          <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-70 mix-blend-multiply filter blur-xl transform -translate-x-1/2 -translate-y-1/2" style={{
+          <div className="absolute top-1/2 left-1/2 w-[800px] h-[700px] bg-art-yellow opacity-70 transform -translate-x-1/2 -translate-y-1/2" style={{
           clipPath: 'polygon(25% 0%, 75% 5%, 95% 35%, 90% 70%, 70% 95%, 25% 90%, 5% 60%, 10% 25%)'
         }}></div>
           
