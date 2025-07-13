@@ -171,7 +171,7 @@ const Index = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center group">
-              <div className="bg-art-yellow opacity-70 mix-blend-multiply rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="bg-art-yellow opacity-70 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-2xl font-black text-foreground">1</span>
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Upload Photos</h3>
@@ -181,7 +181,7 @@ const Index = () => {
             </div>
 
             <div className="text-center group">
-              <div className="bg-art-pink opacity-70 mix-blend-multiply rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="bg-art-pink opacity-70 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-2xl font-black text-foreground">2</span>
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Customize Cards</h3>
@@ -191,7 +191,7 @@ const Index = () => {
             </div>
 
             <div className="text-center group">
-              <div className="bg-art-green opacity-70 mix-blend-multiply rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="bg-art-green opacity-70 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-2xl font-black text-foreground">3</span>
               </div>
               <h3 className="text-xl font-black text-foreground mb-3">Start Learning</h3>
