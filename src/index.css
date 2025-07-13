@@ -141,3 +141,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Force consistent yellow blob opacity - override all conflicting styles */
+.yellow-blob-consistent {
+  background-color: hsl(50, 95%, 55%) !important;
+  mix-blend-mode: multiply !important;
+  opacity: 0.7 !important;
+}
+
+/* Ensure yellow blob styles persist through console toggle */
+.yellow-blob-consistent,
+.yellow-blob-consistent:hover,
+.yellow-blob-consistent:focus {
+  background-color: hsl(50, 95%, 55%) !important;
+  mix-blend-mode: multiply !important;
+  opacity: 0.7 !important;
+}
