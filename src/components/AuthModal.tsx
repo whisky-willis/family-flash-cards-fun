@@ -38,7 +38,7 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
   const [name, setName] = useState('');
   const [isSignUp, setIsSignUp] = useState(true);
   
-  const { isAnonymous, convertAnonymousUser } = useAuth();
+  const { isAnonymous, convertAnonymousUser, createAnonymousUser } = useAuth();
   const { toast } = useToast();
 
   const handleMagicLink = async () => {
@@ -51,6 +51,24 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
     setError('');
 
     try {
+      // Create anonymous user and save cards first
+      if (cards.length > 0) {
+        const { user: anonUser, error: anonError } = await createAnonymousUser();
+        if (anonError) throw anonError;
+
+        // Save cards to the anonymous user
+        const { error: saveError } = await supabase
+          .from('card_collections')
+          .insert({
+            user_id: anonUser?.id || '',
+            name: 'My Card Collection',
+            description: 'Cards created in the card builder',
+            cards: JSON.parse(JSON.stringify(cards)) as any
+          });
+
+        if (saveError) throw saveError;
+      }
+
       const { error } = await supabase.auth.signInWithOtp({
         email: magicEmail,
         options: {
