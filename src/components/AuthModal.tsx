@@ -51,30 +51,43 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
     setError('');
 
     try {
-      // Create anonymous user and save cards first
+      // Save cards and associate email with current or new anonymous user
       if (cards.length > 0) {
-        const { user: anonUser, error: anonError } = await createAnonymousUser();
-        if (anonError) throw anonError;
+        // Get current user or create new anonymous user
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        let userId = currentUser?.id;
 
-        // Associate email with the anonymous user in profiles
+        if (!userId) {
+          const { user: anonUser, error: anonError } = await createAnonymousUser();
+          if (anonError) throw anonError;
+          userId = anonUser?.id;
+        }
+
+        if (!userId) throw new Error('Failed to get user ID');
+
+        // Associate email with the user in profiles (upsert to handle existing profiles)
         const { error: profileError } = await supabase
           .from('profiles')
-          .insert({
-            user_id: anonUser?.id || '',
+          .upsert({
+            user_id: userId,
             email: magicEmail,
             name: 'Anonymous User'
+          }, {
+            onConflict: 'user_id'
           });
 
         if (profileError) throw profileError;
 
-        // Save cards to the anonymous user
+        // Save cards to the user
         const { error: saveError } = await supabase
           .from('card_collections')
-          .insert({
-            user_id: anonUser?.id || '',
+          .upsert({
+            user_id: userId,
             name: 'My Card Collection',
             description: 'Cards created in the card builder',
             cards: JSON.parse(JSON.stringify(cards)) as any
+          }, {
+            onConflict: 'user_id'
           });
 
         if (saveError) throw saveError;
