@@ -52,19 +52,16 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
 
     try {
       if (isAnonymous) {
-        // Convert anonymous user with email verification
+        // For anonymous users, convert them and send verification email  
         const { error } = await convertAnonymousUser(magicEmail, 'temp-password', magicEmail.split('@')[0]);
         if (error) throw error;
 
-        // Send verification email to the now-updated user
-        const { error: emailError } = await supabase.auth.signInWithOtp({
-          email: magicEmail,
-          options: {
-            emailRedirectTo: `${window.location.origin}/profile`
-          }
+        // Close modal and show success message - user will be redirected after email verification
+        setMagicLinkSent(true);
+        toast({
+          title: "Account Updated!",
+          description: "Check your email and click the link to complete verification. Your cards will be available in your profile.",
         });
-
-        if (emailError) throw emailError;
       } else {
         // Regular magic link for non-anonymous users
         const { error } = await supabase.auth.signInWithOtp({
@@ -75,13 +72,13 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
         });
 
         if (error) throw error;
+        
+        setMagicLinkSent(true);
+        toast({
+          title: "Magic Link Sent!",
+          description: "Check your email and click the link to sign in. Your cards will be available in your profile.",
+        });
       }
-
-      setMagicLinkSent(true);
-      toast({
-        title: "Magic Link Sent!",
-        description: "Check your email and click the link to sign in. Your cards will be available in your profile.",
-      });
     } catch (err: any) {
       setError(err.message || 'Failed to send magic link');
     } finally {

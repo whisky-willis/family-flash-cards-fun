@@ -39,6 +39,13 @@ const CreateCards = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   
+  // Redirect authenticated users to profile if they have cards
+  useEffect(() => {
+    if (user && !isAnonymous && cards.length > 0) {
+      navigate('/profile');
+    }
+  }, [user, isAnonymous, cards.length, navigate]);
+  
   // Deck-level state
   const [recipientName, setRecipientName] = useState('');
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
