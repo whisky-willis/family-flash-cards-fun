@@ -146,7 +146,7 @@ export const DeckDesigner = ({
               <Button
                 onClick={() => setIsExpanded(false)}
                 variant="outline"
-                className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10"
+                className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10 hover:text-art-purple"
               >
                 👍
                 Save Design
