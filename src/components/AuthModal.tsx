@@ -51,13 +51,16 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
     setError('');
 
     try {
-      // Send magic link without creating anonymous user
-      // Cards will be migrated after authentication via useSupabaseCards hook
+      // Save current cards to localStorage before sending magic link
+      // They will be migrated after authentication via useSupabaseCards hook
+      if (cards.length > 0) {
+        localStorage.setItem('kindred-cards-draft', JSON.stringify(cards));
+      }
       
       const { error } = await supabase.auth.signInWithOtp({
         email: magicEmail,
         options: {
-          emailRedirectTo: `${window.location.origin}/profile`
+          emailRedirectTo: `${window.location.origin}/create`
         }
       });
 
