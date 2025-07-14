@@ -56,19 +56,30 @@ export function EmailSignupModal({ open, onOpenChange, cards, onSuccess }: Email
     try {
       // Save draft cards to localStorage before signup with email association
       if (cards.length > 0) {
+        console.log('💾 About to save draft cards:', cards);
         saveDraftToLocal(cards, email);
         console.log('💾 Saved draft cards to localStorage before signup:', cards.length, 'for email:', email);
+        
+        // Verify the save worked
+        const savedData = localStorage.getItem('kindred-cards-draft');
+        console.log('🔍 Verification - data in localStorage:', savedData);
+      } else {
+        console.log('⚠️ No cards to save for later');
       }
 
       // Sign up user with email verification
+      const redirectUrl = `${window.location.origin}/auth-callback`;
+      console.log('📧 Signup redirect URL:', redirectUrl);
+      
       const { error: signUpError } = await supabase.auth.signUp({
         email: email,
         password: crypto.randomUUID(), // Generate a random password for email-only signup
         options: {
-          emailRedirectTo: `${window.location.origin}/auth-callback`,
+          emailRedirectTo: redirectUrl,
           data: {
             signup_type: 'save_for_later',
-            has_draft_cards: cards.length > 0
+            has_draft_cards: cards.length > 0,
+            email: email // Store email in user metadata too
           }
         }
       });

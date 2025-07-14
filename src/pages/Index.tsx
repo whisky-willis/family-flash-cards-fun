@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { FlippableCardPreview } from "@/components/FlippableCardPreview";
 import { useAuth } from "@/hooks/useAuth";
 import { SignInModal } from "@/components/SignInModal";
+import { supabase } from '@/integrations/supabase/client';
 const kindredLogo = "/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png";
 const Index = () => {
   const navigate = useNavigate();
@@ -18,6 +19,46 @@ const Index = () => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const [showSignInModal, setShowSignInModal] = useState(false);
+  
+  // Handle email verification if user lands on homepage
+  useEffect(() => {
+    const handleEmailVerification = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      const type = hashParams.get('type');
+
+      if (accessToken && refreshToken && type === 'signup') {
+        console.log('🔐 Processing email verification on homepage...');
+        
+        try {
+          // Set the session using the tokens from the hash
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+
+          if (error) {
+            console.error('❌ Error setting session from hash:', error);
+            return;
+          }
+
+          console.log('✅ Session set from email verification, redirecting to create-cards');
+          
+          // Clear the hash from URL
+          window.history.replaceState(null, '', window.location.pathname);
+          
+          // Redirect to create-cards for draft migration
+          navigate('/create-cards');
+        } catch (error) {
+          console.error('❌ Error processing auth hash:', error);
+        }
+      }
+    };
+
+    handleEmailVerification();
+  }, [navigate]);
+  
   useEffect(() => {
     const currentName = names[currentNameIndex];
     let charIndex = 0;

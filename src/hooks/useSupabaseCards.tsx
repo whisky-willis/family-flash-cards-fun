@@ -110,7 +110,9 @@ export const useSupabaseCards = () => {
         userEmail: user?.email,
         isAnonymous: user?.is_anonymous, 
         cardsLength: cards.length,
-        signupType: user?.user_metadata?.signup_type
+        signupType: user?.user_metadata?.signup_type,
+        currentDomain: window.location.origin,
+        currentPath: window.location.pathname
       });
       
       const draftData = localStorage.getItem('kindred-cards-draft');
