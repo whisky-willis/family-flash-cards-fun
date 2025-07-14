@@ -81,93 +81,110 @@ const About = () => {
           </p>
         </div>
 
-        {/* Story Sections */}
-        <div className="grid gap-12 max-w-4xl mx-auto">
-          {/* Our Family Section */}
-          <Card className="backdrop-blur-sm bg-background/90 border-art-pink/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-black">
+        {/* Story Sections - Alternating Layout */}
+        <div className="space-y-20 max-w-7xl mx-auto">
+          {/* Our Family Section - Image Left */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <img 
+                src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=600&h=400&fit=crop&crop=center" 
+                alt="Family gathered around table playing cards"
+                className="w-full h-80 lg:h-96 object-cover rounded-2xl shadow-2xl"
+              />
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <div className="flex items-center gap-3 mb-4">
                 <Users className="h-8 w-8 text-art-pink" />
-                Our Family
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-lg leading-relaxed text-foreground/80 font-medium">
-              <p>
-                Kindred Cards was born from our own family's love for gathering around the table. 
-                As parents, we watched our children light up during game nights, seeing how a simple 
-                deck of cards could spark laughter, create memories, and bring multiple generations together.
-              </p>
-              <p>
-                We noticed that the most magical moments happened when our kids could see themselves 
-                reflected in the games they played. When they recognized faces, places, and stories 
-                that mattered to them, the experience became so much more meaningful.
-              </p>
-            </CardContent>
-          </Card>
+                <h2 className="text-3xl lg:text-4xl font-black text-foreground">Our Family</h2>
+              </div>
+              <div className="space-y-4 text-lg leading-relaxed text-foreground/80 font-medium">
+                <p>
+                  Kindred Cards was born from our own family's love for gathering around the table. 
+                  As parents, we watched our children light up during game nights, seeing how a simple 
+                  deck of cards could spark laughter, create memories, and bring multiple generations together.
+                </p>
+                <p>
+                  We noticed that the most magical moments happened when our kids could see themselves 
+                  reflected in the games they played. When they recognized faces, places, and stories 
+                  that mattered to them, the experience became so much more meaningful.
+                </p>
+              </div>
+            </div>
+          </div>
 
-          {/* The Inspiration Section */}
-          <Card className="backdrop-blur-sm bg-background/90 border-art-green/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-black">
+          {/* The Inspiration Section - Image Right */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-4">
                 <Lightbulb className="h-8 w-8 text-art-green" />
-                The Inspiration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-lg leading-relaxed text-foreground/80 font-medium">
-              <p>
-                The idea struck during a rainy weekend when our usual deck of cards was missing a few pieces. 
-                Our youngest asked, "Why can't we have cards with our family on them?" That innocent question 
-                sparked something bigger than we could have imagined.
-              </p>
-              <p>
-                We realized that while there were countless generic card games on the market, there was 
-                nothing that truly celebrated the unique bonds within each family. Every family has their 
-                own stories, traditions, and special moments that deserve to be celebrated.
-              </p>
-            </CardContent>
-          </Card>
+                <h2 className="text-3xl lg:text-4xl font-black text-foreground">The Inspiration</h2>
+              </div>
+              <div className="space-y-4 text-lg leading-relaxed text-foreground/80 font-medium">
+                <p>
+                  The idea struck during a rainy weekend when our usual deck of cards was missing a few pieces. 
+                  Our youngest asked, "Why can't we have cards with our family on them?" That innocent question 
+                  sparked something bigger than we could have imagined.
+                </p>
+                <p>
+                  We realized that while there were countless generic card games on the market, there was 
+                  nothing that truly celebrated the unique bonds within each family. Every family has their 
+                  own stories, traditions, and special moments that deserve to be celebrated.
+                </p>
+              </div>
+            </div>
+            <div>
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop&crop=center" 
+                alt="Child holding custom playing cards with family photos"
+                className="w-full h-80 lg:h-96 object-cover rounded-2xl shadow-2xl"
+              />
+            </div>
+          </div>
 
-          {/* How Kindred Cards Started Section */}
-          <Card className="backdrop-blur-sm bg-background/90 border-art-blue/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-black">
+          {/* How Kindred Cards Started Section - Image Left */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <img 
+                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop&crop=center" 
+                alt="Multiple families around table with card games"
+                className="w-full h-80 lg:h-96 object-cover rounded-2xl shadow-2xl"
+              />
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <div className="flex items-center gap-3 mb-4">
                 <Heart className="h-8 w-8 text-art-blue" />
-                How Kindred Cards Began
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-lg leading-relaxed text-foreground/80 font-medium">
-              <p>
-                What started as a weekend project to create custom cards for our own family quickly 
-                grew into something much larger. We spent months perfecting the design, testing different 
-                games, and refining the experience based on feedback from friends and extended family.
-              </p>
-              <p>
-                The response was overwhelming. Every family that tried our personalized cards had the 
-                same reaction - pure joy and excitement. Kids who rarely put down their devices were 
-                suddenly engaged for hours, grandparents were sharing stories prompted by the familiar 
-                faces on the cards, and families were creating new traditions.
-              </p>
-              <p>
-                We knew we had to share this magic with other families. Kindred Cards was officially 
-                born with a simple mission: to help families create lasting memories through the power 
-                of personalized play.
-              </p>
-            </CardContent>
-          </Card>
+                <h2 className="text-3xl lg:text-4xl font-black text-foreground">How Kindred Cards Began</h2>
+              </div>
+              <div className="space-y-4 text-lg leading-relaxed text-foreground/80 font-medium">
+                <p>
+                  What started as a weekend project to create custom cards for our own family quickly 
+                  grew into something much larger. We spent months perfecting the design, testing different 
+                  games, and refining the experience based on feedback from friends and extended family.
+                </p>
+                <p>
+                  The response was overwhelming. Every family that tried our personalized cards had the 
+                  same reaction - pure joy and excitement. Kids who rarely put down their devices were 
+                  suddenly engaged for hours, grandparents were sharing stories prompted by the familiar 
+                  faces on the cards, and families were creating new traditions.
+                </p>
+                <p>
+                  We knew we had to share this magic with other families. Kindred Cards was officially 
+                  born with a simple mission: to help families create lasting memories through the power 
+                  of personalized play.
+                </p>
+              </div>
+            </div>
+          </div>
 
-          {/* Our Mission Section */}
-          <Card className="backdrop-blur-sm bg-background/90 border-art-yellow/20">
-            <CardHeader>
-              <CardTitle className="text-2xl font-black text-center">Our Mission</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl text-center leading-relaxed text-foreground/80 font-medium">
-                To strengthen family bonds by transforming ordinary game nights into extraordinary 
-                celebrations of the people and moments that matter most. Because every family 
-                deserves to see their story reflected in the games they play together.
-              </p>
-            </CardContent>
-          </Card>
+          {/* Our Mission Section - Centered with Background */}
+          <div className="text-center bg-gradient-to-r from-art-pink/10 via-art-blue/10 to-art-green/10 rounded-3xl p-12 lg:p-16">
+            <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-8">Our Mission</h2>
+            <p className="text-xl lg:text-2xl leading-relaxed text-foreground/80 font-medium max-w-4xl mx-auto">
+              To strengthen family bonds by transforming ordinary game nights into extraordinary 
+              celebrations of the people and moments that matter most. Because every family 
+              deserves to see their story reflected in the games they play together.
+            </p>
+          </div>
         </div>
       </div>
       
