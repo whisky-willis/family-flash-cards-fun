@@ -51,25 +51,36 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
     setError('');
 
     try {
-      // Save current cards to localStorage before sending magic link
-      // They will be migrated after authentication via useSupabaseCards hook
-      if (cards.length > 0) {
-        localStorage.setItem('kindred-cards-draft', JSON.stringify(cards));
-      }
-      
-      const { error } = await supabase.auth.signInWithOtp({
-        email: magicEmail,
-        options: {
-          emailRedirectTo: `${window.location.origin}/create`
-        }
-      });
+      if (isAnonymous) {
+        // Convert anonymous user with email verification
+        const { error } = await convertAnonymousUser(magicEmail, 'temp-password', magicEmail.split('@')[0]);
+        if (error) throw error;
 
-      if (error) throw error;
+        // Send verification email to the now-updated user
+        const { error: emailError } = await supabase.auth.signInWithOtp({
+          email: magicEmail,
+          options: {
+            emailRedirectTo: `${window.location.origin}/profile`
+          }
+        });
+
+        if (emailError) throw emailError;
+      } else {
+        // Regular magic link for non-anonymous users
+        const { error } = await supabase.auth.signInWithOtp({
+          email: magicEmail,
+          options: {
+            emailRedirectTo: `${window.location.origin}/profile`
+          }
+        });
+
+        if (error) throw error;
+      }
 
       setMagicLinkSent(true);
       toast({
         title: "Magic Link Sent!",
-        description: "Check your email and click the link to sign in. Your cards will be saved automatically.",
+        description: "Check your email and click the link to sign in. Your cards will be available in your profile.",
       });
     } catch (err: any) {
       setError(err.message || 'Failed to send magic link');

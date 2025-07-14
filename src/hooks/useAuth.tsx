@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('🔄 Converting anonymous user to permanent account...');
     
     try {
+      // Update the anonymous user with email and password
       const { data, error } = await supabase.auth.updateUser({
         email,
         password,
@@ -70,10 +71,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         console.error('❌ Failed to convert anonymous user:', error);
         return { data, error };
-      } else {
-        console.log('✅ Anonymous user converted successfully');
+      }
+
+      // Update the profile table with the email
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: data.user.id,
+            name,
+            email
+          });
+
+        if (profileError) {
+          console.warn('⚠️ Failed to update profile:', profileError);
+        }
       }
       
+      console.log('✅ Anonymous user converted successfully');
       return { data, error };
     } catch (error) {
       console.error('❌ Failed to convert anonymous user:', error);

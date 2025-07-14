@@ -111,10 +111,12 @@ export const useSupabaseCards = () => {
         cardsLength: cards.length 
       });
       
+      // Only migrate localStorage drafts for email/password auth flow
+      // Magic link flow keeps cards in database with same user_id
       const draftData = localStorage.getItem('kindred-cards-draft');
       console.log('📦 Draft data found:', !!draftData);
       
-      if (draftData && user && !user.is_anonymous) {
+      if (draftData && user && !user.is_anonymous && cards.length === 0) {
         console.log('🔄 Migrating draft cards to authenticated user...');
         const draftCards = JSON.parse(draftData) as FamilyCard[];
         console.log('📝 Draft cards to migrate:', draftCards.length);
