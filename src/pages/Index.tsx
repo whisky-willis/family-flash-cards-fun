@@ -264,7 +264,7 @@ const Index = () => {
                        photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
                        theme: "sports"
                      }}
-                     nameFont="font-kalam"
+                     nameFont="font-fredoka-one"
                    />
                 </div>
               </CarouselItem>
@@ -282,7 +282,7 @@ const Index = () => {
                         photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
                         theme: "rainbow"
                       }}
-                     nameFont="font-pangolin"
+                     nameFont="font-bubblegum"
                    />
                 </div>
               </CarouselItem>
@@ -301,7 +301,7 @@ const Index = () => {
                         imagePosition: { x: 0, y: -100, scale: 1.1 },
                         theme: "mosaic"
                       }}
-                     nameFont="font-boogaloo"
+                     nameFont="font-luckiest-guy"
                    />
                 </div>
               </CarouselItem>
