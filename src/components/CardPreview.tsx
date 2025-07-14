@@ -10,6 +10,8 @@ interface CardPreviewProps {
   onDelete?: () => void;
   showActions?: boolean;
   nameFont?: string;
+  deckTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+  deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
 }
 
 // Comprehensive color mapping function that handles color variations
@@ -227,7 +229,7 @@ const getColorValue = (colorName: string): string => {
   return colorMap[normalizedColor] || '#666666'; // Default to gray if color not found
 };
 
-export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one' }: CardPreviewProps) => {
+export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }: CardPreviewProps) => {
   const [customBackground, setCustomBackground] = useState<string>('');
   const [isGeneratingBg, setIsGeneratingBg] = useState(false);
 
@@ -245,7 +247,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
     }
   };
 
-  const fontClass = getFontClass(card.font);
+  const fontClass = getFontClass(deckFont);
 
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
@@ -386,9 +388,10 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
   };
 
   const getBackgroundImage = () => {
-    if (!card.theme) return null;
+    const theme = deckTheme;
+    if (!theme) return null;
     
-    switch (card.theme) {
+    switch (theme) {
       case 'geometric':
         return '/lovable-uploads/b6d6bac9-cbe0-403c-92d3-d931bef709be.png';
       case 'organic':

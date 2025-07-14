@@ -25,8 +25,6 @@ export interface FamilyCard {
   hobbies: string;
   funFact: string;
   whereTheyLive: string;
-  theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-  font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
   imagePosition?: { x: number; y: number; scale: number };
 }
 
@@ -255,9 +253,7 @@ const CreateCards = () => {
               onThemeChange={setDeckTheme}
               onFontChange={setDeckFont}
               onPreviewChange={(theme, font) => {
-                if (previewCard) {
-                  setPreviewCard(prev => ({ ...prev, theme, font }));
-                }
+                // No need to update preview card theme/font since we use deck-level settings
               }}
             />
 
@@ -297,7 +293,11 @@ const CreateCards = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <FlipCardPreview card={previewCard} />
+                <FlipCardPreview 
+                  card={previewCard} 
+                  deckTheme={deckTheme}
+                  deckFont={deckFont}
+                />
               </CardContent>
             </Card>
           </div>
@@ -317,6 +317,8 @@ const CreateCards = () => {
                     onEdit={() => handleEditCard(card)}
                     onDelete={() => handleDeleteCard(card.id)}
                     showActions={true}
+                    deckTheme={deckTheme}
+                    deckFont={deckFont}
                   />
                 </div>
               ))}

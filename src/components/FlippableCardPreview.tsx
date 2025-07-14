@@ -6,6 +6,8 @@ import { FamilyCard } from "@/pages/CreateCards";
 interface FlippableCardPreviewProps {
   card: Partial<FamilyCard>;
   nameFont?: string;
+  deckTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+  deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
 }
 
 // Comprehensive color mapping function that handles color variations
@@ -223,7 +225,7 @@ const getColorValue = (colorName: string): string => {
   return colorMap[normalizedColor] || '#666666'; // Default to gray if color not found
 };
 
-export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: FlippableCardPreviewProps) => {
+export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one', deckTheme, deckFont }: FlippableCardPreviewProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Function to get font class name
@@ -240,7 +242,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
     }
   };
 
-  const fontClass = getFontClass(card.font);
+  const fontClass = getFontClass(deckFont);
 
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
@@ -259,9 +261,10 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
   }
 
   const getBackgroundImage = () => {
-    if (!card.theme) return null;
+    const theme = deckTheme;
+    if (!theme) return null;
     
-    switch (card.theme) {
+    switch (theme) {
       case 'geometric':
         return '/lovable-uploads/b6d6bac9-cbe0-403c-92d3-d931bef709be.png';
       case 'organic':
@@ -388,12 +391,12 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
           >
             <CardContent className="p-4 relative z-10 h-full">
               {/* Attributes with white background for visibility */}
-              <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${getFontClass(card.font)} h-full flex flex-col`}>
+              <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${getFontClass(deckFont)} h-full flex flex-col`}>
                 <div className="grid grid-cols-2 gap-3 flex-1 content-center items-center justify-center">
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
-                      <div className={`text-blue-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Where they live</div>
+                      <div className={`text-blue-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Where they live</div>
                       <div className="capitalize font-semibold text-black text-base">{card.whereTheyLive}</div>
                     </div>
                   )}
@@ -401,7 +404,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                   {card.dateOfBirth && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🎂</div>
-                      <div className={`text-green-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Birthday</div>
+                      <div className={`text-green-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Birthday</div>
                       <div className="font-semibold text-black text-base">
                         {(() => {
                           const [year, month, day] = card.dateOfBirth.split('-').map(Number);
@@ -421,7 +424,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                   {card.favoriteColor && card.favoriteColor.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🎨</div>
-                      <div className={`text-purple-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Favorite Color</div>
+                      <div className={`text-purple-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Favorite Color</div>
                       <div className="font-semibold text-black text-base">{card.favoriteColor}</div>
                     </div>
                   )}
@@ -429,7 +432,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                   {card.hobbies && card.hobbies.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🌟</div>
-                      <div className={`text-orange-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Hobbies</div>
+                      <div className={`text-orange-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Hobbies</div>
                       <div className="font-semibold text-black text-base">{card.hobbies.split(',')[0].trim()}</div>
                     </div>
                   )}
@@ -437,7 +440,7 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one' }: Fl
                   {card.funFact && card.funFact.trim() && (
                     <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300 hidden lg:block">
                       <div className="text-xl mb-1">✨</div>
-                      <div className={`text-red-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
+                      <div className={`text-red-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
                       <p className="text-sm leading-relaxed font-medium text-black">{card.funFact.substring(0, 40)}</p>
                     </div>
                   )}

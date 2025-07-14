@@ -10,9 +10,11 @@ interface FlipCardPreviewProps {
   onDelete?: () => void;
   showActions?: boolean;
   nameFont?: string;
+  deckTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+  deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
 }
 
-export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one' }: FlipCardPreviewProps) => {
+export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }: FlipCardPreviewProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Function to get font class name
@@ -29,7 +31,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
     }
   };
 
-  const fontClass = getFontClass(card.font);
+  const fontClass = getFontClass(deckFont);
 
   // Check if card has any meaningful data
   const hasData = card.name && card.name.trim().length > 0;
@@ -50,9 +52,9 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
   }
 
   const getBackgroundImage = () => {
-    if (!card.theme) return null;
+    if (!deckTheme) return null;
     
-    switch (card.theme) {
+    switch (deckTheme) {
       case 'geometric':
         return '/lovable-uploads/b6d6bac9-cbe0-403c-92d3-d931bef709be.png';
       case 'organic':
@@ -141,7 +143,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
 
               {/* Name at bottom */}
               <div className="mt-4">
-                <h3 className={`${card.font === 'bubblegum' ? 'text-5xl' : 'text-3xl'} ${fontClass} text-center text-foreground`} style={{
+                <h3 className={`${deckFont === 'bubblegum' ? 'text-5xl' : 'text-3xl'} ${fontClass} text-center text-foreground`} style={{
                   textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)',
                 }}>
                   {card.name}
@@ -167,7 +169,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.whereTheyLive && card.whereTheyLive.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
-                      <div className={`text-blue-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Where they live</div>
+                      <div className={`text-blue-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Where they live</div>
                       <div className="capitalize font-semibold text-black text-base">{card.whereTheyLive}</div>
                     </div>
                   )}
@@ -175,7 +177,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.dateOfBirth && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🎂</div>
-                      <div className={`text-green-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Birthday</div>
+                      <div className={`text-green-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Birthday</div>
                       <div className="font-semibold text-black text-base">
                         {(() => {
                           const [year, month, day] = card.dateOfBirth.split('-').map(Number);
@@ -195,7 +197,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.favoriteColor && card.favoriteColor.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🎨</div>
-                      <div className={`text-purple-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Favorite Color</div>
+                      <div className={`text-purple-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Favorite Color</div>
                       <div className="font-semibold text-black text-base">{card.favoriteColor}</div>
                     </div>
                   )}
@@ -203,7 +205,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.hobbies && card.hobbies.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🌟</div>
-                      <div className={`text-orange-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Hobbies</div>
+                      <div className={`text-orange-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Hobbies</div>
                       <div className="font-semibold text-black text-base">{card.hobbies}</div>
                     </div>
                   )}
@@ -211,7 +213,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
                   {card.funFact && card.funFact.trim() && (
                     <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
                       <div className="text-xl mb-1">✨</div>
-                      <div className={`text-red-400 ${card.font === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
+                      <div className={`text-red-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
                       <p className="text-sm leading-relaxed font-medium text-black">{card.funFact}</p>
                     </div>
                   )}

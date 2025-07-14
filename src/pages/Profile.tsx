@@ -268,7 +268,7 @@ export default function Profile() {
                           <div key={card.id || index} className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded-lg">
                             <span className="font-medium text-sm">{card.name}</span>
                             <Badge variant="outline" className="text-xs">
-                              {card.theme ? card.theme.charAt(0).toUpperCase() + card.theme.slice(1) : 'Card'}
+                              Card
                             </Badge>
                           </div>
                         ))}
