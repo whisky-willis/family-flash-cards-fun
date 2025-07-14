@@ -324,9 +324,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
             </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
           </Carousel>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
           
           <div className="flex items-center justify-center mt-6 md:hidden">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border shadow-sm">
@@ -434,9 +434,9 @@ const Index = () => {
                 </div>
               </CarouselItem>
             </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
           </Carousel>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
           
           <div className="flex items-center justify-center mt-6 md:hidden">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border shadow-sm">
