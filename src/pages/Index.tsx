@@ -206,7 +206,7 @@ const Index = () => {
       {/* Card Examples - Art Center style */}
       <section id="card-examples" className="relative py-36 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">See Example Family Cards</h2>
             <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">
               Discover how our cards help children learn about the special people in their lives
