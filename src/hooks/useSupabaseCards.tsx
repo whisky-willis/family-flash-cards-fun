@@ -107,35 +107,96 @@ export const useSupabaseCards = () => {
     try {
       console.log('🔍 Checking for draft migration...', { 
         hasUser: !!user, 
+        userEmail: user?.email,
         isAnonymous: user?.is_anonymous, 
-        cardsLength: cards.length 
+        cardsLength: cards.length,
+        signupType: user?.user_metadata?.signup_type
       });
       
       const draftData = localStorage.getItem('kindred-cards-draft');
       console.log('📦 Draft data found:', !!draftData);
+      console.log('📄 Raw draft data:', draftData);
+      
+      // Debug: Check all localStorage keys for debugging
+      console.log('🔍 All localStorage keys:', Object.keys(localStorage));
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('draft') || key && key.includes('kindred')) {
+          console.log(`🔑 ${key}:`, localStorage.getItem(key));
+        }
+      }
       
       if (draftData && user && !user.is_anonymous) {
-        console.log('🔄 Migrating draft cards to authenticated user...');
-        const draftCards = JSON.parse(draftData) as FamilyCard[];
-        console.log('📝 Draft cards to migrate:', draftCards.length);
+        console.log('🔄 Attempting to migrate draft cards to authenticated user...');
         
-        if (draftCards.length > 0) {
-          const success = await saveCardsToDatabase(draftCards);
-          if (success) {
-            setCards(draftCards);
-            localStorage.removeItem('kindred-cards-draft');
-            console.log('✅ Successfully migrated draft cards');
-            toast({
-              title: "Cards Saved!",
-              description: `Successfully saved ${draftCards.length} cards to your account.`,
-            });
+        try {
+          const parsedDraft = JSON.parse(draftData);
+          console.log('📝 Parsed draft data:', parsedDraft);
+          
+          let draftCards: FamilyCard[] = [];
+          let draftEmail = '';
+          
+          // Handle both old format (just cards array) and new format (with email)
+          if (Array.isArray(parsedDraft)) {
+            // Old format - just cards
+            draftCards = parsedDraft;
+            draftEmail = '';
+            console.log('📄 Old draft format detected - no email validation');
+          } else if (parsedDraft.cards && Array.isArray(parsedDraft.cards)) {
+            // New format - with email and metadata
+            draftCards = parsedDraft.cards;
+            draftEmail = parsedDraft.email || '';
+            console.log('📧 New draft format detected - email:', draftEmail);
           }
+          
+          console.log('📝 Draft cards found:', draftCards.length);
+          
+          // Email validation for new format
+          if (draftEmail && user.email) {
+            if (draftEmail.toLowerCase() !== user.email.toLowerCase()) {
+              console.log('❌ Email mismatch - Draft email:', draftEmail, 'User email:', user.email);
+              console.log('🚫 Skipping migration due to email mismatch');
+              return;
+            } else {
+              console.log('✅ Email matches! Proceeding with migration');
+            }
+          }
+          
+          if (draftCards.length > 0) {
+            console.log('💾 Attempting to save cards to database:', draftCards);
+            const success = await saveCardsToDatabase(draftCards);
+            if (success) {
+              setCards(draftCards);
+              localStorage.removeItem('kindred-cards-draft');
+              console.log('✅ Successfully migrated draft cards');
+              toast({
+                title: "Welcome! Cards Saved Successfully",
+                description: `Your ${draftCards.length} card${draftCards.length !== 1 ? 's have' : ' has'} been saved to your account.`,
+              });
+              
+              // Clear signup_type if it exists
+              if (user.user_metadata?.signup_type === 'save_for_later') {
+                await supabase.auth.updateUser({
+                  data: { signup_type: null }
+                });
+                console.log('🧹 Cleared signup_type from user metadata');
+              }
+            } else {
+              console.log('❌ Failed to save cards to database');
+            }
+          } else {
+            console.log('📭 No draft cards found to migrate');
+          }
+        } catch (parseError) {
+          console.error('❌ Error parsing draft data:', parseError);
         }
+      } else {
+        console.log('⏭️ Skipping migration - conditions not met');
       }
     } catch (error) {
       console.error('❌ Failed to migrate draft cards:', error);
     }
-  }, [user, toast, cards.length]);
+  }, [user, toast, cards.length, saveCardsToDatabase]);
 
   // Initialize user session and load cards
   useEffect(() => {
@@ -187,8 +248,23 @@ export const useSupabaseCards = () => {
 
   // Handle draft migration for authenticated users
   useEffect(() => {
-    if (user && !user.is_anonymous && isLoaded && cards.length === 0) {
-      migrateDraftToAuthenticated();
+    if (user && !user.is_anonymous && isLoaded) {
+      // Always try migration for save_for_later users, or for users with no cards
+      const shouldMigrate = cards.length === 0 || user.user_metadata?.signup_type === 'save_for_later';
+      
+      if (shouldMigrate) {
+        console.log('🔄 Migration conditions met:', {
+          cardsLength: cards.length,
+          signupType: user.user_metadata?.signup_type,
+          shouldMigrate
+        });
+        migrateDraftToAuthenticated();
+      } else {
+        console.log('⏭️ Migration skipped:', {
+          cardsLength: cards.length,
+          signupType: user.user_metadata?.signup_type
+        });
+      }
     }
   }, [user, isLoaded, cards.length, migrateDraftToAuthenticated]);
 

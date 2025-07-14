@@ -38,6 +38,15 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 - **New Route**: Added `/auth-callback` route for email verification handling
 - **Navigation**: All navigation links updated to use `/create-cards`
 
+### useSupabaseCards.tsx Updates (Enhanced Migration System)
+- **Fallback Migration Logic**: Comprehensive backup system for draft card migration
+- **Email Validation**: Ensures only cards saved with verified email are migrated
+- **Dual Format Support**: Handles both old (array) and new (object with email) draft formats
+- **Aggressive Migration Triggers**: Runs for save_for_later users even if AuthCallback bypassed
+- **localStorage Debugging**: Extensive logging and localStorage inspection for troubleshooting
+- **Metadata Cleanup**: Removes signup_type metadata after successful migration
+- **Error Recovery**: Graceful handling of malformed draft data or email mismatches
+
 ## Workflow
 
 ### 1. User Creates Cards
@@ -177,15 +186,25 @@ localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
 - [ ] Draft cards are associated with the correct email address
 - [ ] Email verification matches the email used for draft cards
 - [ ] Draft cards migrate successfully to user account
+- [ ] **Fallback migration works**: Cards migrate even if AuthCallback is bypassed
 - [ ] User is automatically redirected to /create-cards after verification
 - [ ] Welcome toast notification appears in create-cards
 - [ ] Error states handled gracefully in AuthCallback
 - [ ] Visual feedback provided during processing
 - [ ] Console logs show email matching and card migration details
+- [ ] **localStorage debugging**: All draft-related keys are visible in console
+- [ ] **Email mismatch handling**: No migration if emails don't match
 - [ ] Error states display correctly
 - [ ] Mobile responsive design
 - [ ] Toast notifications appear
 - [ ] Existing auth flow remains unaffected
+
+### Debugging Steps if Cards Don't Appear
+1. **Check Browser Console**: Look for detailed migration logs
+2. **Verify localStorage**: Confirm draft cards were saved with email
+3. **Check Email Match**: Ensure verification email matches draft email
+4. **Monitor Migration Triggers**: Confirm fallback migration attempts
+5. **Database Verification**: Check if cards were actually saved to Supabase
 
 ### Email Configuration Requirements
 - Supabase email templates configured
