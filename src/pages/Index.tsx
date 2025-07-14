@@ -10,7 +10,9 @@ import { SignInModal } from "@/components/SignInModal";
 const kindredLogo = "/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png";
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const names = ['Sofia', 'Henry', 'Mia', 'James', 'William', 'Charlotte', 'Sophia', 'Ava', 'Mateo', 'Amelia', 'Evelyn', 'Olivia', 'Noah', 'Emma', 'Oliver', 'Isabella', 'Elijah', 'Lucas', 'Liam', 'Theodore'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
@@ -61,10 +63,9 @@ const Index = () => {
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
-                <span 
-                  className="text-foreground/70 hover:text-foreground cursor-pointer"
-                  onClick={() => document.getElementById('card-examples')?.scrollIntoView({ behavior: 'smooth' })}
-                >
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => document.getElementById('card-examples')?.scrollIntoView({
+                behavior: 'smooth'
+              })}>
                   Examples
                 </span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
@@ -74,23 +75,11 @@ const Index = () => {
               <Button onClick={() => navigate('/create')} size="sm">
                 Create Cards
               </Button>
-              {user ? (
-                <Button 
-                  onClick={() => navigate('/profile')} 
-                  variant="outline" 
-                  size="sm"
-                >
+              {user ? <Button onClick={() => navigate('/profile')} variant="outline" size="sm">
                   Profile
-                </Button>
-              ) : (
-                <Button 
-                  onClick={() => setShowSignInModal(true)} 
-                  variant="outline" 
-                  size="sm"
-                >
+                </Button> : <Button onClick={() => setShowSignInModal(true)} variant="outline" size="sm">
                   Sign In
-                </Button>
-              )}
+                </Button>}
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
                 0
               </div>
@@ -207,7 +196,7 @@ const Index = () => {
       <section id="card-examples" className="relative py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">See Example Family Cards</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Get Inspired</h2>
             <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">
               Discover how our cards help children learn about the special people in their lives
             </p>
@@ -217,110 +206,96 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
-                   <FlippableCardPreview 
-                     card={{
-                       name: "Uncle Mike",
-                       whereTheyLive: "Boston, MA",
-                       dateOfBirth: "1985-03-15",
-                       favoriteColor: "green",
-                       hobbies: "Guitar, Hiking",
-                       funFact: "Plays 5 instruments!",
-                       photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
-                       theme: "geometric"
-                     }}
-                     nameFont="font-luckiest-guy"
-                   />
+                   <FlippableCardPreview card={{
+                  name: "Uncle Mike",
+                  whereTheyLive: "Boston, MA",
+                  dateOfBirth: "1985-03-15",
+                  favoriteColor: "green",
+                  hobbies: "Guitar, Hiking",
+                  funFact: "Plays 5 instruments!",
+                  photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
+                  theme: "geometric"
+                }} nameFont="font-luckiest-guy" />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
-                   <FlippableCardPreview
-                     card={{
-                       name: "Grandma Rose",
-                       whereTheyLive: "Portland, OR",
-                       dateOfBirth: "1952-09-22",
-                       favoriteColor: "purple",
-                       hobbies: "Gardening, Baking",
-                       funFact: "Visited 23 countries and speaks 4 languages",
-                       photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
-                       theme: "organic"
-                     }}
-                     nameFont="font-bubblegum"
-                   />
+                   <FlippableCardPreview card={{
+                  name: "Grandma Rose",
+                  whereTheyLive: "Portland, OR",
+                  dateOfBirth: "1952-09-22",
+                  favoriteColor: "purple",
+                  hobbies: "Gardening, Baking",
+                  funFact: "Visited 23 countries and speaks 4 languages",
+                  photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
+                  theme: "organic"
+                }} nameFont="font-bubblegum" />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
-                   <FlippableCardPreview
-                     card={{
-                       name: "Cousin Alex",
-                       whereTheyLive: "Austin, TX",
-                       dateOfBirth: "2010-07-08",
-                       favoriteColor: "orange",
-                       hobbies: "Soccer, Video Games",
-                       funFact: "Scored the winning goal last year!",
-                       photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
-                       theme: "sports"
-                     }}
-                     nameFont="font-fredoka-one"
-                   />
+                   <FlippableCardPreview card={{
+                  name: "Cousin Alex",
+                  whereTheyLive: "Austin, TX",
+                  dateOfBirth: "2010-07-08",
+                  favoriteColor: "orange",
+                  hobbies: "Soccer, Video Games",
+                  funFact: "Scored the winning goal last year!",
+                  photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
+                  theme: "sports"
+                }} nameFont="font-fredoka-one" />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
-                   <FlippableCardPreview
-                      card={{
-                        name: "Aunt Sarah",
-                        whereTheyLive: "Denver, CO",
-                        dateOfBirth: "1978-12-03",
-                        favoriteColor: "pink",
-                        hobbies: "Photography, Yoga",
-                        funFact: "Takes amazing nature photos!",
-                        photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
-                        theme: "rainbow"
-                      }}
-                     nameFont="font-bubblegum"
-                   />
+                   <FlippableCardPreview card={{
+                  name: "Aunt Sarah",
+                  whereTheyLive: "Denver, CO",
+                  dateOfBirth: "1978-12-03",
+                  favoriteColor: "pink",
+                  hobbies: "Photography, Yoga",
+                  funFact: "Takes amazing nature photos!",
+                  photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
+                  theme: "rainbow"
+                }} nameFont="font-bubblegum" />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
-                   <FlippableCardPreview
-                      card={{
-                        name: "Uncle Tom",
-                        whereTheyLive: "Seattle, WA",
-                        dateOfBirth: "1980-06-18",
-                        favoriteColor: "blue",
-                        hobbies: "Cooking, Fishing",
-                        funFact: "Makes the best pancakes in town!",
-                        photo: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
-                        imagePosition: { x: 0, y: -100, scale: 1.1 },
-                        theme: "mosaic"
-                      }}
-                     nameFont="font-luckiest-guy"
-                   />
+                   <FlippableCardPreview card={{
+                  name: "Uncle Tom",
+                  whereTheyLive: "Seattle, WA",
+                  dateOfBirth: "1980-06-18",
+                  favoriteColor: "blue",
+                  hobbies: "Cooking, Fishing",
+                  funFact: "Makes the best pancakes in town!",
+                  photo: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
+                  imagePosition: {
+                    x: 0,
+                    y: -100,
+                    scale: 1.1
+                  },
+                  theme: "mosaic"
+                }} nameFont="font-luckiest-guy" />
                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                 <div className="p-2">
-                   <FlippableCardPreview
-                      card={{
-                        name: "Big Sister Emma",
-                        whereTheyLive: "Miami, FL",
-                        dateOfBirth: "2005-11-14",
-                        favoriteColor: "yellow",
-                        hobbies: "Dancing, Reading",
-                        funFact: "Won first place in talent show!",
-                        photo: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
-                        theme: "space"
-                      }}
-                     nameFont="font-fredoka-one"
-                   />
+                   <FlippableCardPreview card={{
+                  name: "Big Sister Emma",
+                  whereTheyLive: "Miami, FL",
+                  dateOfBirth: "2005-11-14",
+                  favoriteColor: "yellow",
+                  hobbies: "Dancing, Reading",
+                  funFact: "Won first place in talent show!",
+                  photo: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
+                  theme: "space"
+                }} nameFont="font-fredoka-one" />
                 </div>
               </CarouselItem>
             </CarouselContent>
@@ -475,10 +450,7 @@ const Index = () => {
         </div>
       </footer>
 
-      <SignInModal 
-        open={showSignInModal} 
-        onOpenChange={setShowSignInModal} 
-      />
+      <SignInModal open={showSignInModal} onOpenChange={setShowSignInModal} />
     </div>;
 };
 export default Index;
