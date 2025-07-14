@@ -14,7 +14,6 @@ import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCards } from "@/hooks/useSupabaseCards";
 import { useDraft } from "@/hooks/useDraft";
 import { supabase } from "@/integrations/supabase/client";
-const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 export interface FamilyCard {
   id: string;
@@ -40,8 +39,6 @@ const CreateCards = () => {
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
@@ -188,7 +185,7 @@ const CreateCards = () => {
                   </Button>
                 </div>
                 <img 
-                  src={kindredLogo} 
+                  src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png" 
                   alt="Kindred Cards" 
                   className="hidden sm:block h-12 w-32 object-cover object-center cursor-pointer hover:opacity-80 transition-opacity" 
                   onClick={() => navigate('/')}
