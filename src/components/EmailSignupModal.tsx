@@ -65,7 +65,7 @@ export function EmailSignupModal({ open, onOpenChange, cards, onSuccess }: Email
         email: email,
         password: crypto.randomUUID(), // Generate a random password for email-only signup
         options: {
-          emailRedirectTo: `${window.location.origin}/verify-email`,
+          emailRedirectTo: `${window.location.origin}/create-cards`,
           data: {
             signup_type: 'save_for_later',
             has_draft_cards: cards.length > 0

@@ -15,14 +15,14 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
   - Mobile-responsive design
   - Loading states and proper UX feedback
 
-### 2. VerifyEmail Page (`src/pages/VerifyEmail.tsx`)
-- **Purpose**: Handles email verification after users click the verification link
+### 2. Email Verification Integration (CreateCards.tsx)
+- **Purpose**: Handles email verification automatically when users are redirected back to the app
 - **Features**:
-  - Automatic token verification using Supabase Auth
+  - Automatic detection of verified email signup users
   - Draft card migration from localStorage to user account
-  - Success/error states with clear messaging
-  - Navigation options after verification
-  - Progress indicators for card migration
+  - Success/error toast notifications
+  - Seamless integration with existing card creation flow
+  - Automatic cleanup of verification metadata
 
 ## Modified Components
 
@@ -31,12 +31,12 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 - **State**: Added `showEmailSignupModal` state
 - **Handler**: Updated `handleSaveCollection()` to show EmailSignupModal instead of AuthModal for unauthenticated users
 - **Success Handler**: Added `handleEmailSignupSuccess()` for post-signup feedback
+- **Email Verification**: Added useEffect to detect verified users and migrate draft cards automatically
 - **JSX**: Added EmailSignupModal component alongside existing AuthModal
 
 ### App.tsx Updates
-- **Route**: Added `/verify-email` route for email verification page
-- **Import**: Added VerifyEmail component import
 - **Routing**: Updated `/create` route to `/create-cards` for consistency
+- **Navigation**: All navigation links updated to use `/create-cards`
 
 ## Workflow
 
@@ -58,10 +58,10 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 
 ### 4. Email Verification
 - User clicks verification link in email
-- Browser redirects to `/verify-email` with token
-- VerifyEmail page automatically verifies the token
-- If successful, draft cards migrate from localStorage to user account
-- User can continue to their cards or go to homepage
+- Browser redirects to `/create-cards` with Supabase auth tokens
+- CreateCards page automatically detects verified user
+- Draft cards migrate from localStorage to user account
+- User sees welcome message and can continue creating cards
 
 ### 5. Error Handling
 - Invalid email formats
@@ -78,7 +78,7 @@ await supabase.auth.signUp({
   email: email,
   password: crypto.randomUUID(), // Random password for email-only signup
   options: {
-    emailRedirectTo: `${window.location.origin}/verify-email`,
+    emailRedirectTo: `${window.location.origin}/create-cards`,
     data: {
       signup_type: 'save_for_later',
       has_draft_cards: cards.length > 0
@@ -92,12 +92,14 @@ await supabase.auth.signUp({
 - Automatic cleanup after successful migration
 - Error recovery if localStorage quota exceeded
 
-### Email Verification
+### Email Verification Detection
 ```typescript
-const { data, error } = await supabase.auth.verifyOtp({
-  token_hash: token,
-  type: 'signup'
-});
+// In CreateCards useEffect
+if (user && !isAnonymous && user.user_metadata?.signup_type === 'save_for_later') {
+  // Migrate draft cards and show welcome message
+  const draftCards = getDraft();
+  // ... migration logic
+}
 ```
 
 ## User Experience Features
@@ -131,11 +133,11 @@ const { data, error } = await supabase.auth.verifyOtp({
 - [ ] Valid email sends verification email
 - [ ] Invalid email shows appropriate error
 - [ ] Duplicate email shows specific error message
-- [ ] Verification email contains correct redirect link
-- [ ] Email verification page loads correctly
-- [ ] Token verification works
-- [ ] Draft cards migrate successfully
-- [ ] Navigation works after verification
+- [ ] Verification email contains correct redirect link (/create-cards)
+- [ ] Email verification redirects to create-cards page correctly
+- [ ] Verified user is automatically detected in CreateCards
+- [ ] Draft cards migrate successfully upon verification
+- [ ] Welcome toast notification appears after verification
 - [ ] Error states display correctly
 - [ ] Mobile responsive design
 - [ ] Toast notifications appear

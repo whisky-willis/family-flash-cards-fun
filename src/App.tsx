@@ -10,7 +10,6 @@ import CreateCards from "./pages/CreateCards";
 import OrderSummary from "./pages/OrderSummary";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
-import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,7 +26,6 @@ const AppContent = () => {
           <Route path="/order" element={<OrderSummary />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
