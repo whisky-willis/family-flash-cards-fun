@@ -73,7 +73,7 @@ const About = () => {
       <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
+          <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-6 leading-tight">
             Our Story
           </h1>
           <p className="text-xl text-foreground/80 font-medium max-w-3xl mx-auto">
