@@ -204,7 +204,7 @@ const Index = () => {
       </section>
 
       {/* Card Examples - Art Center style */}
-      <section id="card-examples" className="relative py-36 z-10">
+      <section id="card-examples" className="relative py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">See Example Family Cards</h2>
@@ -461,7 +461,7 @@ const Index = () => {
 
 
       {/* Footer */}
-      <footer className="relative bg-background border-t border-border py-16 z-10">
+      <footer className="relative bg-background border-t border-border py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
