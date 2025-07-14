@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
-import { BackgroundThemeSelector } from "./BackgroundThemeSelector";
 import { FamilyCard } from "@/pages/CreateCards";
 
 interface CardFormProps {
@@ -14,9 +13,11 @@ interface CardFormProps {
   onCancel?: () => void;
   onPreviewChange?: (card: Partial<FamilyCard>) => void;
   isEditing?: boolean;
+  deckTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+  deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
 }
 
-export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange, isEditing = false }: CardFormProps) => {
+export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange, isEditing = false, deckTheme, deckFont }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -26,17 +27,10 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     hobbies: '',
     funFact: '',
     whereTheyLive: '',
-    theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-    font: undefined as 'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined,
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
 
-  // Preview state for hover effects
-  const [previewData, setPreviewData] = useState<{
-    theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-    font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
-  }>({});
 
   // Only update form data when we're switching to edit mode or resetting
   useEffect(() => {
@@ -49,45 +43,33 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         hobbies: '',
         funFact: '',
         whereTheyLive: '',
-        theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-        font: undefined as 'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
-      
-      // Initialize preview data with theme/font from initialData when editing
-      if (isEditing && initialData) {
-        setPreviewData({
-          theme: initialData.theme,
-          font: initialData.font
-        });
-      } else {
-        setPreviewData({});
-      }
     }
   }, [isEditing, initialData]);
 
-  // Only send preview data for real-time preview updates
+  // Send preview data with deck theme/font for real-time preview updates
   useEffect(() => {
     if (onPreviewChange) {
       const displayData = {
         ...formData,
-        ...(previewData.theme && { theme: previewData.theme }),
-        ...(previewData.font && { font: previewData.font })
+        theme: deckTheme,
+        font: deckFont
       };
       onPreviewChange(displayData);
     }
-  }, [formData, previewData, onPreviewChange]);
+  }, [formData, onPreviewChange, deckTheme, deckFont]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    // Merge formData with preview data for final submission
+    // Use deck theme and font for final submission
     const finalData = {
       ...formData,
-      ...(previewData.theme && { theme: previewData.theme }),
-      ...(previewData.font && { font: previewData.font })
+      theme: deckTheme,
+      font: deckFont
     };
     
     onSubmit(finalData);
@@ -101,12 +83,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         hobbies: '',
         funFact: '',
         whereTheyLive: '',
-        theme: undefined as 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined,
-        font: undefined as 'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined,
         imagePosition: { x: 0, y: 0, scale: 1 },
       }));
-      // Reset preview data after successful submission
-      setPreviewData({});
       // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -155,24 +133,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     setFormData(prev => ({ ...prev, imagePosition: position }));
   }, []);
 
-  // Handler for theme selection - NO formData updates, only for final submission
-  const handleThemeChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => {
-    // DON'T update formData here to prevent auto-save
-    // Only update preview data - formData will be updated on submit
-    setPreviewData(prev => ({ ...prev, theme }));
-  }, []);
-
-  // Handler for font selection - NO formData updates, only for final submission  
-  const handleFontChange = useCallback((font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => {
-    // DON'T update formData here to prevent auto-save
-    // Only update preview data - formData will be updated on submit
-    setPreviewData(prev => ({ ...prev, font }));
-  }, []);
-
-  // Handler for preview changes when hovering
-  const handlePreviewChange = useCallback((theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => {
-    setPreviewData({ theme, font });
-  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -361,13 +321,6 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         </div>
       </div>
 
-      <BackgroundThemeSelector
-        selectedTheme={previewData.theme || formData.theme}
-        selectedFont={previewData.font || formData.font}
-        onThemeChange={handleThemeChange}
-        onFontChange={handleFontChange}
-        onPreviewChange={handlePreviewChange}
-      />
 
       <div className="flex space-x-4">
         <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 font-bold uppercase text-sm tracking-wide">

@@ -77,7 +77,8 @@ export default {
 				'art-green': 'hsl(var(--art-green))',
 				'art-orange': 'hsl(var(--art-orange))',
 				'art-blue': 'hsl(var(--art-blue))',
-				'art-red': 'hsl(var(--art-red))'
+				'art-red': 'hsl(var(--art-red))',
+				'art-purple': 'hsl(var(--art-purple))'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

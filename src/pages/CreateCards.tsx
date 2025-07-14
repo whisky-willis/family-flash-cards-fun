@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { FlipCardPreview } from "@/components/FlipCardPreview";
 import { CardPreview } from "@/components/CardPreview";
+import { DeckDesigner } from "@/components/DeckDesigner";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
@@ -39,6 +40,11 @@ const CreateCards = () => {
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  // Deck-level state
+  const [recipientName, setRecipientName] = useState('');
+  const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
+  const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
@@ -233,9 +239,24 @@ const CreateCards = () => {
             Create Your Family Cards
           </h1>
           <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
-            Add photos and details for each family member or friend
+            Design your deck style, then add photos and details for each family member or friend
           </p>
         </div>
+
+        {/* Deck Designer */}
+        <DeckDesigner
+          recipientName={recipientName}
+          selectedTheme={deckTheme}
+          selectedFont={deckFont}
+          onRecipientNameChange={setRecipientName}
+          onThemeChange={setDeckTheme}
+          onFontChange={setDeckFont}
+          onPreviewChange={(theme, font) => {
+            if (previewCard) {
+              setPreviewCard(prev => ({ ...prev, theme, font }));
+            }
+          }}
+        />
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Card Form */}
@@ -258,6 +279,8 @@ const CreateCards = () => {
                   }}
                   onPreviewChange={handlePreviewChange}
                   isEditing={isEditing}
+                  deckTheme={deckTheme}
+                  deckFont={deckFont}
                 />
               </CardContent>
             </Card>
