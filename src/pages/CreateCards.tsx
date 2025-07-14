@@ -12,6 +12,7 @@ import { DeckDesigner } from "@/components/DeckDesigner";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
+import { EmailSignupModal } from "@/components/EmailSignupModal";
 import { useSupabaseCards } from "@/hooks/useSupabaseCards";
 import { useDraft } from "@/hooks/useDraft";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +39,7 @@ const CreateCards = () => {
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showEmailSignupModal, setShowEmailSignupModal] = useState(false);
   
   // Deck-level state
   const [recipientName, setRecipientName] = useState('');
@@ -139,7 +141,7 @@ const CreateCards = () => {
     }
     
     if (!user || isAnonymous) {
-      setShowAuthModal(true);
+      setShowEmailSignupModal(true);
     } else {
       // User is already authenticated, save directly
       saveAuthentatedCollection();
@@ -165,6 +167,14 @@ const CreateCards = () => {
     toast({
       title: "Success!",
       description: "Your account has been created and cards saved!",
+    });
+  };
+
+  const handleEmailSignupSuccess = () => {
+    setShowEmailSignupModal(false);
+    toast({
+      title: "Verification Email Sent!",
+      description: "Please check your email to complete your account setup and save your cards.",
     });
   };
 
@@ -342,6 +352,14 @@ const CreateCards = () => {
           onOpenChange={setShowAuthModal}
           cards={cards}
           onSuccess={handleAuthSuccess}
+        />
+
+        {/* Email Signup Modal */}
+        <EmailSignupModal
+          open={showEmailSignupModal}
+          onOpenChange={setShowEmailSignupModal}
+          cards={cards}
+          onSuccess={handleEmailSignupSuccess}
         />
       </div>
     </div>
