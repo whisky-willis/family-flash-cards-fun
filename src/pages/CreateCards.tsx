@@ -56,51 +56,54 @@ const CreateCards = () => {
       if (user && !isAnonymous && user.user_metadata?.signup_type === 'save_for_later') {
         console.log('✅ User verified email for save_for_later signup');
         
-        // Check if user has draft cards to migrate
-        const draftCards = getDraft();
-        if (draftCards && draftCards.length > 0) {
-          console.log('🔄 Migrating draft cards:', draftCards.length);
-          
-          try {
-            // Migrate each draft card
-            for (const card of draftCards) {
-              const { id, ...cardData } = card;
-              await addCard(cardData);
+        // Add a small delay to ensure everything is loaded
+        setTimeout(async () => {
+          // Check if user has draft cards to migrate
+          const draftCards = getDraft();
+          if (draftCards && draftCards.length > 0) {
+            console.log('🔄 Migrating draft cards:', draftCards.length);
+            
+            try {
+              // Migrate each draft card
+              for (const card of draftCards) {
+                const { id, ...cardData } = card;
+                await addCard(cardData);
+              }
+              
+              // Clear draft after successful migration
+              clearDraft();
+              
+              toast({
+                title: "Welcome! Cards Saved Successfully",
+                description: `Your ${draftCards.length} card${draftCards.length !== 1 ? 's have' : ' has'} been saved to your account.`,
+              });
+
+              // Clear the signup_type to prevent re-migration
+              await supabase.auth.updateUser({
+                data: { signup_type: null }
+              });
+              
+            } catch (error) {
+              console.error('❌ Draft card migration error:', error);
+              toast({
+                title: "Migration Error",
+                description: "Some cards couldn't be saved. Please try creating them again.",
+                variant: "destructive"
+              });
             }
-            
-            // Clear draft after successful migration
-            clearDraft();
-            
+          } else {
+            // No draft cards, just show welcome message
             toast({
-              title: "Welcome! Cards Saved Successfully",
-              description: `Your ${draftCards.length} card${draftCards.length !== 1 ? 's have' : ' has'} been saved to your account.`,
+              title: "Welcome!",
+              description: "Your account has been verified. You can now start creating cards.",
             });
 
-            // Clear the signup_type to prevent re-migration
+            // Clear the signup_type
             await supabase.auth.updateUser({
               data: { signup_type: null }
             });
-            
-          } catch (error) {
-            console.error('❌ Draft card migration error:', error);
-            toast({
-              title: "Migration Error",
-              description: "Some cards couldn't be saved. Please try creating them again.",
-              variant: "destructive"
-            });
           }
-        } else {
-          // No draft cards, just show welcome message
-          toast({
-            title: "Welcome!",
-            description: "Your account has been verified. You can now start creating cards.",
-          });
-
-          // Clear the signup_type
-          await supabase.auth.updateUser({
-            data: { signup_type: null }
-          });
-        }
+        }, 1000); // 1 second delay to ensure all data is loaded
       }
     };
 

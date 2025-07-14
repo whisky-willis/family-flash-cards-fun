@@ -31,8 +31,13 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 - **State**: Added `showEmailSignupModal` state
 - **Handler**: Updated `handleSaveCollection()` to show EmailSignupModal instead of AuthModal for unauthenticated users
 - **Success Handler**: Added `handleEmailSignupSuccess()` for post-signup feedback
-- **Email Verification**: Added useEffect to detect verified users and migrate draft cards automatically
+- **Email Verification**: Added useEffect to detect verified users and migrate draft cards automatically with timing delay
 - **JSX**: Added EmailSignupModal component alongside existing AuthModal
+
+### useAuth.tsx Updates
+- **Hash Fragment Processing**: Added detection and processing of Supabase auth tokens from URL hash
+- **Session Management**: Automatic session setup from email verification tokens
+- **URL Cleanup**: Removes auth tokens from URL and redirects to create-cards page
 
 ### App.tsx Updates
 - **Routing**: Updated `/create` route to `/create-cards` for consistency
@@ -58,9 +63,10 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 
 ### 4. Email Verification
 - User clicks verification link in email
-- Browser redirects to `/create-cards` with Supabase auth tokens
-- CreateCards page automatically detects verified user
-- Draft cards migrate from localStorage to user account
+- Browser redirects to root domain with Supabase auth tokens in URL hash
+- useAuth hook detects hash fragments and processes authentication
+- User is automatically redirected to `/create-cards` 
+- CreateCards page detects verified user and migrates draft cards
 - User sees welcome message and can continue creating cards
 
 ### 5. Error Handling
@@ -91,6 +97,26 @@ await supabase.auth.signUp({
 - Cards saved to localStorage with key `kindred-cards-draft`
 - Automatic cleanup after successful migration
 - Error recovery if localStorage quota exceeded
+
+### Hash Fragment Processing
+```typescript
+// In useAuth hook - handles Supabase auth tokens from email verification
+const hashParams = new URLSearchParams(window.location.hash.substring(1));
+const accessToken = hashParams.get('access_token');
+const refreshToken = hashParams.get('refresh_token');
+const type = hashParams.get('type');
+
+if (accessToken && refreshToken && type === 'signup') {
+  await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  });
+  window.history.replaceState(null, '', window.location.pathname);
+  if (window.location.pathname !== '/create-cards') {
+    window.location.href = '/create-cards';
+  }
+}
+```
 
 ### Email Verification Detection
 ```typescript
@@ -133,11 +159,14 @@ if (user && !isAnonymous && user.user_metadata?.signup_type === 'save_for_later'
 - [ ] Valid email sends verification email
 - [ ] Invalid email shows appropriate error
 - [ ] Duplicate email shows specific error message
-- [ ] Verification email contains correct redirect link (/create-cards)
-- [ ] Email verification redirects to create-cards page correctly
+- [ ] Verification email is sent successfully
+- [ ] Email verification link works (no 404 errors)
+- [ ] Hash fragments are processed correctly on return
+- [ ] User is automatically redirected to /create-cards after verification
 - [ ] Verified user is automatically detected in CreateCards
-- [ ] Draft cards migrate successfully upon verification
+- [ ] Draft cards migrate successfully upon verification  
 - [ ] Welcome toast notification appears after verification
+- [ ] URL is cleaned up (no auth tokens visible in address bar)
 - [ ] Error states display correctly
 - [ ] Mobile responsive design
 - [ ] Toast notifications appear
