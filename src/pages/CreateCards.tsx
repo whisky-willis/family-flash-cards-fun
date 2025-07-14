@@ -307,7 +307,7 @@ const CreateCards = () => {
         {cards.length > 0 && (
           <div className="mt-12">
             <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-8 text-center">
-              {recipientName ? `${recipientName}'s Card Collection` : 'Your Card Collection'} ({cards.length})
+              {recipientName ? `${recipientName}'s Card Collection` : 'Your Card Collection'} ({cards.length} cards)
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cards.map((card) => (
