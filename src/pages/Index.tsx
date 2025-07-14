@@ -438,7 +438,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3">
-              <img src={kindredLogo} alt="Kindred Cards" className="h-64 w-64" />
+              <img src={kindredLogo} alt="Kindred Cards" className="h-64 w-64 object-cover object-center scale-125" />
               
             </div>
             <p className="text-muted-foreground font-medium text-lg">
