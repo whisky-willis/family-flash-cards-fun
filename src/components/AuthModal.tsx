@@ -78,19 +78,36 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
 
         if (profileError) throw profileError;
 
-        // Save cards to the user
-        const { error: saveError } = await supabase
+        // Save cards to the user - check if collection exists first
+        const { data: existingCollection } = await supabase
           .from('card_collections')
-          .upsert({
-            user_id: userId,
-            name: 'My Card Collection',
-            description: 'Cards created in the card builder',
-            cards: JSON.parse(JSON.stringify(cards)) as any
-          }, {
-            onConflict: 'user_id'
-          });
+          .select('id')
+          .eq('user_id', userId)
+          .single();
 
-        if (saveError) throw saveError;
+        if (existingCollection) {
+          // Update existing collection
+          const { error: updateError } = await supabase
+            .from('card_collections')
+            .update({
+              cards: JSON.parse(JSON.stringify(cards)) as any
+            })
+            .eq('id', existingCollection.id);
+
+          if (updateError) throw updateError;
+        } else {
+          // Create new collection
+          const { error: insertError } = await supabase
+            .from('card_collections')
+            .insert({
+              user_id: userId,
+              name: 'My Card Collection',
+              description: 'Cards created in the card builder',
+              cards: JSON.parse(JSON.stringify(cards)) as any
+            });
+
+          if (insertError) throw insertError;
+        }
       }
 
       const { error } = await supabase.auth.signInWithOtp({
