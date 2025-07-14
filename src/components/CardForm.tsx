@@ -63,7 +63,43 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
+    
+    // Check all required fields
+    const requiredFields = {
+      name: formData.name.trim(),
+      photo: formData.photo,
+      whereTheyLive: formData.whereTheyLive.trim(),
+      dateOfBirth: formData.dateOfBirth,
+      favoriteColor: formData.favoriteColor.trim(),
+      hobbies: formData.hobbies.trim(),
+      funFact: formData.funFact.trim()
+    };
+    
+    // Check if any required field is empty
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+    
+    if (missingFields.length > 0) {
+      // Focus on the first missing field
+      const fieldMap: Record<string, string> = {
+        name: 'name',
+        photo: 'photo',
+        whereTheyLive: 'whereTheyLive',
+        dateOfBirth: 'dateOfBirth',
+        favoriteColor: 'favoriteColor',
+        hobbies: 'hobbies',
+        funFact: 'funFact'
+      };
+      
+      const firstMissingField = fieldMap[missingFields[0]];
+      const element = document.getElementById(firstMissingField);
+      if (element) {
+        element.focus();
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
     
     // Use deck theme and font for final submission
     const finalData = {
@@ -148,7 +184,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       </div>
 
       <div>
-        <Label htmlFor="photo">Photo</Label>
+        <Label htmlFor="photo">Photo *</Label>
         <div className="space-y-2">
           <Input
             ref={fileInputRef}
@@ -157,6 +193,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
+            required={!formData.photo}
             className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
           />
           {formData.photo && (
@@ -202,17 +239,18 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       </div>
 
       <div>
-        <Label htmlFor="whereTheyLive">Where they live</Label>
+        <Label htmlFor="whereTheyLive">Where they live *</Label>
         <Input
           id="whereTheyLive"
           value={formData.whereTheyLive}
           onChange={(e) => setFormData({ ...formData, whereTheyLive: e.target.value })}
           placeholder="e.g., New York, California, Down the street, Next door"
+          required
         />
       </div>
 
       <div>
-        <Label htmlFor="dateOfBirth">Birthday (Month & Day)</Label>
+        <Label htmlFor="dateOfBirth">Birthday (Month & Day) *</Label>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <select
@@ -222,6 +260,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
                 const day = formData.dateOfBirth.split('-')[2] || '01';
                 setFormData({ ...formData, dateOfBirth: `2000-${e.target.value.padStart(2, '0')}-${day}` });
               }}
+              required
             >
               <option value="">Month</option>
               <option value="01">January</option>
@@ -246,6 +285,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
                 const month = formData.dateOfBirth.split('-')[1] || '01';
                 setFormData({ ...formData, dateOfBirth: `2000-${month}-${e.target.value.padStart(2, '0')}` });
               }}
+              required
             >
               <option value="">Day</option>
               {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
@@ -259,17 +299,18 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       </div>
 
       <div>
-        <Label htmlFor="favoriteColor">Favorite Color</Label>
+        <Label htmlFor="favoriteColor">Favorite Color *</Label>
         <Input
           id="favoriteColor"
           value={formData.favoriteColor}
           onChange={(e) => setFormData({ ...formData, favoriteColor: e.target.value })}
           placeholder="e.g., Blue, Red, Green"
+          required
         />
       </div>
 
       <div>
-        <Label htmlFor="hobbies">Hobbies</Label>
+        <Label htmlFor="hobbies">Hobbies *</Label>
         <Input
           id="hobbies"
           value={formData.hobbies}
@@ -281,6 +322,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
           }}
           placeholder="e.g., Reading, Cooking, Gardening"
           maxLength={30}
+          required
         />
         <div className="flex justify-end items-center mt-1">
           <div className="flex items-center space-x-2">
@@ -295,7 +337,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       </div>
 
       <div>
-        <Label htmlFor="funFact">Fun Fact</Label>
+        <Label htmlFor="funFact">Fun Fact *</Label>
         <Textarea
           id="funFact"
           value={formData.funFact}
@@ -308,6 +350,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
           placeholder="Something interesting or fun about this person"
           rows={3}
           maxLength={80}
+          required
         />
         <div className="flex justify-end items-center mt-1">
           <div className="flex items-center space-x-2">
