@@ -234,7 +234,7 @@ const CreateCards = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-4xl lg:text-5xl font-black text-foreground mb-6">
-            Create Your Family Cards
+            Create Your Kindred Cards
           </h1>
           <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
             Design your deck style, then add photos and details for each family member or friend
