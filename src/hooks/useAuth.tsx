@@ -25,46 +25,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAnonymous = user?.is_anonymous || false;
 
   useEffect(() => {
-    // Handle auth hash fragments from email verification
-    const handleAuthHash = async () => {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const accessToken = hashParams.get('access_token');
-      const refreshToken = hashParams.get('refresh_token');
-      const type = hashParams.get('type');
-
-      if (accessToken && refreshToken && type === 'signup') {
-        console.log('🔐 Processing email verification from hash fragments');
-        
-        try {
-          // Set the session using the tokens from the hash
-          const { data, error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken
-          });
-
-          if (error) {
-            console.error('❌ Error setting session from hash:', error);
-            return;
-          }
-
-          console.log('✅ Session set from email verification:', data.user?.id);
-          
-          // Clear the hash from URL
-          window.history.replaceState(null, '', window.location.pathname);
-          
-          // Redirect to create-cards if not already there
-          if (window.location.pathname !== '/create-cards') {
-            window.location.href = '/create-cards';
-          }
-        } catch (error) {
-          console.error('❌ Error processing auth hash:', error);
-        }
-      }
-    };
-
-    // Process auth hash on initial load
-    handleAuthHash();
-
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {

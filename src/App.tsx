@@ -10,6 +10,7 @@ import CreateCards from "./pages/CreateCards";
 import OrderSummary from "./pages/OrderSummary";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const AppContent = () => {
           <Route path="/order" element={<OrderSummary />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/auth-callback" element={<AuthCallback />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -15,14 +15,14 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
   - Mobile-responsive design
   - Loading states and proper UX feedback
 
-### 2. Email Verification Integration (CreateCards.tsx)
-- **Purpose**: Handles email verification automatically when users are redirected back to the app
+### 2. AuthCallback Page (`src/pages/AuthCallback.tsx`)
+- **Purpose**: Dedicated route to handle email verification redirects from Supabase
 - **Features**:
-  - Automatic detection of verified email signup users
+  - Processes Supabase auth tokens automatically
   - Draft card migration from localStorage to user account
-  - Success/error toast notifications
-  - Seamless integration with existing card creation flow
-  - Automatic cleanup of verification metadata
+  - Visual feedback with loading, success, and error states
+  - Automatic redirect to create-cards after successful verification
+  - Comprehensive error handling and user guidance
 
 ## Modified Components
 
@@ -31,16 +31,11 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 - **State**: Added `showEmailSignupModal` state
 - **Handler**: Updated `handleSaveCollection()` to show EmailSignupModal instead of AuthModal for unauthenticated users
 - **Success Handler**: Added `handleEmailSignupSuccess()` for post-signup feedback
-- **Email Verification**: Added useEffect to detect verified users and migrate draft cards automatically with timing delay
 - **JSX**: Added EmailSignupModal component alongside existing AuthModal
-
-### useAuth.tsx Updates
-- **Hash Fragment Processing**: Added detection and processing of Supabase auth tokens from URL hash
-- **Session Management**: Automatic session setup from email verification tokens
-- **URL Cleanup**: Removes auth tokens from URL and redirects to create-cards page
 
 ### App.tsx Updates
 - **Routing**: Updated `/create` route to `/create-cards` for consistency
+- **New Route**: Added `/auth-callback` route for email verification handling
 - **Navigation**: All navigation links updated to use `/create-cards`
 
 ## Workflow
@@ -63,11 +58,10 @@ Added email signup functionality to the "Save for Later" feature in Kindred Card
 
 ### 4. Email Verification
 - User clicks verification link in email
-- Browser redirects to root domain with Supabase auth tokens in URL hash
-- useAuth hook detects hash fragments and processes authentication
-- User is automatically redirected to `/create-cards` 
-- CreateCards page detects verified user and migrates draft cards
-- User sees welcome message and can continue creating cards
+- Browser redirects to `/auth-callback` with Supabase auth tokens
+- AuthCallback page processes authentication and migrates draft cards
+- User sees success feedback and is automatically redirected to `/create-cards`
+- User can continue creating cards with their saved collection
 
 ### 5. Error Handling
 - Invalid email formats
@@ -84,7 +78,7 @@ await supabase.auth.signUp({
   email: email,
   password: crypto.randomUUID(), // Random password for email-only signup
   options: {
-    emailRedirectTo: `${window.location.origin}/create-cards`,
+    emailRedirectTo: `${window.location.origin}/auth-callback`,
     data: {
       signup_type: 'save_for_later',
       has_draft_cards: cards.length > 0
@@ -98,33 +92,28 @@ await supabase.auth.signUp({
 - Automatic cleanup after successful migration
 - Error recovery if localStorage quota exceeded
 
-### Hash Fragment Processing
+### Email Verification Processing
 ```typescript
-// In useAuth hook - handles Supabase auth tokens from email verification
-const hashParams = new URLSearchParams(window.location.hash.substring(1));
-const accessToken = hashParams.get('access_token');
-const refreshToken = hashParams.get('refresh_token');
-const type = hashParams.get('type');
+// In AuthCallback page - handles email verification redirect
+const { data: { session }, error } = await supabase.auth.getSession();
 
-if (accessToken && refreshToken && type === 'signup') {
-  await supabase.auth.setSession({
-    access_token: accessToken,
-    refresh_token: refreshToken
-  });
-  window.history.replaceState(null, '', window.location.pathname);
-  if (window.location.pathname !== '/create-cards') {
-    window.location.href = '/create-cards';
-  }
-}
-```
-
-### Email Verification Detection
-```typescript
-// In CreateCards useEffect
-if (user && !isAnonymous && user.user_metadata?.signup_type === 'save_for_later') {
-  // Migrate draft cards and show welcome message
+if (session?.user?.user_metadata?.signup_type === 'save_for_later') {
   const draftCards = getDraft();
-  // ... migration logic
+  
+  // Save all draft cards as a single collection
+  const cardsData = draftCards.map(card => {
+    const { id, ...cardData } = card;
+    return cardData;
+  });
+  
+  await supabase.from('card_collections').insert({
+    user_id: session.user.id,
+    cards: cardsData,
+    created_at: new Date().toISOString()
+  });
+  
+  clearDraft();
+  navigate('/create-cards');
 }
 ```
 
@@ -161,12 +150,12 @@ if (user && !isAnonymous && user.user_metadata?.signup_type === 'save_for_later'
 - [ ] Duplicate email shows specific error message
 - [ ] Verification email is sent successfully
 - [ ] Email verification link works (no 404 errors)
-- [ ] Hash fragments are processed correctly on return
+- [ ] AuthCallback page loads and processes verification correctly
+- [ ] Draft cards migrate successfully to user account
 - [ ] User is automatically redirected to /create-cards after verification
-- [ ] Verified user is automatically detected in CreateCards
-- [ ] Draft cards migrate successfully upon verification  
-- [ ] Welcome toast notification appears after verification
-- [ ] URL is cleaned up (no auth tokens visible in address bar)
+- [ ] Welcome toast notification appears in create-cards
+- [ ] Error states handled gracefully in AuthCallback
+- [ ] Visual feedback provided during processing
 - [ ] Error states display correctly
 - [ ] Mobile responsive design
 - [ ] Toast notifications appear
