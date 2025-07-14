@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Palette } from "lucide-react";
+import { Type, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BackgroundThemeSelectorProps {
@@ -94,7 +94,7 @@ export const BackgroundThemeSelector = ({
       {/* Font Selection Dropdown */}
       <div>
         <Label className="text-lg font-semibold flex items-center gap-2 mb-3">
-          <Palette className="h-5 w-5 text-art-pink" />
+          <Type className="h-5 w-5 text-art-pink" />
           Font Style
         </Label>
         <Select 
@@ -141,7 +141,7 @@ export const BackgroundThemeSelector = ({
       {/* Background Theme Grid */}
       <div>
         <Label className="text-lg font-semibold flex items-center gap-2 mb-3">
-          <Palette className="h-5 w-5 text-art-blue" />
+          <Image className="h-5 w-5 text-art-blue" />
           Background Theme
         </Label>
         <div 

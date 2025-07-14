@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Heart, Palette, Edit2, ChevronDown, ChevronUp } from "lucide-react";
+import { Heart, Settings, Edit2, ChevronDown, ChevronUp } from "lucide-react";
 import { BackgroundThemeSelector } from "./BackgroundThemeSelector";
 
 interface DeckDesignerProps {
@@ -129,7 +129,7 @@ export const DeckDesigner = ({
           {/* Theme and Font Selection */}
           <div>
             <Label className="text-lg font-semibold flex items-center gap-2 mb-3">
-              <Palette className="h-5 w-5 text-art-blue" />
+              <Settings className="h-5 w-5 text-art-blue" />
               Choose Your Style
             </Label>
             <BackgroundThemeSelector
