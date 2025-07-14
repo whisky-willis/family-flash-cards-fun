@@ -213,7 +213,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-3">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border shadow-sm">
               <span className="text-sm font-medium text-foreground/70">Swipe</span>
               <div className="flex items-center gap-1">
@@ -345,7 +345,7 @@ const Index = () => {
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Backed by Research: Real Benefits for Your Child</h2>
           </div>
 
-          <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center justify-center mb-3">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border shadow-sm">
               <span className="text-sm font-medium text-foreground/70">Swipe</span>
               <div className="flex items-center gap-1">
