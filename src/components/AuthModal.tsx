@@ -51,65 +51,9 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
     setError('');
 
     try {
-      // Save cards and associate email with current or new anonymous user
-      if (cards.length > 0) {
-        // Get current user or create new anonymous user
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
-        let userId = currentUser?.id;
-
-        if (!userId) {
-          const { user: anonUser, error: anonError } = await createAnonymousUser();
-          if (anonError) throw anonError;
-          userId = anonUser?.id;
-        }
-
-        if (!userId) throw new Error('Failed to get user ID');
-
-        // Associate email with the user in profiles (upsert to handle existing profiles)
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            user_id: userId,
-            email: magicEmail,
-            name: 'Anonymous User'
-          }, {
-            onConflict: 'user_id'
-          });
-
-        if (profileError) throw profileError;
-
-        // Save cards to the user - check if collection exists first
-        const { data: existingCollection } = await supabase
-          .from('card_collections')
-          .select('id')
-          .eq('user_id', userId)
-          .single();
-
-        if (existingCollection) {
-          // Update existing collection
-          const { error: updateError } = await supabase
-            .from('card_collections')
-            .update({
-              cards: JSON.parse(JSON.stringify(cards)) as any
-            })
-            .eq('id', existingCollection.id);
-
-          if (updateError) throw updateError;
-        } else {
-          // Create new collection
-          const { error: insertError } = await supabase
-            .from('card_collections')
-            .insert({
-              user_id: userId,
-              name: 'My Card Collection',
-              description: 'Cards created in the card builder',
-              cards: JSON.parse(JSON.stringify(cards)) as any
-            });
-
-          if (insertError) throw insertError;
-        }
-      }
-
+      // Send magic link without creating anonymous user
+      // Cards will be migrated after authentication via useSupabaseCards hook
+      
       const { error } = await supabase.auth.signInWithOtp({
         email: magicEmail,
         options: {
@@ -122,7 +66,7 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
       setMagicLinkSent(true);
       toast({
         title: "Magic Link Sent!",
-        description: "Check your email and click the link to sign in.",
+        description: "Check your email and click the link to sign in. Your cards will be saved automatically.",
       });
     } catch (err: any) {
       setError(err.message || 'Failed to send magic link');
