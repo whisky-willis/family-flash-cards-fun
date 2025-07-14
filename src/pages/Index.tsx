@@ -437,7 +437,7 @@ const Index = () => {
       <footer className="relative bg-background border-t border-border py-20 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
+            <div className="flex items-center justify-center space-x-3">
               <img src={kindredLogo} alt="Kindred Cards" className="h-64 w-64" />
               
             </div>
