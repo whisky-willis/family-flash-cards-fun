@@ -148,7 +148,7 @@ export const DeckDesigner = ({
                 variant="outline"
                 className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10"
               >
-                <ChevronUp className="h-4 w-4 mr-2" />
+                👍
                 Save Design
               </Button>
             </div>
