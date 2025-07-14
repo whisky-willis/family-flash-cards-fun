@@ -213,6 +213,16 @@ const Index = () => {
             </p>
           </div>
 
+          <div className="flex items-center justify-center mb-6">
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border shadow-sm">
+              <span className="text-sm font-medium text-foreground/70">Swipe</span>
+              <div className="flex items-center gap-1">
+                <ArrowRight className="h-3 w-3 text-foreground/50" />
+                <ArrowRight className="h-3 w-3 text-foreground/30 -ml-1" />
+              </div>
+            </div>
+          </div>
+          
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
@@ -324,8 +334,6 @@ const Index = () => {
                 </div>
               </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
           </Carousel>
         </div>
       </section>
@@ -337,6 +345,16 @@ const Index = () => {
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Backed by Research: Real Benefits for Your Child</h2>
           </div>
 
+          <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border shadow-sm">
+              <span className="text-sm font-medium text-foreground/70">Swipe</span>
+              <div className="flex items-center gap-1">
+                <ArrowRight className="h-3 w-3 text-foreground/50" />
+                <ArrowRight className="h-3 w-3 text-foreground/30 -ml-1" />
+              </div>
+            </div>
+          </div>
+          
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
@@ -424,8 +442,6 @@ const Index = () => {
                 </div>
               </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
           </Carousel>
 
           <div className="mt-16 text-center">
