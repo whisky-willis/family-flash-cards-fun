@@ -54,10 +54,10 @@ export function EmailSignupModal({ open, onOpenChange, cards, onSuccess }: Email
     setError('');
 
     try {
-      // Save draft cards to localStorage before signup
+      // Save draft cards to localStorage before signup with email association
       if (cards.length > 0) {
-        saveDraftToLocal(cards);
-        console.log('💾 Saved draft cards to localStorage before signup:', cards.length);
+        saveDraftToLocal(cards, email);
+        console.log('💾 Saved draft cards to localStorage before signup:', cards.length, 'for email:', email);
       }
 
       // Sign up user with email verification

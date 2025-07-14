@@ -9,7 +9,7 @@ import { useDraft } from '@/hooks/useDraft';
 const AuthCallback = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { getDraft, clearDraft } = useDraft();
+  const { getDraftForEmail, clearDraft } = useDraft();
   
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [errorMessage, setErrorMessage] = useState('');
@@ -34,33 +34,43 @@ const AuthCallback = () => {
           
           // Check if this is a save_for_later signup
           if (session.user.user_metadata?.signup_type === 'save_for_later') {
-            console.log('🔄 Processing save_for_later signup');
+            console.log('🔄 Processing save_for_later signup for email:', session.user.email);
             
-            // Get draft cards
-            const draftCards = getDraft();
+            // Get draft cards for this specific email
+            const draftCards = getDraftForEmail(session.user.email || '');
             
-            if (draftCards && draftCards.length > 0) {
-              console.log('📋 Found draft cards to migrate:', draftCards.length);
-              
-                             try {
-                 // Save all draft cards as a single collection
-                 const cardsData = draftCards.map(card => {
-                   const { id, ...cardData } = card;
-                   return cardData;
-                 });
-                 
-                 const { error: insertError } = await supabase
-                   .from('card_collections')
-                   .insert({
-                     user_id: session.user.id,
-                     cards: cardsData,
-                     created_at: new Date().toISOString()
-                   });
-                   
-                 if (insertError) {
-                   console.error('❌ Error saving cards:', insertError);
-                   throw insertError;
-                 }
+                          if (draftCards && draftCards.length > 0) {
+                console.log('📋 Found draft cards to migrate:', draftCards.length, 'cards:', draftCards);
+                
+                try {
+                  // Save all draft cards as a single collection
+                  const cardsData = draftCards.map(card => {
+                    const { id, ...cardData } = card;
+                    return cardData;
+                  });
+                  
+                  console.log('💾 Attempting to save cards to database:', {
+                    user_id: session.user.id,
+                    email: session.user.email,
+                    cards_count: cardsData.length,
+                    cards_data: cardsData
+                  });
+                  
+                  const { data, error: insertError } = await supabase
+                    .from('card_collections')
+                    .insert({
+                      user_id: session.user.id,
+                      cards: cardsData,
+                      created_at: new Date().toISOString()
+                    })
+                    .select();
+                    
+                  if (insertError) {
+                    console.error('❌ Error saving cards:', insertError);
+                    throw insertError;
+                  }
+                  
+                  console.log('✅ Successfully saved cards to database:', data);
                 
                 // Clear draft cards after migration
                 clearDraft();
@@ -94,23 +104,24 @@ const AuthCallback = () => {
                   navigate('/create-cards');
                 }, 1500);
               }
-            } else {
-              // No draft cards, just welcome user
-              setStatus('success');
-              
-              // Clear the signup_type
-              await supabase.auth.updateUser({
-                data: { signup_type: null }
-              });
-              
-              setTimeout(() => {
-                toast({
-                  title: "Welcome!",
-                  description: "Your account has been verified. You can now start creating cards.",
+                          } else {
+                // No draft cards found
+                console.log('📭 No draft cards found for email:', session.user.email);
+                setStatus('success');
+                
+                // Clear the signup_type
+                await supabase.auth.updateUser({
+                  data: { signup_type: null }
                 });
-                navigate('/create-cards');
-              }, 1500);
-            }
+                
+                setTimeout(() => {
+                  toast({
+                    title: "Welcome!",
+                    description: "Your account has been verified. You can now start creating cards.",
+                  });
+                  navigate('/create-cards');
+                }, 1500);
+              }
           } else {
             // Regular auth callback, redirect to create-cards
             setStatus('success');

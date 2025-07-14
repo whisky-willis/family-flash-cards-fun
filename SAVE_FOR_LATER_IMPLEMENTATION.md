@@ -88,7 +88,10 @@ await supabase.auth.signUp({
 ```
 
 ### Draft Card Persistence
-- Cards saved to localStorage with key `kindred-cards-draft`
+- Cards saved to localStorage with key `kindred-cards-draft` including email association
+- Draft data format: `{ cards: FamilyCard[], email: string, timestamp: number }`
+- Email validation during verification ensures correct cards are migrated
+- Backward compatibility with old draft format (cards only)
 - Automatic cleanup after successful migration
 - Error recovery if localStorage quota exceeded
 
@@ -98,23 +101,43 @@ await supabase.auth.signUp({
 const { data: { session }, error } = await supabase.auth.getSession();
 
 if (session?.user?.user_metadata?.signup_type === 'save_for_later') {
-  const draftCards = getDraft();
+  // Get draft cards for this specific verified email
+  const draftCards = getDraftForEmail(session.user.email || '');
   
-  // Save all draft cards as a single collection
-  const cardsData = draftCards.map(card => {
-    const { id, ...cardData } = card;
-    return cardData;
-  });
-  
-  await supabase.from('card_collections').insert({
-    user_id: session.user.id,
-    cards: cardsData,
-    created_at: new Date().toISOString()
-  });
-  
-  clearDraft();
-  navigate('/create-cards');
+  if (draftCards && draftCards.length > 0) {
+    // Save all draft cards as a single collection
+    const cardsData = draftCards.map(card => {
+      const { id, ...cardData } = card;
+      return cardData;
+    });
+    
+    const { data, error: insertError } = await supabase
+      .from('card_collections')
+      .insert({
+        user_id: session.user.id,
+        cards: cardsData,
+        created_at: new Date().toISOString()
+      })
+      .select();
+    
+    clearDraft();
+    navigate('/create-cards');
+  }
 }
+```
+
+### Email-Associated Draft Saving
+```typescript
+// In EmailSignupModal - save cards with email association
+saveDraftToLocal(cards, email);
+
+// In useDraft hook - enhanced draft format
+const draftData: DraftData = {
+  cards,
+  email: email || draftEmail,
+  timestamp: Date.now()
+};
+localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
 ```
 
 ## User Experience Features
@@ -151,11 +174,14 @@ if (session?.user?.user_metadata?.signup_type === 'save_for_later') {
 - [ ] Verification email is sent successfully
 - [ ] Email verification link works (no 404 errors)
 - [ ] AuthCallback page loads and processes verification correctly
+- [ ] Draft cards are associated with the correct email address
+- [ ] Email verification matches the email used for draft cards
 - [ ] Draft cards migrate successfully to user account
 - [ ] User is automatically redirected to /create-cards after verification
 - [ ] Welcome toast notification appears in create-cards
 - [ ] Error states handled gracefully in AuthCallback
 - [ ] Visual feedback provided during processing
+- [ ] Console logs show email matching and card migration details
 - [ ] Error states display correctly
 - [ ] Mobile responsive design
 - [ ] Toast notifications appear
