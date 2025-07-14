@@ -62,7 +62,7 @@ const Index = () => {
                 
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
-                <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/about')}>About</span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => document.getElementById('card-examples')?.scrollIntoView({
                 behavior: 'smooth'
               })}>
