@@ -439,7 +439,7 @@ const Index = () => {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
               <img src={kindredLogo} alt="Kindred Cards" className="h-8 w-8" />
-              <span className="text-2xl font-black text-foreground tracking-tight">Kindred Cards</span>
+              
             </div>
             <p className="text-muted-foreground font-medium text-lg">
               Creating memories, one card at a time
