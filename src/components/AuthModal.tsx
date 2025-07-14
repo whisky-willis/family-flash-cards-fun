@@ -56,6 +56,17 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
         const { user: anonUser, error: anonError } = await createAnonymousUser();
         if (anonError) throw anonError;
 
+        // Associate email with the anonymous user in profiles
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: anonUser?.id || '',
+            email: magicEmail,
+            name: 'Anonymous User'
+          });
+
+        if (profileError) throw profileError;
+
         // Save cards to the anonymous user
         const { error: saveError } = await supabase
           .from('card_collections')
