@@ -197,9 +197,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-4xl lg:text-5xl font-black text-foreground mb-6">Get Inspired</h2>
-            <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">
-              Discover how our cards help children learn about the special people in their lives
-            </p>
+            <p className="text-xl text-foreground/80 font-medium max-w-2xl mx-auto">From Uncle Mike's bear hugs to Grandma Rose's bedtime stories—share</p>
           </div>
 
           <Carousel className="w-full max-w-6xl mx-auto">
