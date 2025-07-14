@@ -52,14 +52,25 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
 
     try {
       if (isAnonymous) {
-        // For anonymous users, convert them and send verification email  
-        const { error } = await convertAnonymousUser(magicEmail, 'temp-password', magicEmail.split('@')[0]);
-        if (error) throw error;
+        // For anonymous users, add email without password and send magic link
+        const { error: updateError } = await supabase.auth.updateUser({
+          email: magicEmail,
+          data: { name: magicEmail.split('@')[0] }
+        });
+        if (updateError) throw updateError;
 
-        // Close modal and show success message - user will be redirected after email verification
+        // Send magic link to the updated user
+        const { error: emailError } = await supabase.auth.signInWithOtp({
+          email: magicEmail,
+          options: {
+            emailRedirectTo: `${window.location.origin}/profile`
+          }
+        });
+        if (emailError) throw emailError;
+
         setMagicLinkSent(true);
         toast({
-          title: "Account Updated!",
+          title: "Magic Link Sent!",
           description: "Check your email and click the link to complete verification. Your cards will be available in your profile.",
         });
       } else {
