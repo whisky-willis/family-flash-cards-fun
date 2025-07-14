@@ -434,10 +434,10 @@ const Index = () => {
 
 
       {/* Footer */}
-      <footer className="relative bg-background border-t border-border py-20 z-10">
+      <footer className="relative bg-background border-t border-border py-10 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-3">
+            <div className="flex items-center justify-center space-x-3 -mt-4">
               <img src={kindredLogo} alt="Kindred Cards" className="h-64 w-64 object-cover object-center scale-125" />
               
             </div>
