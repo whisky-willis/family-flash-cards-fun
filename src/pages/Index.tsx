@@ -203,7 +203,7 @@ const Index = () => {
           <Carousel className="w-full max-w-6xl mx-auto">
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
-                <div className="p-2">
+                 <div className="p-2">
                    <FlippableCardPreview card={{
                   name: "Uncle Mike",
                   whereTheyLive: "Boston, MA",
@@ -213,12 +213,12 @@ const Index = () => {
                   funFact: "Plays 5 instruments!",
                   photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
                   
-                }} nameFont="font-luckiest-guy" />
-                </div>
+                }} nameFont="font-luckiest-guy" deckTheme="organic" />
+                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
-                <div className="p-2">
+                 <div className="p-2">
                    <FlippableCardPreview card={{
                   name: "Grandma Rose",
                   whereTheyLive: "Portland, OR",
@@ -228,12 +228,12 @@ const Index = () => {
                   funFact: "Visited 23 countries and speaks 4 languages",
                   photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
                   
-                }} nameFont="font-bubblegum" />
-                </div>
+                }} nameFont="font-bubblegum" deckTheme="rainbow" />
+                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
-                <div className="p-2">
+                 <div className="p-2">
                    <FlippableCardPreview card={{
                   name: "Cousin Alex",
                   whereTheyLive: "Austin, TX",
@@ -243,12 +243,12 @@ const Index = () => {
                   funFact: "Scored the winning goal last year!",
                   photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
                   
-                }} nameFont="font-fredoka-one" />
-                </div>
+                }} nameFont="font-fredoka-one" deckTheme="sports" />
+                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
-                <div className="p-2">
+                 <div className="p-2">
                    <FlippableCardPreview card={{
                   name: "Aunt Sarah",
                   whereTheyLive: "Denver, CO",
@@ -258,12 +258,12 @@ const Index = () => {
                   funFact: "Takes amazing nature photos!",
                   photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
                   
-                }} nameFont="font-bubblegum" />
-                </div>
+                }} nameFont="font-bubblegum" deckTheme="mosaic" />
+                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
-                <div className="p-2">
+                 <div className="p-2">
                    <FlippableCardPreview card={{
                   name: "Uncle Tom",
                   whereTheyLive: "Seattle, WA",
@@ -278,12 +278,12 @@ const Index = () => {
                     scale: 1.1
                   },
                   
-                }} nameFont="font-luckiest-guy" />
-                </div>
+                }} nameFont="font-luckiest-guy" deckTheme="geometric" />
+                 </div>
               </CarouselItem>
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
-                <div className="p-2">
+                 <div className="p-2">
                    <FlippableCardPreview card={{
                   name: "Big Sister Emma",
                   whereTheyLive: "Miami, FL",
@@ -293,8 +293,8 @@ const Index = () => {
                   funFact: "Won first place in talent show!",
                   photo: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
                   
-                }} nameFont="font-fredoka-one" />
-                </div>
+                }} nameFont="font-fredoka-one" deckTheme="space" />
+                 </div>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious className="hidden md:flex" />
