@@ -243,24 +243,25 @@ const CreateCards = () => {
           </p>
         </div>
 
-        {/* Deck Designer */}
-        <DeckDesigner
-          recipientName={recipientName}
-          selectedTheme={deckTheme}
-          selectedFont={deckFont}
-          onRecipientNameChange={setRecipientName}
-          onThemeChange={setDeckTheme}
-          onFontChange={setDeckFont}
-          onPreviewChange={(theme, font) => {
-            if (previewCard) {
-              setPreviewCard(prev => ({ ...prev, theme, font }));
-            }
-          }}
-        />
-
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Card Form */}
-          <div className="min-h-screen">
+          {/* Left Column - Deck Designer and Card Form */}
+          <div className="space-y-8">
+            {/* Deck Designer */}
+            <DeckDesigner
+              recipientName={recipientName}
+              selectedTheme={deckTheme}
+              selectedFont={deckFont}
+              onRecipientNameChange={setRecipientName}
+              onThemeChange={setDeckTheme}
+              onFontChange={setDeckFont}
+              onPreviewChange={(theme, font) => {
+                if (previewCard) {
+                  setPreviewCard(prev => ({ ...prev, theme, font }));
+                }
+              }}
+            />
+
+            {/* Card Form */}
             <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-pink/20 rounded-3xl shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-2xl font-black">
@@ -286,7 +287,7 @@ const CreateCards = () => {
             </Card>
           </div>
 
-          {/* Card Preview */}
+          {/* Right Column - Card Preview */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg">
               <CardHeader>
