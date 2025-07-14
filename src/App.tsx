@@ -10,6 +10,7 @@ import CreateCards from "./pages/CreateCards";
 import OrderSummary from "./pages/OrderSummary";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const AppContent = () => {
           <Route path="/order" element={<OrderSummary />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
