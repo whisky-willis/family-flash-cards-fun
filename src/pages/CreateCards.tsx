@@ -115,6 +115,16 @@ const CreateCards = () => {
       });
       return;
     }
+    
+    if (!recipientName || !deckTheme || !deckFont) {
+      toast({
+        title: "Deck Design Incomplete",
+        description: "Please complete the deck design section (recipient name, theme, and font) before proceeding to order.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     navigate('/order', { state: { cards } });
   };
 
