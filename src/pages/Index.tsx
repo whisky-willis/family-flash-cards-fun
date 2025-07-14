@@ -72,7 +72,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <Button onClick={() => navigate('/create')} size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
+              <Button onClick={() => navigate('/create-cards')} size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                 Create Cards
               </Button>
               {user ? <Button onClick={() => navigate('/profile')} variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
@@ -130,7 +130,7 @@ const Index = () => {
             </span> Learn
             <br />About Family and Friends
           </h1>
-          <Button size="lg" onClick={() => navigate('/create')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest mb-16">
+          <Button size="lg" onClick={() => navigate('/create-cards')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-4 text-lg font-bold uppercase tracking-widest mb-16">
             Create Now
           </Button>
           <div className="animate-bounce">

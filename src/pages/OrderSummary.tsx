@@ -49,7 +49,7 @@ const OrderSummary = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">No Cards Found</h1>
           <p className="text-gray-600 mb-4">Please create some cards first.</p>
-          <Button onClick={() => navigate('/create')}>Create Cards</Button>
+          <Button onClick={() => navigate('/create-cards')}>Create Cards</Button>
         </div>
       </div>
     );
@@ -65,7 +65,7 @@ const OrderSummary = () => {
               <img src={kindredLogo} alt="Kindred Cards" className="h-10 w-10" />
               <span className="text-2xl font-bold text-gray-800">Kindred Cards</span>
             </div>
-            <Button variant="ghost" onClick={() => navigate('/create')}>
+            <Button variant="ghost" onClick={() => navigate('/create-cards')}>
               Back to Create
             </Button>
           </div>

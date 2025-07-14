@@ -112,7 +112,7 @@ export default function Profile() {
     saveDraftToLocal(collection.cards);
     
     // Navigate to create page
-    navigate('/create');
+          navigate('/create-cards');
     
     toast({
       title: "Collection Loaded",
@@ -146,7 +146,7 @@ export default function Profile() {
               />
             </div>
             <div className="flex items-center space-x-4">
-              <Button onClick={() => navigate('/create')} variant="outline">
+              <Button onClick={() => navigate('/create-cards')} variant="outline">
                 Create Cards
               </Button>
               <Button onClick={signOut} variant="outline">
@@ -185,7 +185,7 @@ export default function Profile() {
             <h2 className="text-3xl font-black text-foreground">
               My Card Collections
             </h2>
-            <Button onClick={() => navigate('/create')}>
+            <Button onClick={() => navigate('/create-cards')}>
               Create New Collection
             </Button>
           </div>
@@ -216,7 +216,7 @@ export default function Profile() {
                 <p className="text-muted-foreground text-center mb-6">
                   Start creating your first family card collection to see them here.
                 </p>
-                <Button onClick={() => navigate('/create')}>
+                <Button onClick={() => navigate('/create-cards')}>
                   Create Your First Collection
                 </Button>
               </CardContent>

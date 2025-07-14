@@ -156,7 +156,7 @@ export const useSupabaseCards = () => {
       // 3. Not in auth flow
       // 4. User didn't just sign out
       const shouldCreateAnonymous = !user && 
-                                   window.location.pathname === '/create' && 
+                                   window.location.pathname === '/create-cards' && 
                                    !isAuthFlow && 
                                    !justSignedOut;
       
