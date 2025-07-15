@@ -10,6 +10,7 @@ interface DeckDesignerProps {
   recipientName: string;
   selectedTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
   selectedFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
+  initiallyCollapsed?: boolean;
   onRecipientNameChange: (name: string) => void;
   onThemeChange: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => void;
   onFontChange: (font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
@@ -20,12 +21,14 @@ export const DeckDesigner = ({
   recipientName,
   selectedTheme,
   selectedFont,
+  initiallyCollapsed = false,
   onRecipientNameChange,
   onThemeChange,
   onFontChange,
   onPreviewChange
 }: DeckDesignerProps) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const isDesignComplete = recipientName && selectedTheme && selectedFont;
+  const [isExpanded, setIsExpanded] = useState(!initiallyCollapsed || !isDesignComplete);
   
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {
@@ -48,9 +51,6 @@ export const DeckDesigner = ({
     };
     return font ? fontNames[font as keyof typeof fontNames] : 'Not selected';
   };
-
-  // Check if deck design is complete enough to show collapsed view
-  const isDesignComplete = recipientName && selectedTheme && selectedFont;
 
   // Auto-collapse when design is complete and user starts adding cards
   React.useEffect(() => {

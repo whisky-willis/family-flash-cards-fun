@@ -44,6 +44,7 @@ const CreateCards = () => {
   const [recipientName, setRecipientName] = useState('');
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
+  const [loadedFromProfile, setLoadedFromProfile] = useState(false);
 
   // Load draft deck design on mount
   useEffect(() => {
@@ -52,6 +53,10 @@ const CreateCards = () => {
       setRecipientName(draft.deckDesign.recipientName || '');
       setDeckTheme(draft.deckDesign.theme);
       setDeckFont(draft.deckDesign.font);
+      // If there's a complete design in draft, assume it was loaded from profile
+      if (draft.deckDesign.recipientName && draft.deckDesign.theme && draft.deckDesign.font) {
+        setLoadedFromProfile(true);
+      }
     }
   }, [getDraft]);
 
@@ -281,6 +286,7 @@ const CreateCards = () => {
               recipientName={recipientName}
               selectedTheme={deckTheme}
               selectedFont={deckFont}
+              initiallyCollapsed={loadedFromProfile}
               onRecipientNameChange={setRecipientName}
               onThemeChange={setDeckTheme}
               onFontChange={setDeckFont}
