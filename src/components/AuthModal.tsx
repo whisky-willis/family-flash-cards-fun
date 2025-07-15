@@ -49,16 +49,47 @@ export function AuthModal({ open, onOpenChange, cards, deckDesign, onSuccess }: 
 
     try {
       // Create new account
-      const { error: signUpError } = await signUp(email, password, name);
+      const { data, error: signUpError } = await signUp(email, password, name);
       if (signUpError) throw signUpError;
 
-      // Save collection after successful account creation
-      await saveCollection();
+      // For new signups, we get the user from the signup response
+      // even if email confirmation is pending
+      if (data?.user) {
+        await saveCollectionForUser(data.user.id);
+      } else {
+        throw new Error('Failed to create account');
+      }
       
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveCollectionForUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('card_collections')
+        .insert({
+          user_id: userId,
+          name: deckDesign?.recipientName || 'My Card Collection',
+          description: 'Cards created in the card builder',
+          cards: JSON.parse(JSON.stringify(cards)) as any,
+          deck_design: deckDesign ? JSON.parse(JSON.stringify(deckDesign)) as any : null
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Your account has been created and cards saved! Please check your email to verify your account.",
+      });
+
+      onSuccess();
+      onOpenChange(false);
+    } catch (err: any) {
+      setError(err.message || 'Failed to save collection');
     }
   };
 
