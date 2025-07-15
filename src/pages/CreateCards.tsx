@@ -205,9 +205,13 @@ const CreateCards = () => {
   const handleAuthSuccess = () => {
     clearDraft();
     toast({
-      title: "Success!",
-      description: "Your account has been created and cards saved!",
+      title: "Account Created Successfully!",
+      description: "Your cards have been saved. Refreshing page...",
     });
+    // Refresh the page to load the user's saved collection
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   return (
