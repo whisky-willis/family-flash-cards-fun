@@ -157,7 +157,10 @@ export default function Profile() {
               <Button onClick={() => navigate('/create')} variant="outline">
                 Create Cards
               </Button>
-              <Button onClick={signOut} variant="outline">
+              <Button onClick={async () => {
+                await signOut();
+                navigate('/');
+              }} variant="outline">
                 Sign Out
               </Button>
             </div>
