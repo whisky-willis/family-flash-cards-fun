@@ -116,7 +116,7 @@ export default function Profile() {
       font: undefined
     };
     
-    console.log('📂 Loading collection from profile:', collection.name, 'with deck design:', deckDesign);
+    
     saveDraftToLocal(collection.cards, deckDesign);
     
     // Navigate to create page
