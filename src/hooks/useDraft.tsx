@@ -36,27 +36,35 @@ export const useDraft = () => {
 
   // Save draft to localStorage
   const saveDraftToLocal = useCallback((cards: FamilyCard[], deckDesign?: DraftData['deckDesign']) => {
+    console.log('💾 useDraft: saveDraftToLocal called with:', { cards: cards.length, deckDesign });
+    
     const draftData: DraftData = { 
       cards, 
-      deckDesign: deckDesign || draft.deckDesign 
+      deckDesign: deckDesign !== undefined ? deckDesign : draft.deckDesign 
     };
+    
+    console.log('💾 useDraft: Final draftData:', draftData);
+    
     setDraft(draftData);
-    if (cards.length > 0 || deckDesign) {
+    
+    // Save to localStorage if there are cards OR if deckDesign is provided
+    if (cards.length > 0 || deckDesign !== undefined) {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
+        console.log('💾 useDraft: Successfully saved to localStorage');
       } catch (error) {
         if (error instanceof DOMException && error.name === 'QuotaExceededError') {
           console.warn('⚠️ LocalStorage quota exceeded, skipping draft save');
-          // Clear existing draft to free up space
           localStorage.removeItem(DRAFT_KEY);
         } else {
           console.error('Failed to save draft to localStorage:', error);
         }
       }
     } else {
+      console.log('💾 useDraft: Removing from localStorage (no cards and no deckDesign)');
       localStorage.removeItem(DRAFT_KEY);
     }
-  }, [draft.deckDesign]);
+  }, []); // Remove problematic dependency
 
   // Get current draft
   const getDraft = useCallback(() => {
