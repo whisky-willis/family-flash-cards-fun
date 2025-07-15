@@ -46,8 +46,18 @@ const CreateCards = () => {
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
   const [loadedFromProfile, setLoadedFromProfile] = useState(false);
 
-  // Load draft deck design on mount
+  // Load draft deck design on mount only for authenticated users
   useEffect(() => {
+    if (!user) {
+      // Clear draft data for non-authenticated users
+      clearDraft();
+      setRecipientName('');
+      setDeckTheme(undefined);
+      setDeckFont(undefined);
+      setLoadedFromProfile(false);
+      return;
+    }
+
     const draft = getDraft();
     if (draft.deckDesign) {
       setRecipientName(draft.deckDesign.recipientName || '');
@@ -58,7 +68,7 @@ const CreateCards = () => {
         setLoadedFromProfile(true);
       }
     }
-  }, [getDraft]);
+  }, [user, getDraft, clearDraft]);
 
   // Save deck design changes to draft
   useEffect(() => {
