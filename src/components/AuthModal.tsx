@@ -21,10 +21,15 @@ interface AuthModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   cards: FamilyCard[];
+  deckDesign?: {
+    recipientName: string;
+    theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+    font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
+  };
   onSuccess: () => void;
 }
 
-export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalProps) {
+export function AuthModal({ open, onOpenChange, cards, deckDesign, onSuccess }: AuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -150,8 +155,9 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
         .insert({
           user_id: user.id,
           name: 'My Card Collection',
-          description: 'Cards created in the card builder',
-          cards: JSON.parse(JSON.stringify(cards)) as any
+          description: 'Cards created using Kindred Cards',
+          cards: cards as any,
+          deck_design: deckDesign
         });
 
       if (error) throw error;

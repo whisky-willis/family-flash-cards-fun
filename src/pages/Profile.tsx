@@ -73,7 +73,8 @@ export default function Profile() {
         if (collectionsError) throw collectionsError;
         setCollections((collectionsData || []).map(collection => ({
           ...collection,
-          cards: Array.isArray(collection.cards) ? collection.cards as unknown as FamilyCard[] : []
+          cards: Array.isArray(collection.cards) ? collection.cards as unknown as FamilyCard[] : [],
+          deck_design: collection.deck_design as CardCollection['deck_design']
         })));
       } catch (err: any) {
         setError(err.message || 'Failed to load profile data');
