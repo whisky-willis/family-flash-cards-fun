@@ -137,9 +137,9 @@ export function AuthModal({ open, onOpenChange, cards, deckDesign, onSuccess }: 
 
         <div className="space-y-4 mt-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="fullName">Full Name</Label>
             <Input
-              id="name"
+              id="fullName"
               type="text"
               placeholder="Your name"
               value={name}
