@@ -52,26 +52,18 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
 
     try {
       if (isAnonymous) {
-        // For anonymous users, add email without password and send magic link
-        const { error: updateError } = await supabase.auth.updateUser({
-          email: magicEmail,
-          data: { name: magicEmail.split('@')[0] }
-        });
-        if (updateError) throw updateError;
+        // For anonymous users, use email/password conversion to maintain the same user ID
+        const tempPassword = Math.random().toString(36).slice(-8) + "A1!"; // Generate temp password
+        const { error } = await convertAnonymousUser(magicEmail, tempPassword, magicEmail.split('@')[0]);
+        
+        if (error) throw error;
 
-        // Send magic link to the updated user
-        const { error: emailError } = await supabase.auth.signInWithOtp({
-          email: magicEmail,
-          options: {
-            emailRedirectTo: `${window.location.origin}/profile`
-          }
-        });
-        if (emailError) throw emailError;
-
-        setMagicLinkSent(true);
+        // Save cards after successful conversion
+        await saveCollection();
+        
         toast({
-          title: "Magic Link Sent!",
-          description: "Check your email and click the link to complete verification. Your cards will be available in your profile.",
+          title: "Account Created!",
+          description: "Your account has been created and your cards have been saved.",
         });
       } else {
         // Regular magic link for non-anonymous users
@@ -91,7 +83,7 @@ export function AuthModal({ open, onOpenChange, cards, onSuccess }: AuthModalPro
         });
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to send magic link');
+      setError(err.message || 'Failed to authenticate');
     } finally {
       setLoading(false);
     }
