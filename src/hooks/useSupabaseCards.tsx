@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { FamilyCard } from '@/pages/CreateCards';
 
 export const useSupabaseCards = () => {
-  const { user, createAnonymousUser } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [cards, setCards] = useState<FamilyCard[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -13,8 +13,6 @@ export const useSupabaseCards = () => {
 
   const loadCardsFromDatabase = async () => {
     if (!user) return;
-    
-    console.log('📋 Loading cards from database for user:', user.id);
     
     try {
       const { data, error } = await supabase
@@ -33,9 +31,7 @@ export const useSupabaseCards = () => {
       if (data && data.cards) {
         const loadedCards = Array.isArray(data.cards) ? (data.cards as unknown) as FamilyCard[] : [];
         setCards(loadedCards);
-        console.log('✅ Loaded cards from database:', loadedCards.length);
       } else {
-        console.log('📭 No existing cards found in database');
         setCards([]);
       }
     } catch (error) {
@@ -47,12 +43,10 @@ export const useSupabaseCards = () => {
 
   const saveCardsToDatabase = async (cardsToSave: FamilyCard[]) => {
     if (!user) {
-      console.warn('⚠️ No user available for saving cards');
       return false;
     }
 
     setIsSaving(true);
-    console.log('💾 Saving cards to database:', cardsToSave.length);
 
     try {
       // Check if user already has a collection
@@ -73,20 +67,18 @@ export const useSupabaseCards = () => {
           .eq('id', existingCollection.id);
 
         if (error) throw error;
-        console.log('✅ Updated existing collection');
       } else {
         // Create new collection
         const { error } = await supabase
           .from('card_collections')
           .insert({
             user_id: user.id,
-            name: user.is_anonymous ? 'Draft Collection' : 'My Cards',
-            description: user.is_anonymous ? 'Collection created while browsing' : 'My family card collection',
+            name: 'My Cards',
+            description: 'My family card collection',
             cards: cardsToSave as any
           });
 
         if (error) throw error;
-        console.log('✅ Created new collection');
       }
 
       return true;
@@ -105,28 +97,16 @@ export const useSupabaseCards = () => {
 
   const migrateDraftToAuthenticated = useCallback(async () => {
     try {
-      console.log('🔍 Checking for draft migration...', { 
-        hasUser: !!user, 
-        isAnonymous: user?.is_anonymous, 
-        cardsLength: cards.length 
-      });
-      
-      // Only migrate localStorage drafts for email/password auth flow
-      // Magic link flow keeps cards in database with same user_id
       const draftData = localStorage.getItem('kindred-cards-draft');
-      console.log('📦 Draft data found:', !!draftData);
       
-      if (draftData && user && !user.is_anonymous && cards.length === 0) {
-        console.log('🔄 Migrating draft cards to authenticated user...');
+      if (draftData && user && cards.length === 0) {
         const draftCards = JSON.parse(draftData) as FamilyCard[];
-        console.log('📝 Draft cards to migrate:', draftCards.length);
         
         if (draftCards.length > 0) {
           const success = await saveCardsToDatabase(draftCards);
           if (success) {
             setCards(draftCards);
             localStorage.removeItem('kindred-cards-draft');
-            console.log('✅ Successfully migrated draft cards');
             toast({
               title: "Cards Saved!",
               description: `Successfully saved ${draftCards.length} cards to your account.`,
@@ -139,57 +119,18 @@ export const useSupabaseCards = () => {
     }
   }, [user, toast, cards.length]);
 
-  // Initialize user session and load cards
+  // Load cards when user is available
   useEffect(() => {
-    const initializeSession = async () => {
-      console.log('🚀 Initializing card session...');
-      
-      // Check if we're in the middle of an auth flow (magic link, etc.)
-      const isAuthFlow = window.location.search.includes('token=') || 
-                        window.location.search.includes('code=') ||
-                        window.location.hash.includes('access_token');
-      
-      // Check if user explicitly signed out (prevent anonymous creation after sign out)
-      const justSignedOut = sessionStorage.getItem('just-signed-out') === 'true';
-      
-      // Only create anonymous user if:
-      // 1. We're on the create page
-      // 2. No user exists
-      // 3. Not in auth flow
-      // 4. User didn't just sign out
-      const shouldCreateAnonymous = !user && 
-                                   window.location.pathname === '/create' && 
-                                   !isAuthFlow && 
-                                   !justSignedOut;
-      
-      if (shouldCreateAnonymous) {
-        console.log('👤 No user found, creating anonymous user...');
-        const { error } = await createAnonymousUser();
-        if (error) {
-          console.error('❌ Failed to create anonymous user:', error);
-          toast({
-            title: "Session Error",
-            description: "Failed to initialize session. Please refresh the page.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-      
-      // Load cards from database if user exists
-      if (user) {
-        await loadCardsFromDatabase();
-      } else {
-        setIsLoaded(true);
-      }
-    };
-
-    initializeSession();
-  }, [user, createAnonymousUser, toast]);
+    if (user) {
+      loadCardsFromDatabase();
+    } else {
+      setIsLoaded(true);
+    }
+  }, [user]);
 
   // Handle draft migration for authenticated users
   useEffect(() => {
-    if (user && !user.is_anonymous && isLoaded && cards.length === 0) {
+    if (user && isLoaded && cards.length === 0) {
       migrateDraftToAuthenticated();
     }
   }, [user, isLoaded, cards.length, migrateDraftToAuthenticated]);
@@ -197,8 +138,8 @@ export const useSupabaseCards = () => {
   const updateCards = useCallback(async (newCards: FamilyCard[]) => {
     setCards(newCards);
     
-    // Auto-save to database
-    if (isLoaded) {
+    // Auto-save to database if user is authenticated
+    if (isLoaded && user) {
       await saveCardsToDatabase(newCards);
     }
   }, [isLoaded, user]);
@@ -212,7 +153,7 @@ export const useSupabaseCards = () => {
     const updatedCards = [...cards, cardWithId];
     await updateCards(updatedCards);
     
-    console.log('➕ Added card:', newCard.name);
+    
     return cardWithId;
   }, [cards, updateCards]);
 
@@ -224,18 +165,18 @@ export const useSupabaseCards = () => {
     );
     
     await updateCards(updatedCards);
-    console.log('✏️ Updated card:', cardId);
+    
   }, [cards, updateCards]);
 
   const removeCard = useCallback(async (cardId: string) => {
     const updatedCards = cards.filter(card => card.id !== cardId);
     await updateCards(updatedCards);
-    console.log('🗑️ Removed card:', cardId);
+    
   }, [cards, updateCards]);
 
   const clearCards = useCallback(async () => {
     await updateCards([]);
-    console.log('🧹 Cleared all cards');
+    
   }, [updateCards]);
 
   return {

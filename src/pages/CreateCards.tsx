@@ -31,7 +31,7 @@ export interface FamilyCard {
 const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, isAnonymous } = useAuth();
+  const { user } = useAuth();
   const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
   const { saveDraftToLocal, clearDraft, getDraft, saveDeckDesign } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
@@ -87,7 +87,7 @@ const CreateCards = () => {
     
     toast({
       title: "Card Added!",
-      description: `${card.name}'s card has been ${isAnonymous ? 'saved to your draft' : 'added to your collection'}.`,
+      description: `${card.name}'s card has been added to your collection.`,
     });
   };
 
@@ -165,7 +165,7 @@ const CreateCards = () => {
       return;
     }
     
-    if (!user || isAnonymous) {
+    if (!user) {
       setShowAuthModal(true);
     } else {
       // User is already authenticated, save directly
