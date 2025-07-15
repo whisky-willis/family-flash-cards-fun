@@ -46,11 +46,10 @@ const CreateCards = () => {
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
   const [loadedFromProfile, setLoadedFromProfile] = useState(false);
 
-  // Load draft deck design on mount only for authenticated users
+  // Load draft deck design on mount, only clear when user auth status changes
   useEffect(() => {
     if (!user) {
-      // Clear draft data for non-authenticated users
-      clearDraft();
+      // Only clear for non-authenticated users on auth status change
       setRecipientName('');
       setDeckTheme(undefined);
       setDeckFont(undefined);
@@ -68,7 +67,7 @@ const CreateCards = () => {
         setLoadedFromProfile(true);
       }
     }
-  }, [user, getDraft, clearDraft]);
+  }, [user]); // Only depend on user state, not draft functions
 
   // Save deck design changes to draft
   useEffect(() => {
