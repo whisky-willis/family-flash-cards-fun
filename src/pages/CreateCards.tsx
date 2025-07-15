@@ -62,8 +62,8 @@ const CreateCards = () => {
       setRecipientName(draft.deckDesign.recipientName || '');
       setDeckTheme(draft.deckDesign.theme);
       setDeckFont(draft.deckDesign.font);
-      // If there's a complete design in draft, assume it was loaded from profile
-      if (draft.deckDesign.recipientName && draft.deckDesign.theme && draft.deckDesign.font) {
+      // If there's any deck design data in draft, assume it was loaded from profile
+      if (draft.deckDesign.recipientName || draft.deckDesign.theme || draft.deckDesign.font) {
         setLoadedFromProfile(true);
       }
     }
