@@ -128,12 +128,10 @@ export default function Profile() {
     console.log('🔄 Profile: About to call saveDraftToLocal...');
     saveDraftToLocal(collection.cards, deckDesign);
     
-    // Verify the draft was saved
-    setTimeout(() => {
-      const savedDraft = getDraft();
-      console.log('🔄 Profile: Verified saved draft:', savedDraft);
-      console.log('🔄 Profile: Draft deckDesign:', savedDraft.deckDesign);
-    }, 100);
+    // Verify the draft was saved (now works immediately due to getDraft() fix)
+    const savedDraft = getDraft();
+    console.log('🔄 Profile: Verified saved draft:', savedDraft);
+    console.log('🔄 Profile: Draft deckDesign:', savedDraft.deckDesign);
     
     // Navigate to create page
     console.log('🔄 Profile: Navigating to /create...');

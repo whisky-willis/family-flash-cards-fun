@@ -66,10 +66,25 @@ export const useDraft = () => {
     }
   }, []); // Remove problematic dependency
 
-  // Get current draft
-  const getDraft = useCallback(() => {
-    return draft;
-  }, [draft]);
+  // Get current draft - read from localStorage as source of truth to avoid race conditions
+  const getDraft = useCallback((): DraftData => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      try {
+        const parsedDraft = JSON.parse(savedDraft);
+        // Handle legacy format (just array of cards)
+        if (Array.isArray(parsedDraft)) {
+          return { cards: parsedDraft };
+        } else {
+          return parsedDraft;
+        }
+      } catch (error) {
+        console.error('Failed to parse draft from localStorage in getDraft:', error);
+        localStorage.removeItem(DRAFT_KEY);
+      }
+    }
+    return { cards: [] };
+  }, []); // No dependency on draft state to avoid stale closures
 
   // Clear draft
   const clearDraft = useCallback(() => {
@@ -91,8 +106,8 @@ export const useDraft = () => {
     }
   }, [draft.cards]);
 
-  // Check if draft exists
-  const hasDraft = draft.cards.length > 0;
+  // Check if draft exists - use getDraft() for consistency
+  const hasDraft = getDraft().cards.length > 0;
 
   return {
     draft,
