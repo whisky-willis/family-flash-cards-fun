@@ -74,6 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Clear any local draft data when signing out
+    localStorage.removeItem('kindred-cards-draft');
   };
 
   const value = {
