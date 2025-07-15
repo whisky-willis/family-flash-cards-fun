@@ -18,6 +18,7 @@ interface CardCollection {
   name: string;
   description: string | null;
   cards: FamilyCard[];
+  deck_design: any;
   created_at: string;
   updated_at: string;
 }

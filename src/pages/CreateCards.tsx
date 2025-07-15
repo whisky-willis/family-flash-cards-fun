@@ -33,7 +33,7 @@ const CreateCards = () => {
   const { toast } = useToast();
   const { user, isAnonymous } = useAuth();
   const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
-  const { saveDraftToLocal, clearDraft } = useDraft();
+  const { saveDraftToLocal, clearDraft, getDraft, saveDeckDesign } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
@@ -44,6 +44,27 @@ const CreateCards = () => {
   const [recipientName, setRecipientName] = useState('');
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
+
+  // Load draft deck design on mount
+  useEffect(() => {
+    const draft = getDraft();
+    if (draft.deckDesign) {
+      setRecipientName(draft.deckDesign.recipientName || '');
+      setDeckTheme(draft.deckDesign.theme);
+      setDeckFont(draft.deckDesign.font);
+    }
+  }, [getDraft]);
+
+  // Save deck design changes to draft
+  useEffect(() => {
+    if (recipientName || deckTheme || deckFont) {
+      saveDeckDesign({
+        recipientName,
+        theme: deckTheme,
+        font: deckFont
+      });
+    }
+  }, [recipientName, deckTheme, deckFont, saveDeckDesign]);
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
@@ -342,6 +363,11 @@ const CreateCards = () => {
           open={showAuthModal}
           onOpenChange={setShowAuthModal}
           cards={cards}
+          deckDesign={{
+            recipientName,
+            theme: deckTheme,
+            font: deckFont
+          }}
           onSuccess={handleAuthSuccess}
         />
       </div>
