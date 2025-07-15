@@ -14,7 +14,6 @@ import { User } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { FamilyCard } from '@/pages/CreateCards';
 import { supabase } from '@/integrations/supabase/client';
-import { createClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthModalProps {
@@ -70,13 +69,7 @@ export function AuthModal({ open, onOpenChange, cards, deckDesign, onSuccess }: 
 
   const saveCollectionForUser = async (userId: string) => {
     try {
-      // Use service role to bypass RLS for new user signup
-      const serviceSupabase = createClient(
-        'https://ngxvbmxhziirnxkycodx.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neHZibXhoemlpcm54a3ljb2R4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTcyNDU3NiwiZXhwIjoyMDY3MzAwNTc2fQ.NqfN-fv3STtWlSGNjR5kxj1GZNuOTZ_m9OqPgj7RQIo'
-      );
-
-      const { error } = await serviceSupabase
+      const { error } = await supabase
         .from('card_collections')
         .insert({
           user_id: userId,
