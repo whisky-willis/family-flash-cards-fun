@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,14 @@ export const DeckDesigner = ({
   const isDesignComplete = recipientName && selectedTheme && selectedFont;
   console.log('🔧 DeckDesigner render - initiallyCollapsed:', initiallyCollapsed, 'isDesignComplete:', isDesignComplete);
   const [isExpanded, setIsExpanded] = useState(!(initiallyCollapsed && isDesignComplete));
+  
+  // Update expanded state when initiallyCollapsed and isDesignComplete change
+  useEffect(() => {
+    if (initiallyCollapsed && isDesignComplete) {
+      console.log('🎯 Setting isExpanded to false due to complete design being loaded');
+      setIsExpanded(false);
+    }
+  }, [initiallyCollapsed, isDesignComplete]);
   
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {
