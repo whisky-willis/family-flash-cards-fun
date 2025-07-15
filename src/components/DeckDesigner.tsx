@@ -28,7 +28,8 @@ export const DeckDesigner = ({
   onPreviewChange
 }: DeckDesignerProps) => {
   const isDesignComplete = recipientName && selectedTheme && selectedFont;
-  const [isExpanded, setIsExpanded] = useState(!initiallyCollapsed || !isDesignComplete);
+  console.log('🔧 DeckDesigner render - initiallyCollapsed:', initiallyCollapsed, 'isDesignComplete:', isDesignComplete);
+  const [isExpanded, setIsExpanded] = useState(!(initiallyCollapsed && isDesignComplete));
   
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {

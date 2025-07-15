@@ -49,12 +49,15 @@ const CreateCards = () => {
   // Load draft deck design on mount
   useEffect(() => {
     const draft = getDraft();
+    console.log('🎯 Loading draft on CreateCards mount:', draft);
     if (draft.deckDesign) {
+      console.log('📝 Found deck design in draft:', draft.deckDesign);
       setRecipientName(draft.deckDesign.recipientName || '');
       setDeckTheme(draft.deckDesign.theme);
       setDeckFont(draft.deckDesign.font);
       // If there's a complete design in draft, assume it was loaded from profile
       if (draft.deckDesign.recipientName && draft.deckDesign.theme && draft.deckDesign.font) {
+        console.log('✅ Complete deck design found - setting loadedFromProfile to true');
         setLoadedFromProfile(true);
       }
     }
