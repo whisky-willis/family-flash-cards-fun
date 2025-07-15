@@ -18,7 +18,6 @@ export type Database = {
         Row: {
           cards: Json
           created_at: string
-          deck_design: Json | null
           description: string | null
           id: string
           name: string
@@ -28,7 +27,6 @@ export type Database = {
         Insert: {
           cards?: Json
           created_at?: string
-          deck_design?: Json | null
           description?: string | null
           id?: string
           name: string
@@ -38,7 +36,6 @@ export type Database = {
         Update: {
           cards?: Json
           created_at?: string
-          deck_design?: Json | null
           description?: string | null
           id?: string
           name?: string

@@ -20,11 +20,6 @@ interface CardCollection {
   cards: FamilyCard[];
   created_at: string;
   updated_at: string;
-  deck_design?: {
-    recipientName: string;
-    theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
-    font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
-  };
 }
 
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
@@ -73,8 +68,7 @@ export default function Profile() {
         if (collectionsError) throw collectionsError;
         setCollections((collectionsData || []).map(collection => ({
           ...collection,
-          cards: Array.isArray(collection.cards) ? collection.cards as unknown as FamilyCard[] : [],
-          deck_design: collection.deck_design as CardCollection['deck_design']
+          cards: Array.isArray(collection.cards) ? collection.cards as unknown as FamilyCard[] : []
         })));
       } catch (err: any) {
         setError(err.message || 'Failed to load profile data');

@@ -14,7 +14,6 @@ interface DeckDesignerProps {
   onThemeChange: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports') => void;
   onFontChange: (font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
   onPreviewChange?: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
-  initiallyCollapsed?: boolean;
 }
 
 export const DeckDesigner = ({
@@ -24,14 +23,9 @@ export const DeckDesigner = ({
   onRecipientNameChange,
   onThemeChange,
   onFontChange,
-  onPreviewChange,
-  initiallyCollapsed = false
+  onPreviewChange
 }: DeckDesignerProps) => {
-  // Check if deck design is complete
-  const isDesignComplete = recipientName && selectedTheme && selectedFont;
-  
-  // Initialize collapsed state based on whether design is complete and initiallyCollapsed prop
-  const [isExpanded, setIsExpanded] = useState(!initiallyCollapsed && !isDesignComplete);
+  const [isExpanded, setIsExpanded] = useState(true);
   
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {
@@ -56,14 +50,14 @@ export const DeckDesigner = ({
   };
 
   // Check if deck design is complete enough to show collapsed view
-  const canCollapse = recipientName && selectedTheme && selectedFont;
+  const isDesignComplete = recipientName && selectedTheme && selectedFont;
 
   // Auto-collapse when design is complete and user starts adding cards
   React.useEffect(() => {
-    if (canCollapse && initiallyCollapsed) {
-      setIsExpanded(false);
+    if (isDesignComplete && isExpanded) {
+      // Keep expanded initially, but user can manually collapse
     }
-  }, [canCollapse, initiallyCollapsed]);
+  }, [isDesignComplete, isExpanded]);
 
   return (
     <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-purple/20 rounded-3xl shadow-lg mb-8">
@@ -74,7 +68,7 @@ export const DeckDesigner = ({
               <Heart className="h-6 w-6 text-art-purple" />
               <span>Design Your Deck</span>
             </CardTitle>
-            {!isExpanded && canCollapse && (
+            {!isExpanded && isDesignComplete && (
               <div className="mt-2 text-sm text-muted-foreground space-y-1">
                 <p><strong>For:</strong> {recipientName}</p>
                 <p><strong>Theme:</strong> {getThemeDisplayName(selectedTheme)} • <strong>Font:</strong> {getFontDisplayName(selectedFont)}</p>
@@ -87,7 +81,7 @@ export const DeckDesigner = ({
             )}
           </div>
           <div className="flex items-center gap-2">
-            {!isExpanded && canCollapse && (
+            {!isExpanded && isDesignComplete && (
               <Button
                 variant="outline"
                 size="sm"
@@ -98,7 +92,7 @@ export const DeckDesigner = ({
                 Edit
               </Button>
             )}
-            {canCollapse && (
+            {isDesignComplete && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -147,18 +141,18 @@ export const DeckDesigner = ({
             />
           </div>
 
-            {canCollapse && (
-              <div className="pt-4 border-t">
-                <Button
-                  onClick={() => setIsExpanded(false)}
-                  variant="outline"
-                  className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10 hover:text-art-purple"
-                >
-                  👍
-                  Save Design
-                </Button>
-              </div>
-            )}
+          {isDesignComplete && (
+            <div className="pt-4 border-t">
+              <Button
+                onClick={() => setIsExpanded(false)}
+                variant="outline"
+                className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10 hover:text-art-purple"
+              >
+                👍
+                Save Design
+              </Button>
+            </div>
+          )}
         </CardContent>
       )}
     </Card>

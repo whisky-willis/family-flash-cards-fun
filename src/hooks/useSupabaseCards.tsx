@@ -45,7 +45,7 @@ export const useSupabaseCards = () => {
     }
   };
 
-  const saveCardsToDatabase = async (cardsToSave: FamilyCard[], deckDesign?: any) => {
+  const saveCardsToDatabase = async (cardsToSave: FamilyCard[]) => {
     if (!user) {
       console.warn('⚠️ No user available for saving cards');
       return false;
@@ -68,7 +68,6 @@ export const useSupabaseCards = () => {
           .from('card_collections')
           .update({
             cards: cardsToSave as any,
-            deck_design: deckDesign,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingCollection.id);
@@ -83,8 +82,7 @@ export const useSupabaseCards = () => {
             user_id: user.id,
             name: user.is_anonymous ? 'Draft Collection' : 'My Cards',
             description: user.is_anonymous ? 'Collection created while browsing' : 'My family card collection',
-            cards: cardsToSave as any,
-            deck_design: deckDesign
+            cards: cardsToSave as any
           });
 
         if (error) throw error;

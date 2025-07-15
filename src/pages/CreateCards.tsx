@@ -33,34 +33,17 @@ const CreateCards = () => {
   const { toast } = useToast();
   const { user, isAnonymous } = useAuth();
   const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
-  const { saveDraftToLocal, clearDraft, saveDeckDesign, draft } = useDraft();
+  const { saveDraftToLocal, clearDraft } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   
   
-  // Deck-level state - initialized from draft if available
-  const [recipientName, setRecipientName] = useState(draft.deckDesign?.recipientName || '');
-  const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>(draft.deckDesign?.theme);
-  const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>(draft.deckDesign?.font);
-
-  // Auto-collapse deck designer if design is loaded from draft
-  const [isDeckDesignerCollapsed, setIsDeckDesignerCollapsed] = useState(Boolean(draft.deckDesign?.recipientName && draft.deckDesign?.theme && draft.deckDesign?.font));
-
-  // Save deck design whenever it changes
-  const handleDeckDesignChange = (recipientName: string, theme?: typeof deckTheme, font?: typeof deckFont) => {
-    if (recipientName !== undefined) setRecipientName(recipientName);
-    if (theme !== undefined) setDeckTheme(theme);
-    if (font !== undefined) setDeckFont(font);
-    
-    // Save to draft
-    saveDeckDesign({
-      recipientName: recipientName !== undefined ? recipientName : recipientName,
-      theme: theme !== undefined ? theme : deckTheme,
-      font: font !== undefined ? font : deckFont
-    });
-  };
+  // Deck-level state
+  const [recipientName, setRecipientName] = useState('');
+  const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
+  const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
@@ -70,13 +53,8 @@ const CreateCards = () => {
     const newCard = await addCard(card);
     const updatedCards = [...cards, newCard];
     
-    // Save cards and current deck design to draft
-    const deckDesign = recipientName || deckTheme || deckFont ? {
-      recipientName,
-      theme: deckTheme,
-      font: deckFont
-    } : undefined;
-    saveDraftToLocal(updatedCards, deckDesign);
+    // Save to draft for persistence
+    saveDraftToLocal(updatedCards);
     
     setCurrentCard({});
     setPreviewCard({});
@@ -97,18 +75,13 @@ const CreateCards = () => {
     if (currentCard.id) {
       await updateCard(currentCard.id, updatedCard);
       
-      // Update draft with modified cards and current deck design
+      // Update draft with modified cards
       const updatedCards = cards.map(card => 
         card.id === currentCard.id 
           ? { ...updatedCard, id: currentCard.id }
           : card
       );
-      const deckDesign = recipientName || deckTheme || deckFont ? {
-        recipientName,
-        theme: deckTheme,
-        font: deckFont
-      } : undefined;
-      saveDraftToLocal(updatedCards, deckDesign);
+      saveDraftToLocal(updatedCards);
       
       setCurrentCard({});
       setPreviewCard({});
@@ -124,14 +97,9 @@ const CreateCards = () => {
   const handleDeleteCard = async (cardId: string) => {
     await removeCard(cardId);
     
-    // Update draft after deletion with current deck design
+    // Update draft after deletion
     const updatedCards = cards.filter(card => card.id !== cardId);
-    const deckDesign = recipientName || deckTheme || deckFont ? {
-      recipientName,
-      theme: deckTheme,
-      font: deckFont
-    } : undefined;
-    saveDraftToLocal(updatedCards, deckDesign);
+    saveDraftToLocal(updatedCards);
     
     toast({
       title: "Card Removed",
@@ -292,22 +260,12 @@ const CreateCards = () => {
               recipientName={recipientName}
               selectedTheme={deckTheme}
               selectedFont={deckFont}
-              onRecipientNameChange={(name) => {
-                setRecipientName(name);
-                handleDeckDesignChange(name, deckTheme, deckFont);
-              }}
-              onThemeChange={(theme) => {
-                setDeckTheme(theme);
-                handleDeckDesignChange(recipientName, theme, deckFont);
-              }}
-              onFontChange={(font) => {
-                setDeckFont(font);
-                handleDeckDesignChange(recipientName, deckTheme, font);
-              }}
+              onRecipientNameChange={setRecipientName}
+              onThemeChange={setDeckTheme}
+              onFontChange={setDeckFont}
               onPreviewChange={(theme, font) => {
                 // No need to update preview card theme/font since we use deck-level settings
               }}
-              initiallyCollapsed={Boolean(draft.deckDesign?.recipientName && draft.deckDesign?.theme && draft.deckDesign?.font)}
             />
 
             {/* Card Form */}
@@ -384,11 +342,6 @@ const CreateCards = () => {
           open={showAuthModal}
           onOpenChange={setShowAuthModal}
           cards={cards}
-          deckDesign={recipientName || deckTheme || deckFont ? {
-            recipientName,
-            theme: deckTheme,
-            font: deckFont
-          } : undefined}
           onSuccess={handleAuthSuccess}
         />
       </div>
