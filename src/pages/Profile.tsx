@@ -110,12 +110,16 @@ export default function Profile() {
 
   const handleLoadCollection = (collection: CardCollection) => {
     // Load the collection's cards and deck design into draft
+    console.log('Loading collection:', collection);
+    console.log('Raw deck_design:', collection.deck_design);
+    
     const deckDesign = collection.deck_design || {
       recipientName: collection.name,
       theme: undefined,
       font: undefined
     };
     
+    console.log('Processed deckDesign:', deckDesign);
     
     saveDraftToLocal(collection.cards, deckDesign);
     
