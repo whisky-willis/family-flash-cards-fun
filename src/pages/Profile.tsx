@@ -20,6 +20,11 @@ interface CardCollection {
   cards: FamilyCard[];
   created_at: string;
   updated_at: string;
+  deck_design?: {
+    recipientName: string;
+    theme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
+    font?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
+  };
 }
 
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
