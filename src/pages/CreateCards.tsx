@@ -48,21 +48,33 @@ const CreateCards = () => {
 
   // Load draft data on component mount (only run once)
   useEffect(() => {
+    console.log('🎯 CreateCards: Component mounted, loading draft...');
     const draft = getDraft();
+    console.log('🎯 CreateCards: Retrieved draft:', draft);
+    console.log('🎯 CreateCards: Draft deckDesign:', draft.deckDesign);
     
-    if (draft.deckDesign && draft.deckDesign.recipientName) {
-      // Only load if there's actual data
-      setRecipientName(draft.deckDesign.recipientName || '');
-      setDeckTheme(draft.deckDesign.theme);
-      setDeckFont(draft.deckDesign.font);
-      setLoadedFromProfile(true);
+    if (draft.deckDesign) {
+      console.log('🎯 CreateCards: Found deckDesign in draft');
+      console.log('🎯 CreateCards: recipientName:', draft.deckDesign.recipientName);
+      console.log('🎯 CreateCards: theme:', draft.deckDesign.theme);
+      console.log('🎯 CreateCards: font:', draft.deckDesign.font);
+      
+      if (draft.deckDesign.recipientName) {
+        console.log('🎯 CreateCards: Setting form state from draft...');
+        setRecipientName(draft.deckDesign.recipientName);
+        setDeckTheme(draft.deckDesign.theme);
+        setDeckFont(draft.deckDesign.font);
+        setLoadedFromProfile(true);
+        console.log('🎯 CreateCards: Form state set, loadedFromProfile:', true);
+      } else {
+        console.log('🎯 CreateCards: No recipientName in deckDesign, skipping load');
+      }
+    } else {
+      console.log('🎯 CreateCards: No deckDesign found in draft');
     }
     
     if (draft.cards && draft.cards.length > 0) {
-      // Load draft cards if not using Supabase
-      if (!user) {
-        // Local cards will be shown via getDraft().cards in the UI
-      }
+      console.log('🎯 CreateCards: Found cards in draft:', draft.cards.length);
     }
   }, []); // Run only once on mount
 

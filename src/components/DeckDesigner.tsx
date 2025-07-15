@@ -27,15 +27,29 @@ export const DeckDesigner = ({
   onFontChange,
   onPreviewChange
 }: DeckDesignerProps) => {
+  console.log('🎨 DeckDesigner: Props received:', {
+    recipientName,
+    selectedTheme,
+    selectedFont,
+    initiallyCollapsed
+  });
+
   const isDesignComplete = recipientName && selectedTheme && selectedFont;
   // When loaded from profile (initiallyCollapsed=true), start expanded to show loaded values
   // When fresh session (initiallyCollapsed=false), start expanded for user input
   const [isExpanded, setIsExpanded] = useState(true);
   
+  console.log('🎨 DeckDesigner: Initial state:', {
+    isDesignComplete,
+    isExpanded,
+    initiallyCollapsed
+  });
+  
   // Auto-collapse only when design is complete and NOT loaded from profile
   useEffect(() => {
     if (!initiallyCollapsed && isDesignComplete) {
       // Only auto-collapse for fresh sessions when design is complete
+      console.log('🎨 DeckDesigner: Auto-collapsing for completed design');
       setIsExpanded(false);
     }
   }, [initiallyCollapsed, isDesignComplete]);

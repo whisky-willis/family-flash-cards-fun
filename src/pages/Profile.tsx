@@ -32,7 +32,7 @@ export default function Profile() {
   const [error, setError] = useState('');
   const { user, signOut, loading } = useAuth();
   const { toast } = useToast();
-  const { saveDraftToLocal } = useDraft();
+  const { saveDraftToLocal, getDraft } = useDraft();
   const navigate = useNavigate();
 
   // Redirect to auth if not logged in (but wait for auth to finish loading)
@@ -110,8 +110,8 @@ export default function Profile() {
 
   const handleLoadCollection = (collection: CardCollection) => {
     // Load the collection's cards and deck design into draft
-    console.log('Loading collection:', collection);
-    console.log('Raw deck_design:', collection.deck_design);
+    console.log('🔄 Profile: Loading collection:', collection);
+    console.log('🔄 Profile: Raw deck_design:', collection.deck_design);
     
     // Ensure proper default values for theme and font if they're undefined
     const rawDeckDesign = collection.deck_design as any;
@@ -121,11 +121,22 @@ export default function Profile() {
       font: rawDeckDesign?.font || 'bubblegum' as const
     };
     
-    console.log('Processed deckDesign with defaults:', deckDesign);
+    console.log('🔄 Profile: Processed deckDesign with defaults:', deckDesign);
+    console.log('🔄 Profile: Collection cards:', collection.cards);
     
+    // Save to draft with comprehensive logging
+    console.log('🔄 Profile: About to call saveDraftToLocal...');
     saveDraftToLocal(collection.cards, deckDesign);
     
+    // Verify the draft was saved
+    setTimeout(() => {
+      const savedDraft = getDraft();
+      console.log('🔄 Profile: Verified saved draft:', savedDraft);
+      console.log('🔄 Profile: Draft deckDesign:', savedDraft.deckDesign);
+    }, 100);
+    
     // Navigate to create page
+    console.log('🔄 Profile: Navigating to /create...');
     navigate('/create');
     
     toast({
