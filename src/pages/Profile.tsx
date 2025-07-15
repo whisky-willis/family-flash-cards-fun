@@ -108,8 +108,14 @@ export default function Profile() {
   };
 
   const handleLoadCollection = (collection: CardCollection) => {
-    // Load the collection's cards into draft
-    saveDraftToLocal(collection.cards);
+    // Load the collection's cards and deck design into draft
+    const deckDesign = collection.deck_design || {
+      recipientName: collection.name,
+      theme: undefined,
+      font: undefined
+    };
+    
+    saveDraftToLocal(collection.cards, deckDesign);
     
     // Navigate to create page
     navigate('/create');
