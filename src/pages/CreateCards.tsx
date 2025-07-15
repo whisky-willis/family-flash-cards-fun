@@ -58,13 +58,17 @@ const CreateCards = () => {
     }
 
     const draft = getDraft();
+    console.log('CreateCards: Loading draft on mount:', draft);
+    
     if (draft.deckDesign) {
+      console.log('CreateCards: Setting deck design from draft:', draft.deckDesign);
       setRecipientName(draft.deckDesign.recipientName || '');
       setDeckTheme(draft.deckDesign.theme);
       setDeckFont(draft.deckDesign.font);
       // If there's any deck design data in draft, assume it was loaded from profile
       if (draft.deckDesign.recipientName || draft.deckDesign.theme || draft.deckDesign.font) {
         setLoadedFromProfile(true);
+        console.log('CreateCards: Marked as loaded from profile');
       }
     }
   }, [user]); // Only depend on user state, not draft functions

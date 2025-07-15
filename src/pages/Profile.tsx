@@ -113,13 +113,15 @@ export default function Profile() {
     console.log('Loading collection:', collection);
     console.log('Raw deck_design:', collection.deck_design);
     
-    const deckDesign = collection.deck_design || {
-      recipientName: collection.name,
-      theme: undefined,
-      font: undefined
+    // Ensure proper default values for theme and font if they're undefined
+    const rawDeckDesign = collection.deck_design as any;
+    const deckDesign = {
+      recipientName: rawDeckDesign?.recipientName || collection.name,
+      theme: rawDeckDesign?.theme || 'geometric' as const,
+      font: rawDeckDesign?.font || 'bubblegum' as const
     };
     
-    console.log('Processed deckDesign:', deckDesign);
+    console.log('Processed deckDesign with defaults:', deckDesign);
     
     saveDraftToLocal(collection.cards, deckDesign);
     
