@@ -28,14 +28,16 @@ export const DeckDesigner = ({
   onPreviewChange
 }: DeckDesignerProps) => {
   const isDesignComplete = recipientName && selectedTheme && selectedFont;
-  const [isExpanded, setIsExpanded] = useState(!(initiallyCollapsed && isDesignComplete));
+  // When loaded from profile, start expanded so user can see the loaded values
+  const [isExpanded, setIsExpanded] = useState(!initiallyCollapsed);
   
-  // Update expanded state when initiallyCollapsed and isDesignComplete change
+  // Update expanded state only when manually changed, not when loaded from profile
   useEffect(() => {
-    if (initiallyCollapsed && isDesignComplete) {
+    if (initiallyCollapsed && isDesignComplete && !recipientName) {
+      // Only auto-collapse if it's a fresh session without loaded data
       setIsExpanded(false);
     }
-  }, [initiallyCollapsed, isDesignComplete]);
+  }, [initiallyCollapsed, isDesignComplete, recipientName]);
   
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {

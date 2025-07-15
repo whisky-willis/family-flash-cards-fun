@@ -46,32 +46,25 @@ const CreateCards = () => {
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
   const [loadedFromProfile, setLoadedFromProfile] = useState(false);
 
-  // Load draft deck design on mount, only clear when user auth status changes
+  // Load draft data on component mount (only run once)
   useEffect(() => {
-    if (!user) {
-      // Only clear for non-authenticated users on auth status change
-      setRecipientName('');
-      setDeckTheme(undefined);
-      setDeckFont(undefined);
-      setLoadedFromProfile(false);
-      return;
-    }
-
     const draft = getDraft();
-    console.log('CreateCards: Loading draft on mount:', draft);
     
-    if (draft.deckDesign) {
-      console.log('CreateCards: Setting deck design from draft:', draft.deckDesign);
+    if (draft.deckDesign && draft.deckDesign.recipientName) {
+      // Only load if there's actual data
       setRecipientName(draft.deckDesign.recipientName || '');
       setDeckTheme(draft.deckDesign.theme);
       setDeckFont(draft.deckDesign.font);
-      // If there's any deck design data in draft, assume it was loaded from profile
-      if (draft.deckDesign.recipientName || draft.deckDesign.theme || draft.deckDesign.font) {
-        setLoadedFromProfile(true);
-        console.log('CreateCards: Marked as loaded from profile');
+      setLoadedFromProfile(true);
+    }
+    
+    if (draft.cards && draft.cards.length > 0) {
+      // Load draft cards if not using Supabase
+      if (!user) {
+        // Local cards will be shown via getDraft().cards in the UI
       }
     }
-  }, [user]); // Only depend on user state, not draft functions
+  }, []); // Run only once on mount
 
   // Save deck design changes to draft
   useEffect(() => {
