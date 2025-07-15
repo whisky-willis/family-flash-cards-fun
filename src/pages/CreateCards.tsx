@@ -143,7 +143,10 @@ const CreateCards = () => {
   };
 
   const handleProceedToOrder = () => {
-    if (cards.length === 0) {
+    const draft = getDraft();
+    const effectiveCards = user ? cards : draft.cards;
+    
+    if (effectiveCards.length === 0) {
       toast({
         title: "No Cards Created",
         description: "Please create at least one card before proceeding to order.",
@@ -161,11 +164,14 @@ const CreateCards = () => {
       return;
     }
     
-    navigate('/order', { state: { cards } });
+    navigate('/order', { state: { cards: effectiveCards } });
   };
 
   const handleSaveCollection = () => {
-    if (cards.length === 0) {
+    const draft = getDraft();
+    const effectiveCards = user ? cards : draft.cards;
+    
+    if (effectiveCards.length === 0) {
       toast({
         title: "No Cards to Save",
         description: "Please create at least one card before saving a collection.",
@@ -252,7 +258,7 @@ const CreateCards = () => {
                   onClick={handleSaveCollection}
                   variant="outline"
                   className="px-3 py-1 sm:px-4 md:px-4 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none md:flex-none"
-                  disabled={cards.length === 0}
+                  disabled={(user ? cards : getDraft().cards).length === 0}
                 >
                   <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
                   Save for Later
@@ -260,12 +266,12 @@ const CreateCards = () => {
                 <Button 
                   onClick={handleProceedToOrder}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
-                  disabled={cards.length === 0}
+                  disabled={(user ? cards : getDraft().cards).length === 0}
                 >
                   Order Cards
                 </Button>
               <div className="hidden sm:flex w-8 h-8 bg-primary rounded-full items-center justify-center text-primary-foreground text-sm font-bold">
-                {cards.length}
+                {(user ? cards : getDraft().cards).length}
               </div>
               {isSaving && (
                 <div className="text-sm text-muted-foreground">
@@ -351,13 +357,13 @@ const CreateCards = () => {
         </div>
 
         {/* Cards Collection */}
-        {cards.length > 0 && (
+        {(user ? cards : getDraft().cards).length > 0 && (
           <div className="mt-12">
             <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-8 text-center">
-              {recipientName ? `${recipientName}'s Collection` : 'Your Collection'} ({cards.length} cards)
+              {recipientName ? `${recipientName}'s Collection` : 'Your Collection'} ({(user ? cards : getDraft().cards).length} cards)
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {cards.map((card) => (
+              {(user ? cards : getDraft().cards).map((card) => (
                 <div key={card.id} className="relative hover:scale-105 transition-transform duration-300">
                   <CardPreview 
                     card={card} 
@@ -377,7 +383,7 @@ const CreateCards = () => {
         <AuthModal
           open={showAuthModal}
           onOpenChange={setShowAuthModal}
-          cards={cards}
+          cards={user ? cards : getDraft().cards}
           deckDesign={{
             recipientName,
             theme: deckTheme,
