@@ -124,10 +124,14 @@ export const DeckDesigner = ({
             <Input
               id="recipientName"
               value={recipientName}
-              onChange={(e) => onRecipientNameChange(e.target.value)}
+              onChange={(e) => {
+                console.log('Input change:', e.target.value);
+                onRecipientNameChange(e.target.value);
+              }}
               placeholder="e.g., Grandma Sarah, The Johnson Family, My Cousin"
-              className="h-12 text-base relative z-10 pointer-events-auto"
+              className="h-12 text-base"
               autoComplete="off"
+              tabIndex={0}
             />
             <p className="text-sm text-muted-foreground mt-2">
               This helps personalize the experience and could be used for special messaging
