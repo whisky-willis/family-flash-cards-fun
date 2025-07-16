@@ -28,7 +28,7 @@ const OrderSummary = () => {
     specialInstructions: '',
   });
 
-  const pricePerCard = 2.99;
+  const pricePerCard = 3.99;
   const shippingCost = 5.99;
   const totalCardCost = cards.length * pricePerCard;
   const totalCost = totalCardCost + shippingCost;
