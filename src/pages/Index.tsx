@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Heart, Users, Image, ArrowRight, Brain, BookOpen, Smile, Target, UserCheck } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FlippableCardPreview } from "@/components/FlippableCardPreview";
 import { useAuth } from "@/hooks/useAuth";
 import { SignInModal } from "@/components/SignInModal";
@@ -48,9 +48,9 @@ const Index = () => {
       </div>
 
       {/* Top banner */}
-      <div className="bg-primary text-primary-foreground text-center py-2 text-sm font-medium relative z-10">
-        Now available: Create custom family learning cards!
-      </div>
+      <Link to="/waitlist" className="block bg-primary text-primary-foreground text-center py-2 text-sm font-medium relative z-10 hover:bg-primary/90 transition-colors">
+        Coming Soon: Family Alphabet Cards, click here to join the waitlist
+      </Link>
 
       {/* Navigation - Art Center style */}
       <nav className="bg-background/90 backdrop-blur-sm sticky top-0 z-50 border-b border-border/20">
