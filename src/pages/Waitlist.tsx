@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Waitlist() {
   const [email, setEmail] = useState("");
@@ -26,15 +27,30 @@ export default function Waitlist() {
 
     setIsSubmitting(true);
     
-    // Simulate API call - replace with actual implementation
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setIsSubmitted(true);
-      toast({
-        title: "You're on the waitlist!",
-        description: "We'll notify you when Family Alphabet Cards are available.",
-      });
+      const { error } = await supabase
+        .from('waitlist_emails')
+        .insert([{ email }]);
+
+      if (error) {
+        if (error.code === '23505') { // Unique constraint violation
+          toast({
+            title: "Already on waitlist",
+            description: "This email is already registered for our waitlist.",
+            variant: "destructive",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        setIsSubmitted(true);
+        toast({
+          title: "You're on the waitlist!",
+          description: "We'll notify you when Family Alphabet Cards are available.",
+        });
+      }
     } catch (error) {
+      console.error('Error saving email:', error);
       toast({
         title: "Something went wrong",
         description: "Please try again later.",
