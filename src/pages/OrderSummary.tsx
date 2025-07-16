@@ -57,17 +57,33 @@ const OrderSummary = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-pink-100">
+      {/* Navigation - matches site-wide style */}
+      <nav className="bg-background/90 backdrop-blur-sm sticky top-0 z-50 border-b border-border/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <img src={kindredLogo} alt="Kindred Cards" className="h-10 w-10" />
-              <span className="text-2xl font-bold text-gray-800">Kindred Cards</span>
+          <div className="flex justify-between items-center h-16 md:justify-between">
+            <div className="flex items-center space-x-8 flex-1 md:flex-initial">
+              <div className="flex items-center space-x-3">
+                <img 
+                  src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png" 
+                  alt="Kindred Cards" 
+                  className="h-12 w-32 object-cover object-center cursor-pointer hover:opacity-80 transition-opacity" 
+                  onClick={() => navigate('/')}
+                />
+              </div>
+              <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/about')}>About</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/')}>Examples</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
+              </div>
             </div>
-            <Button variant="ghost" onClick={() => navigate('/create')}>
-              Back to Create
-            </Button>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Button onClick={() => navigate('/create')} variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
+                Back to Create
+              </Button>
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
+                {cards.length}
+              </div>
+            </div>
           </div>
         </div>
       </nav>
