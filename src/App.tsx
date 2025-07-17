@@ -8,6 +8,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import CreateCards from "./pages/CreateCards";
 import OrderSummary from "./pages/OrderSummary";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
@@ -26,6 +28,8 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/create" element={<CreateCards />} />
           <Route path="/order" element={<OrderSummary />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-cancel" element={<PaymentCancel />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />

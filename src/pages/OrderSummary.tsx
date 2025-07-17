@@ -33,14 +33,43 @@ const OrderSummary = () => {
   const totalCardCost = cards.length * pricePerCard;
   const totalCost = totalCardCost + shippingCost;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Order Submitted!",
-      description: `Your order for ${cards.length} cards has been submitted. You'll receive an email confirmation shortly.`,
-    });
-    // Here you would integrate with a payment processor like Stripe
-    console.log('Order details:', { orderDetails, cards, totalCost });
+    
+    // Validate required fields
+    if (!orderDetails.name || !orderDetails.email || !orderDetails.address || 
+        !orderDetails.city || !orderDetails.postalCode || !orderDetails.country) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { cards, orderDetails }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast({
+        title: "Payment Error",
+        description: "There was an error processing your payment. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (cards.length === 0) {
