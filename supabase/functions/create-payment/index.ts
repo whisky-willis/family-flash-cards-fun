@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -57,6 +58,12 @@ serve(async (req) => {
       },
     ];
 
+    // Initialize Supabase client
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer_email: orderDetails.email,
@@ -71,9 +78,23 @@ serve(async (req) => {
         card_count: cards.length.toString(),
         customer_email: orderDetails.email,
         special_instructions: orderDetails.specialInstructions || "",
-        // Store card data in metadata (Stripe has a 500 char limit per key, so we'll handle this in the webhook)
       },
     });
+
+    // Store order data in database for email processing
+    const { error: dbError } = await supabase
+      .from('orders')
+      .insert({
+        stripe_session_id: session.id,
+        cards_data: cards,
+        order_details: orderDetails,
+        status: 'pending'
+      });
+
+    if (dbError) {
+      console.error('Error storing order data:', dbError);
+      // Don't fail the payment creation, just log the error
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
