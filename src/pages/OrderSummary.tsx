@@ -183,7 +183,7 @@ const OrderSummary = () => {
                     type="submit" 
                     className="w-full bg-pink-500 hover:bg-pink-600 text-lg py-3"
                   >
-                    Place Order
+                    Shipping and Payment
                   </Button>
                 </form>
               </CardContent>
