@@ -160,7 +160,7 @@ Favorite Things: ${card.favoriteThings?.join(', ') || 'None'}
 
     // Send email with attachments
     const emailResponse = await resend.emails.send({
-      from: "Kindred Cards <orders@kindredcards.com>",
+      from: "Kindred Cards <onboarding@resend.dev>",
       to: ["nick.g.williss@gmail.com"],
       subject: `New Kindred Cards Order - ${cards.length} cards`,
       html: emailHtml,
