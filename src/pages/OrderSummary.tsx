@@ -45,9 +45,13 @@ const OrderSummary = () => {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
-      // Save order data to localStorage for email sending after payment
-      localStorage.setItem('orderCards', JSON.stringify(cards));
-      localStorage.setItem('orderDetails', JSON.stringify(orderDetails));
+      // Save only essential order data to localStorage (no large images)
+      const essentialOrderData = {
+        cardCount: cards.length,
+        customerInfo: orderDetails,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('orderDetails', JSON.stringify(essentialOrderData));
       
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: { cards, orderDetails }

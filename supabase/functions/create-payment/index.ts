@@ -71,7 +71,7 @@ serve(async (req) => {
         card_count: cards.length.toString(),
         customer_email: orderDetails.email,
         special_instructions: orderDetails.specialInstructions || "",
-        cards_data: JSON.stringify(cards), // Store card data for email sending
+        // Store card data in metadata (Stripe has a 500 char limit per key, so we'll handle this in the webhook)
       },
     });
 
