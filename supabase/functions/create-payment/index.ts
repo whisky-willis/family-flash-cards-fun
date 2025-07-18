@@ -81,14 +81,23 @@ serve(async (req) => {
       },
     });
 
-    // Store order data in database for email processing
+    // Store comprehensive order data in database
+    const totalAmount = Math.round((cards.length * pricePerCard + shippingCost) * 100); // in cents
+    
     const { error: dbError } = await supabase
       .from('orders')
       .insert({
         stripe_session_id: session.id,
         cards_data: cards,
         order_details: orderDetails,
-        status: 'pending'
+        customer_name: orderDetails.name,
+        customer_email: orderDetails.email,
+        total_amount: totalAmount,
+        card_count: cards.length,
+        special_instructions: orderDetails.specialInstructions || null,
+        payment_status: 'pending',
+        fulfillment_status: 'pending',
+        status: 'payment_pending'
       });
 
     if (dbError) {

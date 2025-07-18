@@ -49,31 +49,61 @@ export type Database = {
       }
       orders: {
         Row: {
+          card_count: number | null
           cards_data: Json
+          completed_at: string | null
           created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          fulfillment_status: string | null
           id: string
           order_details: Json
+          payment_status: string | null
+          shipping_address: Json | null
+          special_instructions: string | null
           status: string | null
           stripe_session_id: string | null
+          total_amount: number | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          card_count?: number | null
           cards_data: Json
+          completed_at?: string | null
           created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          fulfillment_status?: string | null
           id?: string
           order_details: Json
+          payment_status?: string | null
+          shipping_address?: Json | null
+          special_instructions?: string | null
           status?: string | null
           stripe_session_id?: string | null
+          total_amount?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          card_count?: number | null
           cards_data?: Json
+          completed_at?: string | null
           created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          fulfillment_status?: string | null
           id?: string
           order_details?: Json
+          payment_status?: string | null
+          shipping_address?: Json | null
+          special_instructions?: string | null
           status?: string | null
           stripe_session_id?: string | null
+          total_amount?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -130,7 +160,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_order_status: {
+        Args: {
+          order_id: string
+          new_payment_status?: string
+          new_fulfillment_status?: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
