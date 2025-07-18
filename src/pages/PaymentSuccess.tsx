@@ -1,13 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [emailSent, setEmailSent] = useState(false);
   const sessionId = searchParams.get('session_id');
+
+  useEffect(() => {
+    const sendOrderEmail = async () => {
+      if (!sessionId || emailSent) return;
+
+      try {
+        // Get card data and order details from localStorage
+        const savedCards = localStorage.getItem('orderCards');
+        const savedOrderDetails = localStorage.getItem('orderDetails');
+        
+        if (savedCards && savedOrderDetails) {
+          const cards = JSON.parse(savedCards);
+          const orderDetails = JSON.parse(savedOrderDetails);
+          
+          const { data, error } = await supabase.functions.invoke('send-order-email', {
+            body: {
+              cards,
+              orderDetails,
+              sessionId,
+            },
+          });
+
+          if (error) {
+            console.error('Error sending order email:', error);
+          } else {
+            console.log('Order email sent successfully:', data);
+            setEmailSent(true);
+            // Clean up localStorage
+            localStorage.removeItem('orderCards');
+            localStorage.removeItem('orderDetails');
+          }
+        }
+      } catch (error) {
+        console.error('Error sending order email:', error);
+      }
+    };
+
+    sendOrderEmail();
+  }, [sessionId, emailSent]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">

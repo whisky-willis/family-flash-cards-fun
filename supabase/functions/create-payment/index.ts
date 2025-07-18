@@ -71,6 +71,7 @@ serve(async (req) => {
         card_count: cards.length.toString(),
         customer_email: orderDetails.email,
         special_instructions: orderDetails.specialInstructions || "",
+        cards_data: JSON.stringify(cards), // Store card data for email sending
       },
     });
 
