@@ -2,7 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
+const resend = new Resend(resendApiKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,6 +50,15 @@ async function processCardImage(imageUrl: string, cardName: string, side: 'front
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Check if Resend API key is configured
+  if (!resendApiKey) {
+    console.error("RESEND_API_KEY environment variable is not configured");
+    return new Response(JSON.stringify({ error: "Email service not configured" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+    });
   }
 
   try {
@@ -168,6 +178,11 @@ Favorite Things: ${card.favoriteThings?.join(', ') || 'None'}
     });
 
     console.log("Order email sent successfully:", emailResponse);
+    
+    if (emailResponse.error) {
+      console.error("Resend API error:", emailResponse.error);
+      throw new Error(`Email sending failed: ${emailResponse.error.message || 'Unknown error'}`);
+    }
 
     return new Response(JSON.stringify({ success: true, emailId: emailResponse.data?.id }), {
       status: 200,
