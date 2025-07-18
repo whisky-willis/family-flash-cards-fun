@@ -21,10 +21,6 @@ const OrderSummary = () => {
   const [orderDetails, setOrderDetails] = useState({
     name: '',
     email: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    country: '',
     specialInstructions: '',
   });
 
@@ -37,8 +33,7 @@ const OrderSummary = () => {
     e.preventDefault();
     
     // Validate required fields
-    if (!orderDetails.name || !orderDetails.email || !orderDetails.address || 
-        !orderDetails.city || !orderDetails.postalCode || !orderDetails.country) {
+    if (!orderDetails.name || !orderDetails.email) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -132,7 +127,7 @@ const OrderSummary = () => {
           <div>
             <Card className="border-pink-100">
               <CardHeader>
-                <CardTitle>Shipping Information</CardTitle>
+                <CardTitle>Order Details</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -153,46 +148,6 @@ const OrderSummary = () => {
                         type="email"
                         value={orderDetails.email}
                         onChange={(e) => setOrderDetails({ ...orderDetails, email: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="address">Address *</Label>
-                    <Input
-                      id="address"
-                      value={orderDetails.address}
-                      onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="city">City *</Label>
-                      <Input
-                        id="city"
-                        value={orderDetails.city}
-                        onChange={(e) => setOrderDetails({ ...orderDetails, city: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="postalCode">Postal Code *</Label>
-                      <Input
-                        id="postalCode"
-                        value={orderDetails.postalCode}
-                        onChange={(e) => setOrderDetails({ ...orderDetails, postalCode: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="country">Country *</Label>
-                      <Input
-                        id="country"
-                        value={orderDetails.country}
-                        onChange={(e) => setOrderDetails({ ...orderDetails, country: e.target.value })}
                         required
                       />
                     </div>
