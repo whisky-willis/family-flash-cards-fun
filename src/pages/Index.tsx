@@ -324,23 +324,6 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="group p-2">
-                  <div className="bg-art-yellow p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
-                    <div>
-                      <div className="text-3xl mb-3">🧠</div>
-                      <h3 className="text-xl font-black text-foreground mb-3">Boosts Academic Performance</h3>
-                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-                        Children who engage in family storytelling show higher language and literacy skills that last through elementary school, with benefits extending 7 years down the line.
-                      </p>
-                    </div>
-                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
-                      Source: Duke University Family Life Project
-                    </a>
-                  </div>
-                </div>
-              </CarouselItem>
-
-              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="group p-2">
                   <div className="bg-art-pink p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
                     <div>
                       <div className="text-3xl mb-3">❤️</div>
@@ -402,6 +385,23 @@ const Index = () => {
                     </div>
                     <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6305786/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
                       Source: Brain Imaging Studies
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
+
+              <CarouselItem className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="group p-2">
+                  <div className="bg-art-yellow p-6 rounded-3xl h-80 flex flex-col justify-between hover:scale-105 transition-transform duration-300">
+                    <div>
+                      <div className="text-3xl mb-3">🧠</div>
+                      <h3 className="text-xl font-black text-foreground mb-3">Boosts Academic Performance</h3>
+                      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
+                        Children who engage in family storytelling show higher language and literacy skills that last through elementary school, with benefits extending 7 years down the line.
+                      </p>
+                    </div>
+                    <a href="https://childandfamilypolicy.duke.edu/news/the-power-of-storytelling-how-parents-and-caregivers-can-give-children-a-strong-foundation-for-language-and-literacy-development/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-foreground/70 hover:text-foreground underline mt-3">
+                      Source: Duke University Family Life Project
                     </a>
                   </div>
                 </div>
