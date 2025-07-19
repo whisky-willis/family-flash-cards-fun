@@ -204,9 +204,9 @@ const Index = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                  <div className="p-2">
-                   <FlippableCardPreview card={{
+                    <FlippableCardPreview card={{
                   name: "Uncle Mike",
-                  whereTheyLive: "Boston, MA",
+                  whereTheyLive: "London, UK",
                   dateOfBirth: "1985-03-15",
                   favoriteColor: "green",
                   hobbies: "Guitar, Hiking",
@@ -219,9 +219,9 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                  <div className="p-2">
-                   <FlippableCardPreview card={{
+                    <FlippableCardPreview card={{
                   name: "Grandma Rose",
-                  whereTheyLive: "Portland, OR",
+                  whereTheyLive: "Paris, France",
                   dateOfBirth: "1952-09-22",
                   favoriteColor: "purple",
                   hobbies: "Gardening, Baking",
@@ -234,9 +234,9 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                  <div className="p-2">
-                   <FlippableCardPreview card={{
+                    <FlippableCardPreview card={{
                   name: "Cousin Alex",
-                  whereTheyLive: "Austin, TX",
+                  whereTheyLive: "Sydney, Australia",
                   dateOfBirth: "2010-07-08",
                   favoriteColor: "orange",
                   hobbies: "Soccer, Video Games",
@@ -249,9 +249,9 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                  <div className="p-2">
-                   <FlippableCardPreview card={{
+                    <FlippableCardPreview card={{
                   name: "Aunt Sarah",
-                  whereTheyLive: "Denver, CO",
+                  whereTheyLive: "Barcelona, Spain",
                   dateOfBirth: "1978-12-03",
                   favoriteColor: "pink",
                   hobbies: "Photography, Yoga",
@@ -264,9 +264,9 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                  <div className="p-2">
-                   <FlippableCardPreview card={{
+                    <FlippableCardPreview card={{
                   name: "Uncle Tom",
-                  whereTheyLive: "Seattle, WA",
+                  whereTheyLive: "New York, NY",
                   dateOfBirth: "1980-06-18",
                   favoriteColor: "blue",
                   hobbies: "Cooking, Fishing",
@@ -284,9 +284,9 @@ const Index = () => {
 
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 mt-8">
                  <div className="p-2">
-                   <FlippableCardPreview card={{
+                    <FlippableCardPreview card={{
                   name: "Big Sister Emma",
-                  whereTheyLive: "Miami, FL",
+                  whereTheyLive: "Tokyo, Japan",
                   dateOfBirth: "2005-11-14",
                   favoriteColor: "yellow",
                   hobbies: "Dancing, Reading",
