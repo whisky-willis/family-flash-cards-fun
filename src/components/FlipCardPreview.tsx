@@ -35,9 +35,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           backgroundColor: null,
           scale: 2, // High resolution for print
           useCORS: true,
-          allowTaint: true,
-          width: 400,
-          height: 400
+          allowTaint: true
         });
         
         return new Promise<string>((resolve) => {
@@ -63,9 +61,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           backgroundColor: null,
           scale: 2, // High resolution for print
           useCORS: true,
-          allowTaint: true,
-          width: 400,
-          height: 400
+          allowTaint: true
         });
         
         return new Promise<string>((resolve) => {

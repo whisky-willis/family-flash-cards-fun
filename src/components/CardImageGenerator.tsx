@@ -1,5 +1,4 @@
-
-import React, { useRef } from 'react';
+import React, { useRef, forwardRef } from 'react';
 import { CardPreview, CardPreviewRef } from "./CardPreview";
 import { FlipCardPreview, FlipCardPreviewRef } from "./FlipCardPreview";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
@@ -12,18 +11,22 @@ interface CardImageGeneratorProps {
   onImagesGenerated?: (frontUrl?: string, backUrl?: string) => void;
 }
 
-export const CardImageGenerator: React.FC<CardImageGeneratorProps> = ({
+export interface CardImageGeneratorRef {
+  generateImages: () => Promise<{ frontImageUrl: string | null; backImageUrl: string | null }>;
+}
+
+export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGeneratorProps>(({
   card,
   isFlipCard = false,
   deckTheme,
   deckFont,
   onImagesGenerated
-}) => {
+}, ref) => {
   const cardPreviewRef = useRef<CardPreviewRef>(null);
   const flipCardPreviewRef = useRef<FlipCardPreviewRef>(null);
 
   // Expose generation method for external use
-  React.useImperativeHandle(onImagesGenerated, () => ({
+  React.useImperativeHandle(ref, () => ({
     generateImages: async () => {
       try {
         let frontImageUrl: string | null = null;
@@ -34,6 +37,10 @@ export const CardImageGenerator: React.FC<CardImageGeneratorProps> = ({
           backImageUrl = await flipCardPreviewRef.current.generateBackImage();
         } else if (cardPreviewRef.current) {
           frontImageUrl = await cardPreviewRef.current.generateImage();
+        }
+
+        if (onImagesGenerated) {
+          onImagesGenerated(frontImageUrl || undefined, backImageUrl || undefined);
         }
 
         return { frontImageUrl, backImageUrl };
@@ -64,4 +71,4 @@ export const CardImageGenerator: React.FC<CardImageGeneratorProps> = ({
       )}
     </div>
   );
-};
+});
