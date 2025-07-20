@@ -206,12 +206,12 @@ const Index = () => {
                  <div className="p-2">
                     <FlippableCardPreview card={{
                   name: "Uncle Mike",
-                  whereTheyLive: "London, UK",
+                  relationship: "London, UK",
                   dateOfBirth: "1985-03-15",
                   favoriteColor: "green",
                   hobbies: "Guitar, Hiking",
                   funFact: "Plays 5 instruments!",
-                  photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
+                  photo_url: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
                   
                 }} nameFont="font-luckiest-guy" deckTheme="organic" />
                  </div>
@@ -221,12 +221,12 @@ const Index = () => {
                  <div className="p-2">
                     <FlippableCardPreview card={{
                   name: "Grandma Rose",
-                  whereTheyLive: "Paris, France",
+                  relationship: "Paris, France",
                   dateOfBirth: "1952-09-22",
                   favoriteColor: "purple",
                   hobbies: "Gardening, Baking",
                   funFact: "Visited 23 countries and speaks 4 languages",
-                  photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
+                  photo_url: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
                   
                 }} nameFont="font-bubblegum" deckTheme="rainbow" />
                  </div>
@@ -236,12 +236,12 @@ const Index = () => {
                  <div className="p-2">
                     <FlippableCardPreview card={{
                   name: "Cousin Alex",
-                  whereTheyLive: "Sydney, Australia",
+                  relationship: "Sydney, Australia",
                   dateOfBirth: "2010-07-08",
                   favoriteColor: "orange",
                   hobbies: "Soccer, Video Games",
                   funFact: "Scored the winning goal last year!",
-                  photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
+                  photo_url: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
                   
                 }} nameFont="font-fredoka-one" deckTheme="sports" />
                  </div>
@@ -251,12 +251,12 @@ const Index = () => {
                  <div className="p-2">
                     <FlippableCardPreview card={{
                   name: "Aunt Sarah",
-                  whereTheyLive: "Barcelona, Spain",
+                  relationship: "Barcelona, Spain",
                   dateOfBirth: "1978-12-03",
                   favoriteColor: "pink",
                   hobbies: "Photography, Yoga",
                   funFact: "Takes amazing nature photos!",
-                  photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
+                  photo_url: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
                   
                 }} nameFont="font-bubblegum" deckTheme="mosaic" />
                  </div>
@@ -266,12 +266,12 @@ const Index = () => {
                  <div className="p-2">
                     <FlippableCardPreview card={{
                   name: "Uncle Tom",
-                  whereTheyLive: "New York, NY",
+                  relationship: "New York, NY",
                   dateOfBirth: "1980-06-18",
                   favoriteColor: "blue",
                   hobbies: "Cooking, Fishing",
                   funFact: "Makes the best pancakes in town!",
-                  photo: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
+                  photo_url: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
                   imagePosition: {
                     x: 0,
                     y: -100,
@@ -286,12 +286,12 @@ const Index = () => {
                  <div className="p-2">
                     <FlippableCardPreview card={{
                   name: "Big Sister Emma",
-                  whereTheyLive: "Tokyo, Japan",
+                  relationship: "Tokyo, Japan",
                   dateOfBirth: "2005-11-14",
                   favoriteColor: "yellow",
                   hobbies: "Dancing, Reading",
                   funFact: "Won first place in talent show!",
-                  photo: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
+                  photo_url: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
                   
                 }} nameFont="font-fredoka-one" deckTheme="space" />
                  </div>

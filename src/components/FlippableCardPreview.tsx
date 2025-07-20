@@ -350,11 +350,11 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one', deck
             <CardContent className="p-4 relative z-10 h-full flex flex-col">
               {/* Photo Section */}
               <div className="flex-1 flex items-center justify-center">
-                {card.photo ? (
+                {card.photo_url ? (
                   <div 
                     className="w-full h-full rounded-2xl border-4 border-white shadow-md" 
                     style={{ 
-                      backgroundImage: `url(${card.photo})`,
+                      backgroundImage: `url(${card.photo_url})`,
                       backgroundSize: card.imagePosition ? `${100 * card.imagePosition.scale}%` : 'cover',
                       backgroundPosition: card.imagePosition
                         ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`
@@ -393,11 +393,11 @@ export const FlippableCardPreview = ({ card, nameFont = 'font-fredoka-one', deck
               {/* Attributes with white background for visibility */}
               <div className={`bg-white/95 rounded-2xl p-4 backdrop-blur-sm shadow-sm ${getFontClass(deckFont)} h-full flex flex-col`}>
                 <div className="grid grid-cols-2 gap-3 flex-1 content-center items-center justify-center">
-                  {card.whereTheyLive && card.whereTheyLive.trim() && (
+                  {card.relationship && card.relationship.trim() && (
                     <div className="text-center">
                       <div className="text-xl mb-1">🏠</div>
                       <div className={`text-blue-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Where they live</div>
-                      <div className="capitalize font-semibold text-black text-base">{card.whereTheyLive}</div>
+                      <div className="capitalize font-semibold text-black text-base">{card.relationship}</div>
                     </div>
                   )}
                   
