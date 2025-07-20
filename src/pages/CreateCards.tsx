@@ -13,18 +13,22 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCards } from "@/hooks/useSupabaseCards";
+import { useEnhancedCards } from "@/hooks/useEnhancedCards";
 import { useDraft } from "@/hooks/useDraft";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface FamilyCard {
   id: string;
   name: string;
-  photo: string;
+  photo: string; // Keep for backward compatibility with existing draft cards
+  photo_url?: string; // New field for Supabase Storage URLs
+  photoFile?: File; // Temporary field for upload handling
   dateOfBirth: string;
   favoriteColor: string;
   hobbies: string;
   funFact: string;
   whereTheyLive: string;
+  relationship?: string; // New field aligned with database schema
   imagePosition?: { x: number; y: number; scale: number };
 }
 
@@ -32,7 +36,7 @@ const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
+  const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useEnhancedCards();
   const { saveDraftToLocal, clearDraft, getDraft, saveDeckDesign } = useDraft();
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
@@ -94,19 +98,15 @@ const CreateCards = () => {
   }, []);
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    const newCard = await addCard(card);
-    const updatedCards = [...cards, newCard];
-    
-    // Save to draft for persistence
-    saveDraftToLocal(updatedCards);
-    
-    setCurrentCard({});
-    setPreviewCard({});
-    
-    toast({
-      title: "Card Added!",
-      description: `${card.name}'s card has been added to your collection.`,
-    });
+    try {
+      const newCard = await addCard(card);
+      
+      setCurrentCard({});
+      setPreviewCard({});
+    } catch (error) {
+      // Error handling is done in the hook
+      console.error('Failed to add card:', error);
+    }
   };
 
   const handleEditCard = (card: FamilyCard) => {
@@ -117,45 +117,30 @@ const CreateCards = () => {
 
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
-      await updateCard(currentCard.id, updatedCard);
-      
-      // Update draft with modified cards
-      const updatedCards = cards.map(card => 
-        card.id === currentCard.id 
-          ? { ...updatedCard, id: currentCard.id }
-          : card
-      );
-      saveDraftToLocal(updatedCards);
-      
-      setCurrentCard({});
-      setPreviewCard({});
-      setIsEditing(false);
-      
-      toast({
-        title: "Card Updated!",
-        description: `${updatedCard.name}'s card has been updated.`,
-      });
+      try {
+        await updateCard(currentCard.id, updatedCard);
+        
+        setCurrentCard({});
+        setPreviewCard({});
+        setIsEditing(false);
+      } catch (error) {
+        // Error handling is done in the hook
+        console.error('Failed to update card:', error);
+      }
     }
   };
 
   const handleDeleteCard = async (cardId: string) => {
-    await removeCard(cardId);
-    
-    // Update draft after deletion
-    const updatedCards = cards.filter(card => card.id !== cardId);
-    saveDraftToLocal(updatedCards);
-    
-    toast({
-      title: "Card Removed",
-      description: "The card has been removed from your collection.",
-    });
+    try {
+      await removeCard(cardId);
+    } catch (error) {
+      // Error handling is done in the hook
+      console.error('Failed to delete card:', error);
+    }
   };
 
   const handleProceedToOrder = () => {
-    const draft = getDraft();
-    const effectiveCards = user ? cards : draft.cards;
-    
-    if (effectiveCards.length === 0) {
+    if (cards.length === 0) {
       toast({
         title: "No Cards Created",
         description: "Please create at least one card before proceeding to order.",
@@ -173,14 +158,20 @@ const CreateCards = () => {
       return;
     }
     
-    navigate('/order', { state: { cards: effectiveCards } });
+    // Pass cards with high-resolution image URLs for printing
+    navigate('/order', { 
+      state: { 
+        cards: cards.map(card => ({
+          ...card,
+          // Ensure we're using the high-res photo_url for printing
+          photo: card.photo_url || card.photo
+        }))
+      } 
+    });
   };
 
   const handleSaveCollection = () => {
-    const draft = getDraft();
-    const effectiveCards = user ? cards : draft.cards;
-    
-    if (effectiveCards.length === 0) {
+    if (cards.length === 0) {
       toast({
         title: "No Cards to Save",
         description: "Please create at least one card before saving a collection.",
@@ -192,8 +183,11 @@ const CreateCards = () => {
     if (!user) {
       setShowAuthModal(true);
     } else {
-      // User is already authenticated, save directly
-      saveAuthentatedCollection();
+      // User is already authenticated, cards are automatically saved
+      toast({
+        title: "Collection Saved!",
+        description: "Your cards are automatically saved to your profile.",
+      });
     }
   };
 
@@ -271,7 +265,7 @@ const CreateCards = () => {
                   onClick={handleSaveCollection}
                   variant="outline"
                   className="px-3 py-1 sm:px-4 md:px-4 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none md:flex-none"
-                  disabled={(user ? cards : getDraft().cards).length === 0}
+                  disabled={cards.length === 0}
                 >
                   <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
                   Save for Later
@@ -279,12 +273,12 @@ const CreateCards = () => {
                 <Button 
                   onClick={handleProceedToOrder}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
-                  disabled={(user ? cards : getDraft().cards).length === 0}
+                  disabled={cards.length === 0}
                 >
                   Order Cards
                 </Button>
               <div className="hidden sm:flex w-8 h-8 bg-primary rounded-full items-center justify-center text-primary-foreground text-sm font-bold">
-                {(user ? cards : getDraft().cards).length}
+                {cards.length}
               </div>
               {isSaving && (
                 <div className="text-sm text-muted-foreground">
@@ -370,13 +364,13 @@ const CreateCards = () => {
         </div>
 
         {/* Cards Collection */}
-        {(user ? cards : getDraft().cards).length > 0 && (
+        {cards.length > 0 && (
           <div className="mt-12">
             <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-8 text-center">
-              {recipientName ? `${recipientName}'s Collection` : 'Your Collection'} ({(user ? cards : getDraft().cards).length} cards)
+              {recipientName ? `${recipientName}'s Collection` : 'Your Collection'} ({cards.length} cards)
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {(user ? cards : getDraft().cards).map((card) => (
+              {cards.map((card) => (
                 <div key={card.id} className="relative hover:scale-105 transition-transform duration-300">
                   <CardPreview 
                     card={card} 
@@ -396,7 +390,7 @@ const CreateCards = () => {
         <AuthModal
           open={showAuthModal}
           onOpenChange={setShowAuthModal}
-          cards={user ? cards : getDraft().cards}
+          cards={cards}
           deckDesign={{
             recipientName,
             theme: deckTheme,

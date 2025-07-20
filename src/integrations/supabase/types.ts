@@ -47,6 +47,78 @@ export type Database = {
         }
         Relationships: []
       }
+      cards: {
+        Row: {
+          id: string
+          user_session_id: string | null
+          user_id: string | null
+          name: string
+          relationship: string | null
+          date_of_birth: string | null
+          favorite_color: string | null
+          hobbies: string | null
+          fun_fact: string | null
+          photo_url: string | null
+          photo_storage_path: string | null
+          image_position: Json | null
+          created_at: string
+          updated_at: string
+          order_id: string | null
+          is_draft: boolean
+        }
+        Insert: {
+          id?: string
+          user_session_id?: string | null
+          user_id?: string | null
+          name: string
+          relationship?: string | null
+          date_of_birth?: string | null
+          favorite_color?: string | null
+          hobbies?: string | null
+          fun_fact?: string | null
+          photo_url?: string | null
+          photo_storage_path?: string | null
+          image_position?: Json | null
+          created_at?: string
+          updated_at?: string
+          order_id?: string | null
+          is_draft?: boolean
+        }
+        Update: {
+          id?: string
+          user_session_id?: string | null
+          user_id?: string | null
+          name?: string
+          relationship?: string | null
+          date_of_birth?: string | null
+          favorite_color?: string | null
+          hobbies?: string | null
+          fun_fact?: string | null
+          photo_url?: string | null
+          photo_storage_path?: string | null
+          image_position?: Json | null
+          created_at?: string
+          updated_at?: string
+          order_id?: string | null
+          is_draft?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          }
+        ]
+      }
       orders: {
         Row: {
           card_count: number | null

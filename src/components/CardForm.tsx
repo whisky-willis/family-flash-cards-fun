@@ -131,15 +131,23 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Store the file for high-resolution upload
+      setFormData(prev => ({ 
+        ...prev, 
+        photoFile: file,
+        imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
+      }));
+
+      // Create preview URL for immediate display
       const reader = new FileReader();
       reader.onload = (event) => {
         setFormData(prev => ({ 
           ...prev, 
-          photo: event.target?.result as string,
-          imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
+          photo: event.target?.result as string
         }));
       };
       reader.readAsDataURL(file);
+      
       // Clear the input value so the same file can be selected again
       e.target.value = '';
     }
@@ -150,6 +158,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     setFormData(prev => ({ 
       ...prev, 
       photo: '',
+      photo_url: '',
+      photoFile: undefined,
       imagePosition: { x: 0, y: 0, scale: 1 }
     }));
     // Reset the file input
