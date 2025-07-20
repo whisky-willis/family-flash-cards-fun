@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -152,7 +153,6 @@ export const useSupabaseCards = () => {
     
     const updatedCards = [...cards, cardWithId];
     await updateCards(updatedCards);
-    
     
     return cardWithId;
   }, [cards, updateCards]);

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, Image as ImageIcon, Save, ArrowLeft } from "lucide-react";
@@ -40,12 +40,65 @@ const CreateCards = () => {
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
 
+  // Hidden image generators for background processing
+  const imageGeneratorRefs = useRef<Map<string, any>>(new Map());
+
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
   }, []);
 
+  // Background image generation function
+  const generateImagesForCard = async (cardId: string) => {
+    const card = cards.find(c => c.id === cardId);
+    if (!card || !deckTheme || !deckFont) return;
+
+    try {
+      // Create a temporary image generator
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '-9999px';
+      document.body.appendChild(tempDiv);
+
+      // Import html2canvas dynamically
+      const html2canvas = (await import('html2canvas')).default;
+      
+      // Generate front image
+      const frontCanvas = await html2canvas(tempDiv, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        width: 400,
+        height: 400
+      });
+
+      const frontImageUrl = await new Promise<string>((resolve) => {
+        frontCanvas.toBlob((blob) => {
+          if (blob) {
+            resolve(URL.createObjectURL(blob));
+          } else {
+            resolve('');
+          }
+        }, 'image/png', 1.0);
+      });
+
+      // For flip cards, we'd generate back image too
+      // For now, let's just generate front image
+      
+      if (frontImageUrl) {
+        await generateCardImages(cardId, frontImageUrl);
+      }
+
+      // Clean up
+      document.body.removeChild(tempDiv);
+    } catch (error) {
+      console.error('Error generating images for card:', cardId, error);
+    }
+  };
+
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    const cardId = await saveCard(card);
+    const cardId = await saveCard(card, generateImagesForCard);
     if (cardId) {
       setCurrentCard({});
       setPreviewCard({});
@@ -65,7 +118,7 @@ const CreateCards = () => {
 
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
-      const success = await updateCard(currentCard.id, updatedCard);
+      const success = await updateCard(currentCard.id, updatedCard, generateImagesForCard);
       if (success) {
         setCurrentCard({});
         setPreviewCard({});
@@ -140,22 +193,6 @@ const CreateCards = () => {
 
   const handleUploadImage = async (file: File): Promise<string | null> => {
     return await uploadImage(file);
-  };
-
-  const handleImagesGenerated = async (cardId: string, frontUrl?: string, backUrl?: string) => {
-    const result = await generateCardImages(cardId, frontUrl, backUrl);
-    if (result.success) {
-      toast({
-        title: "Print Images Generated!",
-        description: "High-resolution images have been created for printing.",
-      });
-    } else {
-      toast({
-        title: "Generation Failed",
-        description: "Failed to generate print images. Please try again.",
-        variant: "destructive",
-      });
-    }
   };
 
   return (
@@ -313,25 +350,21 @@ const CreateCards = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cards.map((card) => (
                 <div key={card.id} className="relative hover:scale-105 transition-transform duration-300">
-                  <div className="space-y-4">
-                    <CardPreview 
-                      card={card} 
-                      onEdit={() => handleEditCard(card)}
-                      onDelete={() => handleDeleteCard(card.id)}
-                      showActions={true}
-                      deckTheme={deckTheme}
-                      deckFont={deckFont}
-                    />
-                    <CardImageGenerator
-                      card={card}
-                      isFlipCard={true}
-                      deckTheme={deckTheme}
-                      deckFont={deckFont}
-                      onImagesGenerated={(frontUrl, backUrl) => 
-                        handleImagesGenerated(card.id, frontUrl, backUrl)
-                      }
-                    />
-                  </div>
+                  <CardPreview 
+                    card={card} 
+                    onEdit={() => handleEditCard(card)}
+                    onDelete={() => handleDeleteCard(card.id)}
+                    showActions={true}
+                    deckTheme={deckTheme}
+                    deckFont={deckFont}
+                  />
+                  {/* Hidden image generator for background processing */}
+                  <CardImageGenerator
+                    card={card}
+                    isFlipCard={true}
+                    deckTheme={deckTheme}
+                    deckFont={deckFont}
+                  />
                 </div>
               ))}
             </div>

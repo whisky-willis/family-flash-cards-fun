@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -99,6 +100,13 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
+  // Generate card images automatically in background
+  const generateCardImagesInBackground = async (cardId: string, card: FamilyCard) => {
+    // This will be called by the parent component that has access to the CardImageGenerator
+    // We'll pass a callback to trigger this after the card is saved
+    console.log('Background image generation will be triggered for card:', cardId);
+  };
+
   // Generate and save card images
   const generateCardImages = async (
     cardId: string, 
@@ -196,7 +204,7 @@ export const useSupabaseCardsStorage = () => {
   };
 
   // Save card to database
-  const saveCard = async (card: Omit<FamilyCard, 'id'>): Promise<string | null> => {
+  const saveCard = async (card: Omit<FamilyCard, 'id'>, generateImages?: (cardId: string) => Promise<void>): Promise<string | null> => {
     setSaving(true);
     try {
       const sessionId = getSessionId();
@@ -224,6 +232,12 @@ export const useSupabaseCardsStorage = () => {
       }
 
       await loadCards(); // Refresh the cards list
+      
+      // Generate images in background after save
+      if (generateImages) {
+        setTimeout(() => generateImages(data.id), 100);
+      }
+      
       return data.id;
     } catch (error) {
       console.error('Save error:', error);
@@ -235,7 +249,7 @@ export const useSupabaseCardsStorage = () => {
   };
 
   // Update existing card
-  const updateCard = async (cardId: string, updates: Partial<FamilyCard>): Promise<boolean> => {
+  const updateCard = async (cardId: string, updates: Partial<FamilyCard>, generateImages?: (cardId: string) => Promise<void>): Promise<boolean> => {
     setSaving(true);
     try {
       const { error } = await supabase
@@ -259,6 +273,12 @@ export const useSupabaseCardsStorage = () => {
       }
 
       await loadCards(); // Refresh the cards list
+      
+      // Generate images in background after update
+      if (generateImages) {
+        setTimeout(() => generateImages(cardId), 100);
+      }
+      
       return true;
     } catch (error) {
       console.error('Update error:', error);
