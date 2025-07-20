@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,54 +28,86 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
   // Expose image generation methods via ref
   React.useImperativeHandle(ref, () => ({
     generateFrontImage: async () => {
-      if (!frontElement) return null;
+      console.log('🎯 generateFrontImage called, frontElement:', !!frontElement);
+      
+      if (!frontElement) {
+        console.error('❌ Front element not available for capture');
+        return null;
+      }
       
       try {
+        console.log('🎯 Loading html2canvas...');
         const html2canvas = (await import('html2canvas')).default;
+        
+        console.log('🎯 Capturing front card with html2canvas...');
         const canvas = await html2canvas(frontElement, {
           backgroundColor: null,
           scale: 2, // High resolution for print
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
+          width: frontElement.offsetWidth,
+          height: frontElement.offsetHeight,
+          logging: true
         });
+        
+        console.log('🎯 Front card captured, canvas size:', canvas.width, 'x', canvas.height);
         
         return new Promise<string>((resolve) => {
           canvas.toBlob((blob) => {
             if (blob) {
-              resolve(URL.createObjectURL(blob));
+              const url = URL.createObjectURL(blob);
+              console.log('✅ Front image blob created, size:', blob.size);
+              resolve(url);
             } else {
+              console.error('❌ Failed to create blob from front canvas');
               resolve('');
             }
           }, 'image/png', 1.0);
         });
       } catch (error) {
-        console.error('Error generating front card image:', error);
+        console.error('❌ Error generating front card image:', error);
         return null;
       }
     },
     generateBackImage: async () => {
-      if (!backElement) return null;
+      console.log('🎯 generateBackImage called, backElement:', !!backElement);
+      
+      if (!backElement) {
+        console.error('❌ Back element not available for capture');
+        return null;
+      }
       
       try {
+        console.log('🎯 Loading html2canvas...');
         const html2canvas = (await import('html2canvas')).default;
+        
+        console.log('🎯 Capturing back card with html2canvas...');
         const canvas = await html2canvas(backElement, {
           backgroundColor: null,
           scale: 2, // High resolution for print
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
+          width: backElement.offsetWidth,
+          height: backElement.offsetHeight,
+          logging: true
         });
+        
+        console.log('🎯 Back card captured, canvas size:', canvas.width, 'x', canvas.height);
         
         return new Promise<string>((resolve) => {
           canvas.toBlob((blob) => {
             if (blob) {
-              resolve(URL.createObjectURL(blob));
+              const url = URL.createObjectURL(blob);
+              console.log('✅ Back image blob created, size:', blob.size);
+              resolve(url);
             } else {
+              console.error('❌ Failed to create blob from back canvas');
               resolve('');
             }
           }, 'image/png', 1.0);
         });
       } catch (error) {
-        console.error('Error generating back card image:', error);
+        console.error('❌ Error generating back card image:', error);
         return null;
       }
     }
@@ -323,7 +356,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           <span>Kindred Cards</span>
         </div>
       </div>
-
     </div>
   );
 });

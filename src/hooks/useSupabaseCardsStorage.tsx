@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -76,7 +75,7 @@ export const useSupabaseCardsStorage = () => {
       const sessionId = getSessionId();
       const fileName = `${sessionId}/${cardId}_${side}.png`;
       
-      console.log(`Uploading ${side} image for card ${cardId}, blob size:`, imageBlob.size);
+      console.log(`🎯 Uploading ${side} image for card ${cardId}, blob size:`, imageBlob.size);
       
       const { data, error } = await supabase.storage
         .from('card-renders')
@@ -86,7 +85,7 @@ export const useSupabaseCardsStorage = () => {
         });
 
       if (error) {
-        console.error('Upload render error:', error);
+        console.error('❌ Upload render error:', error);
         return null;
       }
 
@@ -95,25 +94,32 @@ export const useSupabaseCardsStorage = () => {
         .from('card-renders')
         .getPublicUrl(data.path);
 
-      console.log(`Successfully uploaded ${side} image:`, publicUrl);
+      console.log(`✅ Successfully uploaded ${side} image:`, publicUrl);
       return publicUrl;
     } catch (error) {
-      console.error('Upload render error:', error);
+      console.error('❌ Upload render error:', error);
       return null;
     }
   };
 
-  // Convert data URL to blob
-  const dataURLtoBlob = (dataURL: string): Blob => {
-    const arr = dataURL.split(',');
-    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png';
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
+  // Enhanced function to convert URL to blob
+  const urlToBlob = async (url: string): Promise<Blob | null> => {
+    try {
+      console.log('🎯 Converting URL to blob:', url.slice(0, 50) + '...');
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('❌ Failed to fetch URL:', response.status, response.statusText);
+        return null;
+      }
+      
+      const blob = await response.blob();
+      console.log('✅ URL converted to blob, size:', blob.size, 'type:', blob.type);
+      return blob;
+    } catch (error) {
+      console.error('❌ Error converting URL to blob:', error);
+      return null;
     }
-    return new Blob([u8arr], { type: mime });
   };
 
   // Generate and save card images
@@ -123,45 +129,51 @@ export const useSupabaseCardsStorage = () => {
     backImageUrl?: string
   ): Promise<{ front_image_url?: string; back_image_url?: string; success: boolean }> => {
     try {
-      console.log('Starting generateCardImages for card:', cardId);
-      console.log('Received URLs:', { frontImageUrl: !!frontImageUrl, backImageUrl: !!backImageUrl });
+      console.log('🎯 Starting generateCardImages for card:', cardId);
+      console.log('🎯 Received URLs:', { frontImageUrl: !!frontImageUrl, backImageUrl: !!backImageUrl });
       
       const updateData: any = {};
       
       if (frontImageUrl) {
-        console.log('Processing front image...');
-        // Convert front image URL to blob and upload
-        const frontBlob = dataURLtoBlob(frontImageUrl);
-        console.log('Front blob size:', frontBlob.size);
+        console.log('🎯 Processing front image...');
+        const frontBlob = await urlToBlob(frontImageUrl);
         
-        const frontUploadUrl = await uploadCardRender(frontBlob, cardId, 'front');
-        if (frontUploadUrl) {
-          updateData.front_image_url = frontUploadUrl;
-          console.log('Front image uploaded successfully');
+        if (frontBlob) {
+          console.log('🎯 Front blob ready, size:', frontBlob.size);
+          const frontUploadUrl = await uploadCardRender(frontBlob, cardId, 'front');
+          if (frontUploadUrl) {
+            updateData.front_image_url = frontUploadUrl;
+            console.log('✅ Front image uploaded successfully');
+          } else {
+            console.error('❌ Failed to upload front image');
+          }
         } else {
-          console.error('Failed to upload front image');
+          console.error('❌ Failed to convert front image URL to blob');
         }
       }
       
       if (backImageUrl) {
-        console.log('Processing back image...');
-        // Convert back image URL to blob and upload
-        const backBlob = dataURLtoBlob(backImageUrl);
-        console.log('Back blob size:', backBlob.size);
+        console.log('🎯 Processing back image...');
+        const backBlob = await urlToBlob(backImageUrl);
         
-        const backUploadUrl = await uploadCardRender(backBlob, cardId, 'back');
-        if (backUploadUrl) {
-          updateData.back_image_url = backUploadUrl;
-          console.log('Back image uploaded successfully');
+        if (backBlob) {
+          console.log('🎯 Back blob ready, size:', backBlob.size);
+          const backUploadUrl = await uploadCardRender(backBlob, cardId, 'back');
+          if (backUploadUrl) {
+            updateData.back_image_url = backUploadUrl;
+            console.log('✅ Back image uploaded successfully');
+          } else {
+            console.error('❌ Failed to upload back image');
+          }
         } else {
-          console.error('Failed to upload back image');
+          console.error('❌ Failed to convert back image URL to blob');
         }
       }
       
       if (Object.keys(updateData).length > 0) {
         updateData.print_ready = true;
         
-        console.log('Updating database with:', updateData);
+        console.log('🎯 Updating database with:', updateData);
         
         const { error } = await supabase
           .from('cards')
@@ -169,19 +181,19 @@ export const useSupabaseCardsStorage = () => {
           .eq('id', cardId);
           
         if (error) {
-          console.error('Error updating card with images:', error);
+          console.error('❌ Error updating card with images:', error);
           return { success: false };
         }
         
-        console.log('Database updated successfully');
+        console.log('✅ Database updated successfully');
         await loadCards(); // Refresh cards
         return { ...updateData, success: true };
       }
       
-      console.log('No images to update');
+      console.log('⚠️ No images to update');
       return { success: false };
     } catch (error) {
-      console.error('Error generating card images:', error);
+      console.error('❌ Error generating card images:', error);
       return { success: false };
     }
   };
@@ -259,10 +271,10 @@ export const useSupabaseCardsStorage = () => {
 
       await loadCards(); // Refresh the cards list
       
-      // Generate images in background after save
+      // Generate images in background after save with longer delay
       if (generateImages) {
-        console.log('Triggering image generation for new card:', data.id);
-        setTimeout(() => generateImages(data.id), 1000); // Give time for refs to be set
+        console.log('🎯 Triggering image generation for new card:', data.id);
+        setTimeout(() => generateImages(data.id), 2000); // Increased delay
       }
       
       return data.id;
@@ -301,10 +313,10 @@ export const useSupabaseCardsStorage = () => {
 
       await loadCards(); // Refresh the cards list
       
-      // Generate images in background after update
+      // Generate images in background after update with increased delay
       if (generateImages) {
-        console.log('Triggering image generation for updated card:', cardId);
-        setTimeout(() => generateImages(cardId), 500); // Shorter delay for updates
+        console.log('🎯 Triggering image generation for updated card:', cardId);
+        setTimeout(() => generateImages(cardId), 1500); // Increased delay
       }
       
       return true;

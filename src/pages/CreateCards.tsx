@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,7 +47,7 @@ const CreateCards = () => {
     setPreviewCard(previewData);
   }, []);
 
-  // Improved background image generation function
+  // Enhanced image generation function with better error handling
   const generateImagesForCard = async (cardId: string) => {
     const card = cards.find(c => c.id === cardId);
     if (!card || !deckTheme || !deckFont) {
@@ -57,36 +56,46 @@ const CreateCards = () => {
     }
 
     try {
-      console.log('Starting image generation for card:', cardId);
+      console.log('🎯 Starting image generation for card:', cardId);
+      console.log('🎯 Available refs:', Array.from(imageGeneratorRefs.current.keys()));
       
       // Get the CardImageGenerator ref for this card
       const generatorRef = imageGeneratorRefs.current.get(cardId);
       if (!generatorRef) {
-        console.error('No image generator ref found for card:', cardId);
+        console.error('❌ No image generator ref found for card:', cardId);
         return;
       }
 
+      console.log('✅ Found generator ref, calling generateImages...');
+      
       // Generate images using the ref
       const { frontImageUrl, backImageUrl } = await generatorRef.generateImages();
       
+      console.log('🎯 Image generation result:', { 
+        frontImageUrl: !!frontImageUrl, 
+        backImageUrl: !!backImageUrl,
+        frontLength: frontImageUrl?.length,
+        backLength: backImageUrl?.length 
+      });
+      
       if (frontImageUrl || backImageUrl) {
-        console.log('Images generated successfully, uploading to database...');
+        console.log('✅ Images generated successfully, uploading to database...');
         const result = await generateCardImages(cardId, frontImageUrl || undefined, backImageUrl || undefined);
         
         if (result.success) {
-          console.log('Card images saved successfully for card:', cardId);
+          console.log('✅ Card images saved successfully for card:', cardId);
           toast({
             title: "Images Generated",
             description: "Card images have been generated and saved.",
           });
         } else {
-          console.error('Failed to save card images for card:', cardId);
+          console.error('❌ Failed to save card images for card:', cardId);
         }
       } else {
-        console.error('Image generation failed - no images returned');
+        console.error('❌ Image generation failed - no images returned');
       }
     } catch (error) {
-      console.error('Error generating images for card:', cardId, error);
+      console.error('❌ Error generating images for card:', cardId, error);
       toast({
         title: "Image Generation Error",
         description: "Failed to generate card images. Please try again.",
@@ -143,12 +152,15 @@ const CreateCards = () => {
     }
   };
 
-  // Function to set refs for CardImageGenerator components
+  // Enhanced function to set refs for CardImageGenerator components
   const setImageGeneratorRef = (cardId: string, ref: CardImageGeneratorRef | null) => {
+    console.log('🎯 Setting ref for card:', cardId, '- ref exists:', !!ref);
     if (ref) {
       imageGeneratorRefs.current.set(cardId, ref);
+      console.log('✅ Ref stored for card:', cardId);
     } else {
       imageGeneratorRefs.current.delete(cardId);
+      console.log('🗑️ Ref removed for card:', cardId);
     }
   };
 
@@ -368,16 +380,6 @@ const CreateCards = () => {
                     deckTheme={deckTheme}
                     deckFont={deckFont}
                   />
-                  {/* Hidden image generator for background processing */}
-                  <div className="hidden">
-                    <CardImageGenerator
-                      ref={(ref) => setImageGeneratorRef(card.id, ref)}
-                      card={card}
-                      isFlipCard={true}
-                      deckTheme={deckTheme}
-                      deckFont={deckFont}
-                    />
-                  </div>
                 </div>
               ))}
             </div>
@@ -389,6 +391,21 @@ const CreateCards = () => {
             <p className="text-muted-foreground">Loading your cards...</p>
           </div>
         )}
+      </div>
+
+      {/* Image generators positioned off-screen but still rendered */}
+      <div className="fixed -left-[2000px] top-0 w-[400px] h-[400px] pointer-events-none">
+        {cards.map((card) => (
+          <div key={`generator-${card.id}`} className="w-full h-full mb-4">
+            <CardImageGenerator
+              ref={(ref) => setImageGeneratorRef(card.id, ref)}
+              card={card}
+              isFlipCard={true}
+              deckTheme={deckTheme}
+              deckFont={deckFont}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
