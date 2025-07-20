@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,6 +33,15 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.error('❌ Front element not available for capture');
         return null;
       }
+
+      // Check element dimensions
+      const rect = frontElement.getBoundingClientRect();
+      console.log('🎯 Front element dimensions:', rect.width, 'x', rect.height);
+      
+      if (rect.width === 0 || rect.height === 0) {
+        console.error('❌ Front element has zero dimensions:', rect);
+        return null;
+      }
       
       try {
         console.log('🎯 Loading html2canvas...');
@@ -45,12 +53,17 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           scale: 2, // High resolution for print
           useCORS: true,
           allowTaint: true,
-          width: frontElement.offsetWidth,
-          height: frontElement.offsetHeight,
-          logging: true
+          width: rect.width,
+          height: rect.height,
+          logging: false
         });
         
         console.log('🎯 Front card captured, canvas size:', canvas.width, 'x', canvas.height);
+        
+        if (canvas.width === 0 || canvas.height === 0) {
+          console.error('❌ Canvas has zero dimensions');
+          return null;
+        }
         
         return new Promise<string>((resolve) => {
           canvas.toBlob((blob) => {
@@ -76,6 +89,15 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.error('❌ Back element not available for capture');
         return null;
       }
+
+      // Check element dimensions
+      const rect = backElement.getBoundingClientRect();
+      console.log('🎯 Back element dimensions:', rect.width, 'x', rect.height);
+      
+      if (rect.width === 0 || rect.height === 0) {
+        console.error('❌ Back element has zero dimensions:', rect);
+        return null;
+      }
       
       try {
         console.log('🎯 Loading html2canvas...');
@@ -87,12 +109,17 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           scale: 2, // High resolution for print
           useCORS: true,
           allowTaint: true,
-          width: backElement.offsetWidth,
-          height: backElement.offsetHeight,
-          logging: true
+          width: rect.width,
+          height: rect.height,
+          logging: false
         });
         
         console.log('🎯 Back card captured, canvas size:', canvas.width, 'x', canvas.height);
+        
+        if (canvas.width === 0 || canvas.height === 0) {
+          console.error('❌ Canvas has zero dimensions');
+          return null;
+        }
         
         return new Promise<string>((resolve) => {
           canvas.toBlob((blob) => {
@@ -191,17 +218,19 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
   return (
     <div className="w-full max-w-sm mx-auto">
       {/* Flip Button */}
-      <div className="mb-4 text-center">
-        <Button
-          onClick={handleFlip}
-          variant="outline"
-          size="sm"
-          className="border-2 border-art-pink text-art-pink hover:bg-art-pink hover:text-white font-bold uppercase text-xs tracking-wide"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          {isFlipped ? 'Show Photo' : 'Show Details'}
-        </Button>
-      </div>
+      {showActions !== false && (
+        <div className="mb-4 text-center">
+          <Button
+            onClick={handleFlip}
+            variant="outline"
+            size="sm"
+            className="border-2 border-art-pink text-art-pink hover:bg-art-pink hover:text-white font-bold uppercase text-xs tracking-wide"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            {isFlipped ? 'Show Photo' : 'Show Details'}
+          </Button>
+        </div>
+      )}
 
       {/* Flip Card Container */}
       <div className="aspect-square perspective-1000">
@@ -214,7 +243,11 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           <Card 
             ref={setFrontElement}
             className="absolute inset-0 backface-hidden backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
-            style={getBackgroundStyle()}
+            style={{
+              ...getBackgroundStyle(),
+              width: '384px', // Explicit width
+              height: '384px' // Explicit height
+            }}
           >
             <CardContent className="p-4 relative z-10 h-full flex flex-col">
               {/* Photo Section */}
@@ -258,7 +291,11 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           <Card 
             ref={setBackElement}
             className="absolute inset-0 backface-hidden rotate-y-180 backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
-            style={getBackgroundStyle()}
+            style={{
+              ...getBackgroundStyle(),
+              width: '384px', // Explicit width
+              height: '384px' // Explicit height
+            }}
           >
             <CardContent className="p-4 relative z-10 h-full">
               {/* Attributes with white background for visibility */}

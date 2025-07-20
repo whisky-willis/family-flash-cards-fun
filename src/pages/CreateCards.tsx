@@ -59,6 +59,9 @@ const CreateCards = () => {
       console.log('🎯 Starting image generation for card:', cardId);
       console.log('🎯 Available refs:', Array.from(imageGeneratorRefs.current.keys()));
       
+      // Wait a bit longer for DOM to stabilize
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Get the CardImageGenerator ref for this card
       const generatorRef = imageGeneratorRefs.current.get(cardId);
       if (!generatorRef) {
@@ -393,10 +396,19 @@ const CreateCards = () => {
         )}
       </div>
 
-      {/* Image generators positioned off-screen but still rendered */}
-      <div className="fixed -left-[2000px] top-0 w-[400px] h-[400px] pointer-events-none">
+      {/* Image generators positioned off-screen but visible for html2canvas */}
+      <div style={{
+        position: 'fixed',
+        left: '-2000px',
+        top: '0',
+        width: '400px',
+        height: 'auto',
+        pointerEvents: 'none',
+        zIndex: -1000,
+        visibility: 'hidden' // Hide from users but keep for html2canvas
+      }}>
         {cards.map((card) => (
-          <div key={`generator-${card.id}`} className="w-full h-full mb-4">
+          <div key={`generator-${card.id}`} style={{ marginBottom: '20px' }}>
             <CardImageGenerator
               ref={(ref) => setImageGeneratorRef(card.id, ref)}
               card={card}

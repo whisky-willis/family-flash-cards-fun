@@ -1,3 +1,4 @@
+
 import React, { useRef, forwardRef } from 'react';
 import { CardPreview, CardPreviewRef } from "./CardPreview";
 import { FlipCardPreview, FlipCardPreviewRef } from "./FlipCardPreview";
@@ -52,8 +53,14 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
   }));
 
   return (
-    <div className="hidden">
-      {/* Hidden preview components for image generation */}
+    <div style={{
+      width: '384px', // Fixed width for consistent rendering
+      height: '384px', // Fixed height for consistent rendering
+      visibility: 'visible', // Keep visible for html2canvas
+      opacity: 1, // Keep opaque for html2canvas
+      position: 'relative'
+    }}>
+      {/* Preview components for image generation */}
       {isFlipCard ? (
         <FlipCardPreview
           ref={flipCardPreviewRef}
