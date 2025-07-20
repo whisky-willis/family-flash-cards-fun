@@ -137,10 +137,10 @@ const CreateCards = () => {
   };
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    const cardId = await saveCard(card, (newCardId) => {
+    const cardId = await saveCard(card, async (newCardId) => {
       // Pass the card data directly to avoid race condition
       const cardWithId: FamilyCard = { ...card, id: newCardId };
-      generateImagesForCard(newCardId, cardWithId);
+      await generateImagesForCard(newCardId, cardWithId);
     });
     
     if (cardId) {
@@ -162,10 +162,10 @@ const CreateCards = () => {
 
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
-      const success = await updateCard(currentCard.id, updatedCard, (cardId) => {
+      const success = await updateCard(currentCard.id, updatedCard, async (cardId) => {
         // Pass the updated card data directly
         const cardWithId: FamilyCard = { ...updatedCard, id: cardId };
-        generateImagesForCard(cardId, cardWithId);
+        await generateImagesForCard(cardId, cardWithId);
       });
       
       if (success) {
