@@ -47,32 +47,61 @@ const CreateCards = () => {
     setPreviewCard(previewData);
   }, []);
 
-  // Enhanced image generation function with better error handling
-  const generateImagesForCard = async (cardId: string) => {
-    const card = cards.find(c => c.id === cardId);
-    if (!card || !deckTheme || !deckFont) {
-      console.log('Cannot generate images: missing card, theme, or font', { cardId, hasCard: !!card, deckTheme, deckFont });
+  // Enhanced image generation function with better data access
+  const generateImagesForCard = async (cardId: string, cardData?: FamilyCard) => {
+    console.log('🎯 Starting image generation for card:', cardId);
+    console.log('🎯 Deck settings:', { deckTheme, deckFont });
+    console.log('🎯 Card data provided:', !!cardData);
+    
+    // Use provided card data or find in current state
+    let card = cardData || cards.find(c => c.id === cardId);
+    
+    // If still no card data, try to fetch from database
+    if (!card) {
+      console.log('🎯 Card not found in state, will proceed without card data check');
+      // We'll let the image generator handle the missing card case
+    }
+    
+    if (!deckTheme || !deckFont) {
+      console.log('❌ Cannot generate images: missing theme or font', { deckTheme, deckFont });
+      toast({
+        title: "Image Generation Skipped",
+        description: "Please select both theme and font in the deck designer first.",
+        variant: "destructive",
+      });
       return;
     }
 
     try {
-      console.log('🎯 Starting image generation for card:', cardId);
       console.log('🎯 Available refs:', Array.from(imageGeneratorRefs.current.keys()));
       
-      // Wait a bit longer for DOM to stabilize
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for DOM to stabilize
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Get the CardImageGenerator ref for this card
       const generatorRef = imageGeneratorRefs.current.get(cardId);
       if (!generatorRef) {
         console.error('❌ No image generator ref found for card:', cardId);
+        // Retry once after a longer delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const retryRef = imageGeneratorRefs.current.get(cardId);
+        if (!retryRef) {
+          console.error('❌ Still no ref after retry for card:', cardId);
+          return;
+        }
+        console.log('✅ Found generator ref on retry');
+      }
+
+      const activeRef = generatorRef || imageGeneratorRefs.current.get(cardId);
+      if (!activeRef) {
+        console.error('❌ No active ref available for card:', cardId);
         return;
       }
 
       console.log('✅ Found generator ref, calling generateImages...');
       
       // Generate images using the ref
-      const { frontImageUrl, backImageUrl } = await generatorRef.generateImages();
+      const { frontImageUrl, backImageUrl } = await activeRef.generateImages();
       
       console.log('🎯 Image generation result:', { 
         frontImageUrl: !!frontImageUrl, 
@@ -108,7 +137,12 @@ const CreateCards = () => {
   };
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    const cardId = await saveCard(card, generateImagesForCard);
+    const cardId = await saveCard(card, (newCardId) => {
+      // Pass the card data directly to avoid race condition
+      const cardWithId: FamilyCard = { ...card, id: newCardId };
+      generateImagesForCard(newCardId, cardWithId);
+    });
+    
     if (cardId) {
       setCurrentCard({});
       setPreviewCard({});
@@ -128,7 +162,12 @@ const CreateCards = () => {
 
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
-      const success = await updateCard(currentCard.id, updatedCard, generateImagesForCard);
+      const success = await updateCard(currentCard.id, updatedCard, (cardId) => {
+        // Pass the updated card data directly
+        const cardWithId: FamilyCard = { ...updatedCard, id: cardId };
+        generateImagesForCard(cardId, cardWithId);
+      });
+      
       if (success) {
         setCurrentCard({});
         setPreviewCard({});
