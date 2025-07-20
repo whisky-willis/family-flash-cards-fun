@@ -297,10 +297,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
                 </h3>
               </div>
 
-              {/* Flip indicator */}
-              <div className="absolute top-4 right-4 bg-white/80 rounded-full p-2">
-                <RotateCcw className="h-4 w-4 text-art-pink" />
-              </div>
             </CardContent>
           </Card>
 
@@ -372,10 +368,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
                 </div>
               </div>
 
-              {/* Flip indicator */}
-              <div className="absolute top-4 right-4 bg-white/80 rounded-full p-2">
-                <RotateCcw className="h-4 w-4 text-art-pink" />
-              </div>
             </CardContent>
           </Card>
         </div>
