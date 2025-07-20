@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Music } from "lucide-react";
@@ -12,6 +12,10 @@ interface CardPreviewProps {
   nameFont?: string;
   deckTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
   deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
+}
+
+export interface CardPreviewRef {
+  generateImage: () => Promise<string | null>;
 }
 
 // Comprehensive color mapping function that handles color variations
@@ -229,9 +233,42 @@ const getColorValue = (colorName: string): string => {
   return colorMap[normalizedColor] || '#666666'; // Default to gray if color not found
 };
 
-export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }: CardPreviewProps) => {
+export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }, ref) => {
   const [customBackground, setCustomBackground] = useState<string>('');
   const [isGeneratingBg, setIsGeneratingBg] = useState(false);
+  const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null);
+
+  // Expose generateImage method via ref
+  React.useImperativeHandle(ref, () => ({
+    generateImage: async () => {
+      if (!cardElement) return null;
+      
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(cardElement, {
+          backgroundColor: null,
+          scale: 2, // High resolution for print
+          useCORS: true,
+          allowTaint: true,
+          width: 400,
+          height: 400
+        });
+        
+        return new Promise<string>((resolve) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(URL.createObjectURL(blob));
+            } else {
+              resolve('');
+            }
+          }, 'image/png', 1.0);
+        });
+      } catch (error) {
+        console.error('Error generating card image:', error);
+        return null;
+      }
+    }
+  }));
 
   // Function to get font class name
   const getFontClass = (font?: string) => {
@@ -428,6 +465,7 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
     <div className="w-full max-w-sm mx-auto">
       <div className="aspect-square">
         <Card 
+          ref={setCardElement}
           className="backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg h-full overflow-hidden"
           style={getBackgroundStyle()}
         >
@@ -496,4 +534,4 @@ export const CardPreview = ({ card, onEdit, onDelete, showActions = false, nameF
       </div>
     </div>
   );
-};
+});

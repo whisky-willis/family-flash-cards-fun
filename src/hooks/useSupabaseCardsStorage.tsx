@@ -16,6 +16,9 @@ export interface FamilyCard {
     y: number;
     scale: number;
   };
+  front_image_url?: string;
+  back_image_url?: string;
+  print_ready?: boolean;
 }
 
 export const useSupabaseCardsStorage = () => {
@@ -66,6 +69,89 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
+  // Upload generated card image to storage
+  const uploadCardRender = async (imageBlob: Blob, cardId: string, side: 'front' | 'back'): Promise<string | null> => {
+    try {
+      const sessionId = getSessionId();
+      const fileName = `${sessionId}/${cardId}_${side}.png`;
+      
+      const { data, error } = await supabase.storage
+        .from('card-renders')
+        .upload(fileName, imageBlob, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) {
+        console.error('Upload render error:', error);
+        return null;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('card-renders')
+        .getPublicUrl(data.path);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Upload render error:', error);
+      return null;
+    }
+  };
+
+  // Generate and save card images
+  const generateCardImages = async (
+    cardId: string, 
+    frontImageUrl?: string, 
+    backImageUrl?: string
+  ): Promise<{ front_image_url?: string; back_image_url?: string; success: boolean }> => {
+    try {
+      const updateData: any = {};
+      
+      if (frontImageUrl) {
+        // Convert front image URL to blob and upload
+        const frontResponse = await fetch(frontImageUrl);
+        const frontBlob = await frontResponse.blob();
+        const frontUploadUrl = await uploadCardRender(frontBlob, cardId, 'front');
+        if (frontUploadUrl) {
+          updateData.front_image_url = frontUploadUrl;
+        }
+      }
+      
+      if (backImageUrl) {
+        // Convert back image URL to blob and upload
+        const backResponse = await fetch(backImageUrl);
+        const backBlob = await backResponse.blob();
+        const backUploadUrl = await uploadCardRender(backBlob, cardId, 'back');
+        if (backUploadUrl) {
+          updateData.back_image_url = backUploadUrl;
+        }
+      }
+      
+      if (Object.keys(updateData).length > 0) {
+        updateData.print_ready = true;
+        
+        const { error } = await supabase
+          .from('cards')
+          .update(updateData)
+          .eq('id', cardId);
+          
+        if (error) {
+          console.error('Error updating card with images:', error);
+          return { success: false };
+        }
+        
+        await loadCards(); // Refresh cards
+        return { ...updateData, success: true };
+      }
+      
+      return { success: false };
+    } catch (error) {
+      console.error('Error generating card images:', error);
+      return { success: false };
+    }
+  };
+
   // Load cards from database
   const loadCards = async () => {
     setLoading(true);
@@ -94,7 +180,10 @@ export const useSupabaseCardsStorage = () => {
         hobbies: card.hobbies || undefined,
         funFact: card.fun_fact || undefined,
         photo_url: card.photo_url || undefined,
-        imagePosition: (card.image_position as { x: number; y: number; scale: number }) || { x: 0, y: 0, scale: 1 }
+        imagePosition: (card.image_position as { x: number; y: number; scale: number }) || { x: 0, y: 0, scale: 1 },
+        front_image_url: card.front_image_url || undefined,
+        back_image_url: card.back_image_url || undefined,
+        print_ready: card.print_ready || false
       }));
 
       setCards(formattedCards);
@@ -243,6 +332,7 @@ export const useSupabaseCardsStorage = () => {
     updateCard,
     deleteCard,
     linkCardsToOrder,
-    refreshCards: loadCards
+    refreshCards: loadCards,
+    generateCardImages
   };
 };

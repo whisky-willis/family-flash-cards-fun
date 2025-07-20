@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, RotateCcw, RefreshCw } from "lucide-react";
@@ -14,8 +14,75 @@ interface FlipCardPreviewProps {
   deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
 }
 
-export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }: FlipCardPreviewProps) => {
+export interface FlipCardPreviewRef {
+  generateFrontImage: () => Promise<string | null>;
+  generateBackImage: () => Promise<string | null>;
+}
+
+export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewProps>(({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }, ref) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [frontElement, setFrontElement] = useState<HTMLDivElement | null>(null);
+  const [backElement, setBackElement] = useState<HTMLDivElement | null>(null);
+
+  // Expose image generation methods via ref
+  React.useImperativeHandle(ref, () => ({
+    generateFrontImage: async () => {
+      if (!frontElement) return null;
+      
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(frontElement, {
+          backgroundColor: null,
+          scale: 2, // High resolution for print
+          useCORS: true,
+          allowTaint: true,
+          width: 400,
+          height: 400
+        });
+        
+        return new Promise<string>((resolve) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(URL.createObjectURL(blob));
+            } else {
+              resolve('');
+            }
+          }, 'image/png', 1.0);
+        });
+      } catch (error) {
+        console.error('Error generating front card image:', error);
+        return null;
+      }
+    },
+    generateBackImage: async () => {
+      if (!backElement) return null;
+      
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(backElement, {
+          backgroundColor: null,
+          scale: 2, // High resolution for print
+          useCORS: true,
+          allowTaint: true,
+          width: 400,
+          height: 400
+        });
+        
+        return new Promise<string>((resolve) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(URL.createObjectURL(blob));
+            } else {
+              resolve('');
+            }
+          }, 'image/png', 1.0);
+        });
+      } catch (error) {
+        console.error('Error generating back card image:', error);
+        return null;
+      }
+    }
+  }));
 
   // Function to get font class name
   const getFontClass = (font?: string) => {
@@ -116,6 +183,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
         >
           {/* Front Side - Photo */}
           <Card 
+            ref={setFrontElement}
             className="absolute inset-0 backface-hidden backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
             style={getBackgroundStyle()}
           >
@@ -159,6 +227,7 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
 
           {/* Back Side - Attributes */}
           <Card 
+            ref={setBackElement}
             className="absolute inset-0 backface-hidden rotate-y-180 backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
             style={getBackgroundStyle()}
           >
@@ -261,4 +330,4 @@ export const FlipCardPreview = ({ card, onEdit, onDelete, showActions = false, n
 
     </div>
   );
-};
+});

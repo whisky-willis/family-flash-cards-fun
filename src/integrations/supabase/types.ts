@@ -49,9 +49,11 @@ export type Database = {
       }
       cards: {
         Row: {
+          back_image_url: string | null
           created_at: string
           date_of_birth: string | null
           favorite_color: string | null
+          front_image_url: string | null
           fun_fact: string | null
           hobbies: string | null
           id: string
@@ -59,14 +61,17 @@ export type Database = {
           name: string
           order_id: string | null
           photo_url: string | null
+          print_ready: boolean | null
           relationship: string | null
           updated_at: string
           user_session_id: string
         }
         Insert: {
+          back_image_url?: string | null
           created_at?: string
           date_of_birth?: string | null
           favorite_color?: string | null
+          front_image_url?: string | null
           fun_fact?: string | null
           hobbies?: string | null
           id?: string
@@ -74,14 +79,17 @@ export type Database = {
           name: string
           order_id?: string | null
           photo_url?: string | null
+          print_ready?: boolean | null
           relationship?: string | null
           updated_at?: string
           user_session_id: string
         }
         Update: {
+          back_image_url?: string | null
           created_at?: string
           date_of_birth?: string | null
           favorite_color?: string | null
+          front_image_url?: string | null
           fun_fact?: string | null
           hobbies?: string | null
           id?: string
@@ -89,6 +97,7 @@ export type Database = {
           name?: string
           order_id?: string | null
           photo_url?: string | null
+          print_ready?: boolean | null
           relationship?: string | null
           updated_at?: string
           user_session_id?: string

@@ -7,6 +7,7 @@ import { CardForm } from "@/components/CardForm";
 import { FlipCardPreview } from "@/components/FlipCardPreview";
 import { CardPreview } from "@/components/CardPreview";
 import { DeckDesigner } from "@/components/DeckDesigner";
+import { CardImageGenerator } from "@/components/CardImageGenerator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
@@ -25,7 +26,8 @@ const CreateCards = () => {
     updateCard, 
     deleteCard, 
     linkCardsToOrder,
-    refreshCards 
+    refreshCards,
+    generateCardImages
   } = useSupabaseCardsStorage();
   
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
@@ -138,6 +140,22 @@ const CreateCards = () => {
 
   const handleUploadImage = async (file: File): Promise<string | null> => {
     return await uploadImage(file);
+  };
+
+  const handleImagesGenerated = async (cardId: string, frontUrl?: string, backUrl?: string) => {
+    const result = await generateCardImages(cardId, frontUrl, backUrl);
+    if (result.success) {
+      toast({
+        title: "Print Images Generated!",
+        description: "High-resolution images have been created for printing.",
+      });
+    } else {
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate print images. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -295,14 +313,25 @@ const CreateCards = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cards.map((card) => (
                 <div key={card.id} className="relative hover:scale-105 transition-transform duration-300">
-                  <CardPreview 
-                    card={card} 
-                    onEdit={() => handleEditCard(card)}
-                    onDelete={() => handleDeleteCard(card.id)}
-                    showActions={true}
-                    deckTheme={deckTheme}
-                    deckFont={deckFont}
-                  />
+                  <div className="space-y-4">
+                    <CardPreview 
+                      card={card} 
+                      onEdit={() => handleEditCard(card)}
+                      onDelete={() => handleDeleteCard(card.id)}
+                      showActions={true}
+                      deckTheme={deckTheme}
+                      deckFont={deckFont}
+                    />
+                    <CardImageGenerator
+                      card={card}
+                      isFlipCard={true}
+                      deckTheme={deckTheme}
+                      deckFont={deckFont}
+                      onImagesGenerated={(frontUrl, backUrl) => 
+                        handleImagesGenerated(card.id, frontUrl, backUrl)
+                      }
+                    />
+                  </div>
                 </div>
               ))}
             </div>
