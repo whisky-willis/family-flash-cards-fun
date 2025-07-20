@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { FamilyCard } from '@/pages/CreateCards';
+import { FamilyCard } from '@/hooks/useSupabaseCardsStorage';
 
 const DRAFT_KEY = 'kindred-cards-draft';
 

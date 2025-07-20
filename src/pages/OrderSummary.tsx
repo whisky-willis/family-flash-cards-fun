@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Heart, Users } from "lucide-react";
-import { FamilyCard } from "@/pages/CreateCards";
+import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
 const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
@@ -208,9 +208,9 @@ const OrderSummary = () => {
                 <div className="grid gap-4 max-h-96 overflow-y-auto">
                   {cards.map((card) => (
                     <div key={card.id} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                      {card.photo ? (
+                      {card.photo_url ? (
                         <img 
-                          src={card.photo} 
+                          src={card.photo_url} 
                           alt={card.name}
                           className="w-12 h-12 object-cover rounded-full"
                         />
@@ -221,7 +221,7 @@ const OrderSummary = () => {
                       )}
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-800">{card.name}</h4>
-                        <p className="text-sm text-gray-600 capitalize">{card.whereTheyLive}</p>
+                        <p className="text-sm text-gray-600 capitalize">{card.relationship}</p>
                       </div>
                       <span className="text-sm font-medium text-gray-700">
                         ${pricePerCard.toFixed(2)}

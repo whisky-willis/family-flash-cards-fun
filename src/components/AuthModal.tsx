@@ -12,7 +12,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { User } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
-import { FamilyCard } from '@/pages/CreateCards';
+import { FamilyCard } from '@/hooks/useSupabaseCardsStorage';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 

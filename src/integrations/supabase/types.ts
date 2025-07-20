@@ -47,6 +47,62 @@ export type Database = {
         }
         Relationships: []
       }
+      cards: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          favorite_color: string | null
+          fun_fact: string | null
+          hobbies: string | null
+          id: string
+          image_position: Json | null
+          name: string
+          order_id: string | null
+          photo_url: string | null
+          relationship: string | null
+          updated_at: string
+          user_session_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          favorite_color?: string | null
+          fun_fact?: string | null
+          hobbies?: string | null
+          id?: string
+          image_position?: Json | null
+          name: string
+          order_id?: string | null
+          photo_url?: string | null
+          relationship?: string | null
+          updated_at?: string
+          user_session_id: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          favorite_color?: string | null
+          fun_fact?: string | null
+          hobbies?: string | null
+          id?: string
+          image_position?: Json | null
+          name?: string
+          order_id?: string | null
+          photo_url?: string | null
+          relationship?: string | null
+          updated_at?: string
+          user_session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           card_count: number | null

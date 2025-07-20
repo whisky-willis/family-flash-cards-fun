@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Music } from "lucide-react";
-import { FamilyCard } from "@/pages/CreateCards";
+import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 
 interface CardPreviewProps {
   card: Partial<FamilyCard>;

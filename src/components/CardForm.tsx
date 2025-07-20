@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
-import { FamilyCard } from "@/pages/CreateCards";
+import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
+import { toast } from 'sonner';
 
 interface CardFormProps {
   initialData?: Partial<FamilyCard>;
@@ -15,34 +15,35 @@ interface CardFormProps {
   isEditing?: boolean;
   deckTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
   deckFont?: 'bubblegum' | 'luckiest-guy' | 'fredoka-one';
+  onUploadImage?: (file: File) => Promise<string | null>;
 }
 
-export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange, isEditing = false, deckTheme, deckFont }: CardFormProps) => {
+export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange, isEditing = false, deckTheme, deckFont, onUploadImage }: CardFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [formData, setFormData] = useState({
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState<Partial<FamilyCard>>({
     name: '',
-    photo: '',
+    photo_url: '',
+    relationship: '',
     dateOfBirth: '',
     favoriteColor: '',
     hobbies: '',
     funFact: '',
-    whereTheyLive: '',
     imagePosition: { x: 0, y: 0, scale: 1 },
     ...initialData
   });
-
 
   // Only update form data when we're switching to edit mode or resetting
   useEffect(() => {
     if (isEditing || Object.keys(initialData).length === 0) {
       setFormData({
         name: '',
-        photo: '',
+        photo_url: '',
+        relationship: '',
         dateOfBirth: '',
         favoriteColor: '',
         hobbies: '',
         funFact: '',
-        whereTheyLive: '',
         imagePosition: { x: 0, y: 0, scale: 1 },
         ...initialData
       });
@@ -66,13 +67,13 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     
     // Check all required fields
     const requiredFields = {
-      name: formData.name.trim(),
-      photo: formData.photo,
-      whereTheyLive: formData.whereTheyLive.trim(),
-      dateOfBirth: formData.dateOfBirth,
-      favoriteColor: formData.favoriteColor.trim(),
-      hobbies: formData.hobbies.trim(),
-      funFact: formData.funFact.trim()
+      name: formData.name?.trim() || '',
+      photo_url: formData.photo_url || '',
+      relationship: formData.relationship?.trim() || '',
+      dateOfBirth: formData.dateOfBirth || '',
+      favoriteColor: formData.favoriteColor?.trim() || '',
+      hobbies: formData.hobbies?.trim() || '',
+      funFact: formData.funFact?.trim() || ''
     };
     
     // Check if any required field is empty
@@ -84,8 +85,8 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       // Focus on the first missing field
       const fieldMap: Record<string, string> = {
         name: 'name',
-        photo: 'photo',
-        whereTheyLive: 'whereTheyLive',
+        photo_url: 'photo',
+        relationship: 'relationship',
         dateOfBirth: 'dateOfBirth',
         favoriteColor: 'favoriteColor',
         hobbies: 'hobbies',
@@ -106,21 +107,21 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
       ...formData,
       theme: deckTheme,
       font: deckFont
-    };
+    } as Omit<FamilyCard, 'id'>;
     
     onSubmit(finalData);
     
     if (!isEditing) {
-      setFormData(prev => ({
+      setFormData({
         name: '',
-        photo: '',
+        photo_url: '',
+        relationship: '',
         dateOfBirth: '',
         favoriteColor: '',
         hobbies: '',
         funFact: '',
-        whereTheyLive: '',
         imagePosition: { x: 0, y: 0, scale: 1 },
-      }));
+      });
       // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -128,28 +129,36 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData(prev => ({ 
-          ...prev, 
-          photo: event.target?.result as string,
-          imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
-        }));
-      };
-      reader.readAsDataURL(file);
+    if (file && onUploadImage) {
+      setUploading(true);
+      try {
+        const photoUrl = await onUploadImage(file);
+        if (photoUrl) {
+          setFormData(prev => ({ 
+            ...prev, 
+            photo_url: photoUrl,
+            imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
+          }));
+          toast.success('Image uploaded successfully!');
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast.error('Failed to upload image');
+      } finally {
+        setUploading(false);
+      }
       // Clear the input value so the same file can be selected again
       e.target.value = '';
     }
   };
 
-  // Added: Function to remove the uploaded image
+  // Function to remove the uploaded image
   const handleRemoveImage = () => {
     setFormData(prev => ({ 
       ...prev, 
-      photo: '',
+      photo_url: '',
       imagePosition: { x: 0, y: 0, scale: 1 }
     }));
     // Reset the file input
@@ -158,7 +167,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     }
   };
 
-  // Added: Function to trigger file input for image replacement
+  // Function to trigger file input for image replacement
   const handleReplaceImage = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -169,14 +178,13 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     setFormData(prev => ({ ...prev, imagePosition: position }));
   }, []);
 
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Label htmlFor="name">Name (Uncle Stu, Granny, Cousin Tom) *</Label>
         <Input
           id="name"
-          value={formData.name}
+          value={formData.name || ''}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Enter name"
           required
@@ -188,15 +196,21 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <div className="space-y-2">
           <Input
             ref={fileInputRef}
-            key={formData.photo ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
+            key={formData.photo_url ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
             id="photo"
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            required={!formData.photo}
+            required={!formData.photo_url}
+            disabled={uploading}
             className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
           />
-          {formData.photo && (
+          {uploading && (
+            <div className="flex items-center text-sm text-blue-600 p-2">
+              <span>Uploading image...</span>
+            </div>
+          )}
+          {formData.photo_url && !uploading && (
             <div className="flex justify-between items-center text-sm bg-green-50 border border-green-200 rounded-lg p-2">
               <span className="text-green-700 font-medium">✓ Image uploaded successfully</span>
               <div className="flex space-x-2">
@@ -221,29 +235,29 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
               </div>
             </div>
           )}
-          {!formData.photo && (
+          {!formData.photo_url && !uploading && (
             <p className="text-sm text-muted-foreground">Upload a photo to get started</p>
           )}
         </div>
-        {formData.photo && (
+        {formData.photo_url && (
           <div className="mt-3">
             <Label className="text-sm text-muted-foreground mb-2 block font-medium">Adjust Image Position</Label>
             <ImagePositionAdjuster
-              imageSrc={formData.photo}
+              imageSrc={formData.photo_url}
               alt={formData.name || "Preview"}
               onPositionChange={handlePositionChange}
-              initialPosition={formData.imagePosition}
+              initialPosition={formData.imagePosition || { x: 0, y: 0, scale: 1 }}
             />
           </div>
         )}
       </div>
 
       <div>
-        <Label htmlFor="whereTheyLive">Where they live *</Label>
+        <Label htmlFor="relationship">Where they live *</Label>
         <Input
-          id="whereTheyLive"
-          value={formData.whereTheyLive}
-          onChange={(e) => setFormData({ ...formData, whereTheyLive: e.target.value })}
+          id="relationship"
+          value={formData.relationship || ''}
+          onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
           placeholder="e.g., New York, California, Down the street, Next door"
           required
         />
@@ -255,9 +269,9 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
           <div>
             <select
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              value={formData.dateOfBirth.split('-')[1] || ''}
+              value={(formData.dateOfBirth || '').split('-')[1] || ''}
               onChange={(e) => {
-                const day = formData.dateOfBirth.split('-')[2] || '01';
+                const day = (formData.dateOfBirth || '').split('-')[2] || '01';
                 setFormData({ ...formData, dateOfBirth: `2000-${e.target.value.padStart(2, '0')}-${day}` });
               }}
               required
@@ -280,9 +294,9 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
           <div>
             <select
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              value={formData.dateOfBirth.split('-')[2] || ''}
+              value={(formData.dateOfBirth || '').split('-')[2] || ''}
               onChange={(e) => {
-                const month = formData.dateOfBirth.split('-')[1] || '01';
+                const month = (formData.dateOfBirth || '').split('-')[1] || '01';
                 setFormData({ ...formData, dateOfBirth: `2000-${month}-${e.target.value.padStart(2, '0')}` });
               }}
               required
@@ -302,7 +316,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <Label htmlFor="favoriteColor">Favorite Color *</Label>
         <Input
           id="favoriteColor"
-          value={formData.favoriteColor}
+          value={formData.favoriteColor || ''}
           onChange={(e) => setFormData({ ...formData, favoriteColor: e.target.value })}
           placeholder="e.g., Blue, Red, Green"
           required
@@ -313,7 +327,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <Label htmlFor="hobbies">Hobbies *</Label>
         <Input
           id="hobbies"
-          value={formData.hobbies}
+          value={formData.hobbies || ''}
           onChange={(e) => {
             const value = e.target.value;
             if (value.length <= 30) {
@@ -326,10 +340,10 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         />
         <div className="flex justify-end items-center mt-1">
           <div className="flex items-center space-x-2">
-            <span className={`text-xs ${formData.hobbies.length >= 30 ? 'text-destructive' : 'text-muted-foreground'}`}>
-              {formData.hobbies.length}/30
+            <span className={`text-xs ${(formData.hobbies?.length || 0) >= 30 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              {formData.hobbies?.length || 0}/30
             </span>
-            {formData.hobbies.length >= 30 && (
+            {(formData.hobbies?.length || 0) >= 30 && (
               <span className="text-xs text-destructive">Character limit reached</span>
             )}
           </div>
@@ -340,7 +354,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <Label htmlFor="funFact">Fun Fact *</Label>
         <Textarea
           id="funFact"
-          value={formData.funFact}
+          value={formData.funFact || ''}
           onChange={(e) => {
             const value = e.target.value;
             if (value.length <= 80) {
@@ -354,20 +368,23 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         />
         <div className="flex justify-end items-center mt-1">
           <div className="flex items-center space-x-2">
-            <span className={`text-xs ${formData.funFact.length >= 80 ? 'text-destructive' : 'text-muted-foreground'}`}>
-              {formData.funFact.length}/80
+            <span className={`text-xs ${(formData.funFact?.length || 0) >= 80 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              {formData.funFact?.length || 0}/80
             </span>
-            {formData.funFact.length >= 80 && (
+            {(formData.funFact?.length || 0) >= 80 && (
               <span className="text-xs text-destructive">Character limit reached</span>
             )}
           </div>
         </div>
       </div>
 
-
       <div className="flex space-x-4">
-        <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 font-bold uppercase text-sm tracking-wide">
-          {isEditing ? 'Update Card' : 'Add Card'}
+        <Button 
+          type="submit" 
+          disabled={uploading}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 font-bold uppercase text-sm tracking-wide"
+        >
+          {uploading ? 'Uploading...' : (isEditing ? 'Update Card' : 'Add Card')}
         </Button>
         {isEditing && onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold uppercase text-sm tracking-wide">

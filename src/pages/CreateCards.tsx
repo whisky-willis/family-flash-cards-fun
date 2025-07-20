@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Heart, Users, Image as ImageIcon, Save, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
@@ -12,101 +10,49 @@ import { DeckDesigner } from "@/components/DeckDesigner";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
-import { useSupabaseCards } from "@/hooks/useSupabaseCards";
-import { useDraft } from "@/hooks/useDraft";
-import { supabase } from "@/integrations/supabase/client";
-
-export interface FamilyCard {
-  id: string;
-  name: string;
-  photo: string;
-  dateOfBirth: string;
-  favoriteColor: string;
-  hobbies: string;
-  funFact: string;
-  whereTheyLive: string;
-  imagePosition?: { x: number; y: number; scale: number };
-}
+import { useSupabaseCardsStorage, FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 
 const CreateCards = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { cards, addCard, updateCard, removeCard, isLoaded, isSaving } = useSupabaseCards();
-  const { saveDraftToLocal, clearDraft, getDraft, saveDeckDesign } = useDraft();
+  const { 
+    cards, 
+    loading, 
+    saving, 
+    uploadImage, 
+    saveCard, 
+    updateCard, 
+    deleteCard, 
+    linkCardsToOrder,
+    refreshCards 
+  } = useSupabaseCardsStorage();
+  
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   
-  
   // Deck-level state
   const [recipientName, setRecipientName] = useState('');
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
-  const [loadedFromProfile, setLoadedFromProfile] = useState(false);
-
-  // Load draft data on component mount (only run once)
-  useEffect(() => {
-    console.log('🎯 CreateCards: Component mounted, loading draft...');
-    const draft = getDraft();
-    console.log('🎯 CreateCards: Retrieved draft:', draft);
-    console.log('🎯 CreateCards: Draft deckDesign:', draft.deckDesign);
-    
-    if (draft.deckDesign) {
-      console.log('🎯 CreateCards: Found deckDesign in draft');
-      console.log('🎯 CreateCards: recipientName:', draft.deckDesign.recipientName);
-      console.log('🎯 CreateCards: theme:', draft.deckDesign.theme);
-      console.log('🎯 CreateCards: font:', draft.deckDesign.font);
-      
-      if (draft.deckDesign.recipientName) {
-        console.log('🎯 CreateCards: Setting form state from draft...');
-        setRecipientName(draft.deckDesign.recipientName);
-        setDeckTheme(draft.deckDesign.theme);
-        setDeckFont(draft.deckDesign.font);
-        setLoadedFromProfile(true);
-        console.log('🎯 CreateCards: Form state set, loadedFromProfile:', true);
-      } else {
-        console.log('🎯 CreateCards: No recipientName in deckDesign, skipping load');
-      }
-    } else {
-      console.log('🎯 CreateCards: No deckDesign found in draft');
-    }
-    
-    if (draft.cards && draft.cards.length > 0) {
-      console.log('🎯 CreateCards: Found cards in draft:', draft.cards.length);
-    }
-  }, []); // Run only once on mount
-
-  // Save deck design changes to draft
-  useEffect(() => {
-    if (recipientName || deckTheme || deckFont) {
-      saveDeckDesign({
-        recipientName,
-        theme: deckTheme,
-        font: deckFont
-      });
-    }
-  }, [recipientName, deckTheme, deckFont, saveDeckDesign]);
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
   }, []);
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    const newCard = await addCard(card);
-    const updatedCards = [...cards, newCard];
-    
-    // Save to draft for persistence
-    saveDraftToLocal(updatedCards);
-    
-    setCurrentCard({});
-    setPreviewCard({});
-    
-    toast({
-      title: "Card Added!",
-      description: `${card.name}'s card has been added to your collection.`,
-    });
+    const cardId = await saveCard(card);
+    if (cardId) {
+      setCurrentCard({});
+      setPreviewCard({});
+      
+      toast({
+        title: "Card Added!",
+        description: `${card.name}'s card has been added to your collection.`,
+      });
+    }
   };
 
   const handleEditCard = (card: FamilyCard) => {
@@ -117,45 +63,32 @@ const CreateCards = () => {
 
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
-      await updateCard(currentCard.id, updatedCard);
-      
-      // Update draft with modified cards
-      const updatedCards = cards.map(card => 
-        card.id === currentCard.id 
-          ? { ...updatedCard, id: currentCard.id }
-          : card
-      );
-      saveDraftToLocal(updatedCards);
-      
-      setCurrentCard({});
-      setPreviewCard({});
-      setIsEditing(false);
-      
-      toast({
-        title: "Card Updated!",
-        description: `${updatedCard.name}'s card has been updated.`,
-      });
+      const success = await updateCard(currentCard.id, updatedCard);
+      if (success) {
+        setCurrentCard({});
+        setPreviewCard({});
+        setIsEditing(false);
+        
+        toast({
+          title: "Card Updated!",
+          description: `${updatedCard.name}'s card has been updated.`,
+        });
+      }
     }
   };
 
   const handleDeleteCard = async (cardId: string) => {
-    await removeCard(cardId);
-    
-    // Update draft after deletion
-    const updatedCards = cards.filter(card => card.id !== cardId);
-    saveDraftToLocal(updatedCards);
-    
-    toast({
-      title: "Card Removed",
-      description: "The card has been removed from your collection.",
-    });
+    const success = await deleteCard(cardId);
+    if (success) {
+      toast({
+        title: "Card Removed",
+        description: "The card has been removed from your collection.",
+      });
+    }
   };
 
-  const handleProceedToOrder = () => {
-    const draft = getDraft();
-    const effectiveCards = user ? cards : draft.cards;
-    
-    if (effectiveCards.length === 0) {
+  const handleProceedToOrder = async () => {
+    if (cards.length === 0) {
       toast({
         title: "No Cards Created",
         description: "Please create at least one card before proceeding to order.",
@@ -173,14 +106,22 @@ const CreateCards = () => {
       return;
     }
     
-    navigate('/order', { state: { cards: effectiveCards } });
+    // Here you would create an order and link the cards to it
+    // For now, just navigate to the order page
+    navigate('/order', { 
+      state: { 
+        cards,
+        deckDesign: {
+          recipientName,
+          theme: deckTheme,
+          font: deckFont
+        }
+      } 
+    });
   };
 
   const handleSaveCollection = () => {
-    const draft = getDraft();
-    const effectiveCards = user ? cards : draft.cards;
-    
-    if (effectiveCards.length === 0) {
+    if (cards.length === 0) {
       toast({
         title: "No Cards to Save",
         description: "Please create at least one card before saving a collection.",
@@ -189,38 +130,14 @@ const CreateCards = () => {
       return;
     }
     
-    if (!user) {
-      setShowAuthModal(true);
-    } else {
-      // User is already authenticated, save directly
-      saveAuthentatedCollection();
-    }
-  };
-
-  const saveAuthentatedCollection = async () => {
-    try {
-      const { error } = await supabase.auth.getUser();
-      if (error) throw error;
-
-      toast({
-        title: "Collection Saved!",
-        description: "Your cards have been saved to your profile.",
-      });
-    } catch (error) {
-      console.error('Save error:', error);
-    }
-  };
-
-  const handleAuthSuccess = () => {
-    clearDraft();
     toast({
-      title: "Account Created Successfully!",
-      description: "Your cards have been saved. Refreshing page...",
+      title: "Collection Saved!",
+      description: "Your cards are automatically saved and will persist across sessions.",
     });
-    // Refresh the page to load the user's saved collection
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+  };
+
+  const handleUploadImage = async (file: File): Promise<string | null> => {
+    return await uploadImage(file);
   };
 
   return (
@@ -271,7 +188,7 @@ const CreateCards = () => {
                   onClick={handleSaveCollection}
                   variant="outline"
                   className="px-3 py-1 sm:px-4 md:px-4 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none md:flex-none"
-                  disabled={(user ? cards : getDraft().cards).length === 0}
+                  disabled={cards.length === 0}
                 >
                   <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
                   Save for Later
@@ -279,14 +196,14 @@ const CreateCards = () => {
                 <Button 
                   onClick={handleProceedToOrder}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
-                  disabled={(user ? cards : getDraft().cards).length === 0}
+                  disabled={cards.length === 0}
                 >
                   Order Cards
                 </Button>
               <div className="hidden sm:flex w-8 h-8 bg-primary rounded-full items-center justify-center text-primary-foreground text-sm font-bold">
-                {(user ? cards : getDraft().cards).length}
+                {cards.length}
               </div>
-              {isSaving && (
+              {saving && (
                 <div className="text-sm text-muted-foreground">
                   Saving...
                 </div>
@@ -314,7 +231,6 @@ const CreateCards = () => {
               recipientName={recipientName}
               selectedTheme={deckTheme}
               selectedFont={deckFont}
-              initiallyCollapsed={loadedFromProfile}
               onRecipientNameChange={setRecipientName}
               onThemeChange={setDeckTheme}
               onFontChange={setDeckFont}
@@ -344,6 +260,7 @@ const CreateCards = () => {
                   isEditing={isEditing}
                   deckTheme={deckTheme}
                   deckFont={deckFont}
+                  onUploadImage={handleUploadImage}
                 />
               </CardContent>
             </Card>
@@ -370,13 +287,13 @@ const CreateCards = () => {
         </div>
 
         {/* Cards Collection */}
-        {(user ? cards : getDraft().cards).length > 0 && (
+        {cards.length > 0 && (
           <div className="mt-12">
             <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-8 text-center">
-              {recipientName ? `${recipientName}'s Collection` : 'Your Collection'} ({(user ? cards : getDraft().cards).length} cards)
+              {recipientName ? `${recipientName}'s Collection` : 'Your Collection'} ({cards.length} cards)
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {(user ? cards : getDraft().cards).map((card) => (
+              {cards.map((card) => (
                 <div key={card.id} className="relative hover:scale-105 transition-transform duration-300">
                   <CardPreview 
                     card={card} 
@@ -392,18 +309,11 @@ const CreateCards = () => {
           </div>
         )}
 
-        {/* Auth Modal */}
-        <AuthModal
-          open={showAuthModal}
-          onOpenChange={setShowAuthModal}
-          cards={user ? cards : getDraft().cards}
-          deckDesign={{
-            recipientName,
-            theme: deckTheme,
-            font: deckFont
-          }}
-          onSuccess={handleAuthSuccess}
-        />
+        {loading && (
+          <div className="text-center mt-8">
+            <p className="text-muted-foreground">Loading your cards...</p>
+          </div>
+        )}
       </div>
     </div>
   );

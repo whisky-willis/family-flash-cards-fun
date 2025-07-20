@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useDraft } from '@/hooks/useDraft';
 import { CardPreview } from '@/components/CardPreview';
-import { FamilyCard } from '@/pages/CreateCards';
+import { FamilyCard } from '@/hooks/useSupabaseCardsStorage';
 import { User, Calendar, Trash2 } from 'lucide-react';
 
 interface CardCollection {

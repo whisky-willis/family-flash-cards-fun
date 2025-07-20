@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, MapPin, Calendar, Heart, Gamepad2, RotateCcw } from "lucide-react";
-import { FamilyCard } from "@/pages/CreateCards";
+import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 
 interface FlippableCardPreviewProps {
   card: Partial<FamilyCard>;
