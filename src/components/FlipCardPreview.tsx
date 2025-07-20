@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -103,6 +104,17 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.log('🎯 Loading html2canvas...');
         const html2canvas = (await import('html2canvas')).default;
         
+        // Temporarily remove the rotation transform before capture
+        const originalTransform = backElement.style.transform;
+        const originalClass = backElement.className;
+        
+        console.log('🎯 Removing rotation transform for capture...');
+        backElement.style.transform = 'rotateY(0deg)';
+        backElement.className = originalClass.replace('rotate-y-180', '');
+        
+        // Wait a moment for the DOM to update
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
         console.log('🎯 Capturing back card with html2canvas...');
         const canvas = await html2canvas(backElement, {
           backgroundColor: null,
@@ -113,6 +125,11 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           height: rect.height,
           logging: false
         });
+        
+        // Restore the original transform
+        console.log('🎯 Restoring original transform...');
+        backElement.style.transform = originalTransform;
+        backElement.className = originalClass;
         
         console.log('🎯 Back card captured, canvas size:', canvas.width, 'x', canvas.height);
         
