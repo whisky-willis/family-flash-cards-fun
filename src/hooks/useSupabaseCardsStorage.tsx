@@ -76,6 +76,8 @@ export const useSupabaseCardsStorage = () => {
       const sessionId = getSessionId();
       const fileName = `${sessionId}/${cardId}_${side}.png`;
       
+      console.log(`Uploading ${side} image for card ${cardId}, blob size:`, imageBlob.size);
+      
       const { data, error } = await supabase.storage
         .from('card-renders')
         .upload(fileName, imageBlob, {
@@ -93,6 +95,7 @@ export const useSupabaseCardsStorage = () => {
         .from('card-renders')
         .getPublicUrl(data.path);
 
+      console.log(`Successfully uploaded ${side} image:`, publicUrl);
       return publicUrl;
     } catch (error) {
       console.error('Upload render error:', error);
@@ -100,11 +103,17 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Generate card images automatically in background
-  const generateCardImagesInBackground = async (cardId: string, card: FamilyCard) => {
-    // This will be called by the parent component that has access to the CardImageGenerator
-    // We'll pass a callback to trigger this after the card is saved
-    console.log('Background image generation will be triggered for card:', cardId);
+  // Convert data URL to blob
+  const dataURLtoBlob = (dataURL: string): Blob => {
+    const arr = dataURL.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
   };
 
   // Generate and save card images
@@ -114,30 +123,45 @@ export const useSupabaseCardsStorage = () => {
     backImageUrl?: string
   ): Promise<{ front_image_url?: string; back_image_url?: string; success: boolean }> => {
     try {
+      console.log('Starting generateCardImages for card:', cardId);
+      console.log('Received URLs:', { frontImageUrl: !!frontImageUrl, backImageUrl: !!backImageUrl });
+      
       const updateData: any = {};
       
       if (frontImageUrl) {
+        console.log('Processing front image...');
         // Convert front image URL to blob and upload
-        const frontResponse = await fetch(frontImageUrl);
-        const frontBlob = await frontResponse.blob();
+        const frontBlob = dataURLtoBlob(frontImageUrl);
+        console.log('Front blob size:', frontBlob.size);
+        
         const frontUploadUrl = await uploadCardRender(frontBlob, cardId, 'front');
         if (frontUploadUrl) {
           updateData.front_image_url = frontUploadUrl;
+          console.log('Front image uploaded successfully');
+        } else {
+          console.error('Failed to upload front image');
         }
       }
       
       if (backImageUrl) {
+        console.log('Processing back image...');
         // Convert back image URL to blob and upload
-        const backResponse = await fetch(backImageUrl);
-        const backBlob = await backResponse.blob();
+        const backBlob = dataURLtoBlob(backImageUrl);
+        console.log('Back blob size:', backBlob.size);
+        
         const backUploadUrl = await uploadCardRender(backBlob, cardId, 'back');
         if (backUploadUrl) {
           updateData.back_image_url = backUploadUrl;
+          console.log('Back image uploaded successfully');
+        } else {
+          console.error('Failed to upload back image');
         }
       }
       
       if (Object.keys(updateData).length > 0) {
         updateData.print_ready = true;
+        
+        console.log('Updating database with:', updateData);
         
         const { error } = await supabase
           .from('cards')
@@ -149,10 +173,12 @@ export const useSupabaseCardsStorage = () => {
           return { success: false };
         }
         
+        console.log('Database updated successfully');
         await loadCards(); // Refresh cards
         return { ...updateData, success: true };
       }
       
+      console.log('No images to update');
       return { success: false };
     } catch (error) {
       console.error('Error generating card images:', error);
@@ -235,7 +261,8 @@ export const useSupabaseCardsStorage = () => {
       
       // Generate images in background after save
       if (generateImages) {
-        setTimeout(() => generateImages(data.id), 100);
+        console.log('Triggering image generation for new card:', data.id);
+        setTimeout(() => generateImages(data.id), 1000); // Give time for refs to be set
       }
       
       return data.id;
@@ -276,7 +303,8 @@ export const useSupabaseCardsStorage = () => {
       
       // Generate images in background after update
       if (generateImages) {
-        setTimeout(() => generateImages(cardId), 100);
+        console.log('Triggering image generation for updated card:', cardId);
+        setTimeout(() => generateImages(cardId), 500); // Shorter delay for updates
       }
       
       return true;

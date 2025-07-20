@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { CardForm } from "@/components/CardForm";
 import { FlipCardPreview } from "@/components/FlipCardPreview";
 import { CardPreview } from "@/components/CardPreview";
 import { DeckDesigner } from "@/components/DeckDesigner";
-import { CardImageGenerator } from "@/components/CardImageGenerator";
+import { CardImageGenerator, CardImageGeneratorRef } from "@/components/CardImageGenerator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
@@ -40,60 +41,57 @@ const CreateCards = () => {
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
 
-  // Hidden image generators for background processing
-  const imageGeneratorRefs = useRef<Map<string, any>>(new Map());
+  // Refs for CardImageGenerator components
+  const imageGeneratorRefs = useRef<Map<string, CardImageGeneratorRef>>(new Map());
 
   const handlePreviewChange = useCallback((previewData: Partial<FamilyCard>) => {
     setPreviewCard(previewData);
   }, []);
 
-  // Background image generation function
+  // Improved background image generation function
   const generateImagesForCard = async (cardId: string) => {
     const card = cards.find(c => c.id === cardId);
-    if (!card || !deckTheme || !deckFont) return;
+    if (!card || !deckTheme || !deckFont) {
+      console.log('Cannot generate images: missing card, theme, or font', { cardId, hasCard: !!card, deckTheme, deckFont });
+      return;
+    }
 
     try {
-      // Create a temporary image generator
-      const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.top = '-9999px';
-      document.body.appendChild(tempDiv);
-
-      // Import html2canvas dynamically
-      const html2canvas = (await import('html2canvas')).default;
+      console.log('Starting image generation for card:', cardId);
       
-      // Generate front image
-      const frontCanvas = await html2canvas(tempDiv, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        width: 400,
-        height: 400
-      });
-
-      const frontImageUrl = await new Promise<string>((resolve) => {
-        frontCanvas.toBlob((blob) => {
-          if (blob) {
-            resolve(URL.createObjectURL(blob));
-          } else {
-            resolve('');
-          }
-        }, 'image/png', 1.0);
-      });
-
-      // For flip cards, we'd generate back image too
-      // For now, let's just generate front image
-      
-      if (frontImageUrl) {
-        await generateCardImages(cardId, frontImageUrl);
+      // Get the CardImageGenerator ref for this card
+      const generatorRef = imageGeneratorRefs.current.get(cardId);
+      if (!generatorRef) {
+        console.error('No image generator ref found for card:', cardId);
+        return;
       }
 
-      // Clean up
-      document.body.removeChild(tempDiv);
+      // Generate images using the ref
+      const { frontImageUrl, backImageUrl } = await generatorRef.generateImages();
+      
+      if (frontImageUrl || backImageUrl) {
+        console.log('Images generated successfully, uploading to database...');
+        const result = await generateCardImages(cardId, frontImageUrl || undefined, backImageUrl || undefined);
+        
+        if (result.success) {
+          console.log('Card images saved successfully for card:', cardId);
+          toast({
+            title: "Images Generated",
+            description: "Card images have been generated and saved.",
+          });
+        } else {
+          console.error('Failed to save card images for card:', cardId);
+        }
+      } else {
+        console.error('Image generation failed - no images returned');
+      }
     } catch (error) {
       console.error('Error generating images for card:', cardId, error);
+      toast({
+        title: "Image Generation Error",
+        description: "Failed to generate card images. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -135,10 +133,22 @@ const CreateCards = () => {
   const handleDeleteCard = async (cardId: string) => {
     const success = await deleteCard(cardId);
     if (success) {
+      // Remove the ref when card is deleted
+      imageGeneratorRefs.current.delete(cardId);
+      
       toast({
         title: "Card Removed",
         description: "The card has been removed from your collection.",
       });
+    }
+  };
+
+  // Function to set refs for CardImageGenerator components
+  const setImageGeneratorRef = (cardId: string, ref: CardImageGeneratorRef | null) => {
+    if (ref) {
+      imageGeneratorRefs.current.set(cardId, ref);
+    } else {
+      imageGeneratorRefs.current.delete(cardId);
     }
   };
 
@@ -359,12 +369,15 @@ const CreateCards = () => {
                     deckFont={deckFont}
                   />
                   {/* Hidden image generator for background processing */}
-                  <CardImageGenerator
-                    card={card}
-                    isFlipCard={true}
-                    deckTheme={deckTheme}
-                    deckFont={deckFont}
-                  />
+                  <div className="hidden">
+                    <CardImageGenerator
+                      ref={(ref) => setImageGeneratorRef(card.id, ref)}
+                      card={card}
+                      isFlipCard={true}
+                      deckTheme={deckTheme}
+                      deckFont={deckFont}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
