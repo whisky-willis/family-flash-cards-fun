@@ -399,6 +399,7 @@ const CreateCards = () => {
                   card={previewCard} 
                   deckTheme={deckTheme}
                   deckFont={deckFont}
+                  showActions={true}
                 />
               </CardContent>
             </Card>
