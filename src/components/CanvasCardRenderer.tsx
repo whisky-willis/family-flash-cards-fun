@@ -64,6 +64,8 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
   // Render front side of card
   const renderFrontCard = async (): Promise<string | null> => {
     try {
+      console.log('🎯 Starting front card render with Canvas API...');
+      
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
@@ -181,6 +183,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       return new Promise((resolve) => {
         canvas.toBlob((blob) => {
           if (blob) {
+            console.log('✅ Front card rendered successfully');
             resolve(URL.createObjectURL(blob));
           } else {
             resolve(null);
@@ -196,6 +199,8 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
   // Render back side of card
   const renderBackCard = async (): Promise<string | null> => {
     try {
+      console.log('🎯 Starting back card render with Canvas API...');
+      
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
@@ -334,6 +339,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       return new Promise((resolve) => {
         canvas.toBlob((blob) => {
           if (blob) {
+            console.log('✅ Back card rendered successfully');
             resolve(URL.createObjectURL(blob));
           } else {
             resolve(null);
