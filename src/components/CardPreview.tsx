@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Users, Edit, Trash2, Eye } from "lucide-react";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { FlippableCardPreview } from "@/components/FlippableCardPreview";
+import { CanvasCardRenderer, CanvasCardRendererRef } from "@/components/CanvasCardRenderer";
 
 interface CardPreviewProps {
   card: FamilyCard;
@@ -21,118 +22,41 @@ export interface CardPreviewRef {
 }
 
 export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card, onEdit, onDelete, showActions = true, deckTheme, deckFont }, ref) => {
-  const [frontElement, setFrontElement] = useState<HTMLDivElement | null>(null);
-  const [backElement, setBackElement] = useState<HTMLDivElement | null>(null);
+  const canvasRendererRef = useRef<CanvasCardRendererRef>(null);
 
   // Expose image generation methods via ref
   useImperativeHandle(ref, () => ({
     generateFrontImage: async () => {
-      console.log('🎯 generateFrontImage called for CardPreview, frontElement:', !!frontElement);
+      console.log('🎯 generateFrontImage called for CardPreview');
       
-      if (!frontElement) {
-        console.error('❌ Front element not available for capture');
+      if (!canvasRendererRef.current) {
+        console.error('❌ Canvas renderer not available');
         return null;
       }
       
       try {
-        console.log('🎯 Loading html2canvas...');
-        const html2canvas = (await import('html2canvas')).default;
-        
-        // Wait for fonts to be ready
-        await document.fonts.ready;
-        
-        // Add a small delay to ensure rendering is complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        console.log('🎯 Capturing front card with html2canvas...');
-        const canvas = await html2canvas(frontElement, {
-          backgroundColor: null,
-          scale: 4, // Increased from 2 to 4 for higher quality
-          useCORS: true,
-          allowTaint: true,
-          width: 384,
-          height: 384,
-          foreignObjectRendering: false, // Better text rendering
-          imageTimeout: 15000,
-          removeContainer: true,
-          logging: false
-        });
-        
-        console.log('🎯 Front card captured, canvas size:', canvas.width, 'x', canvas.height);
-        
-        if (canvas.width === 0 || canvas.height === 0) {
-          console.error('❌ Canvas has zero dimensions');
-          return null;
-        }
-        
-        return new Promise<string>((resolve) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              console.log('✅ Front image blob created, size:', blob.size);
-              resolve(url);
-            } else {
-              console.error('❌ Failed to create blob from front canvas');
-              resolve('');
-            }
-          }, 'image/png', 1.0); // Maximum quality PNG
-        });
+        console.log('🎯 Using Canvas API for front image generation...');
+        const frontImageUrl = await canvasRendererRef.current.generateFrontImage();
+        console.log('✅ Front image generated:', !!frontImageUrl);
+        return frontImageUrl;
       } catch (error) {
         console.error('❌ Error generating front card image:', error);
         return null;
       }
     },
     generateBackImage: async () => {
-      console.log('🎯 generateBackImage called for CardPreview, backElement:', !!backElement);
+      console.log('🎯 generateBackImage called for CardPreview');
       
-      if (!backElement) {
-        console.error('❌ Back element not available for capture');
+      if (!canvasRendererRef.current) {
+        console.error('❌ Canvas renderer not available');
         return null;
       }
       
       try {
-        console.log('🎯 Loading html2canvas...');
-        const html2canvas = (await import('html2canvas')).default;
-        
-        // Wait for fonts to be ready
-        await document.fonts.ready;
-        
-        // Add a small delay to ensure rendering is complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        console.log('🎯 Capturing back card with html2canvas...');
-        const canvas = await html2canvas(backElement, {
-          backgroundColor: null,
-          scale: 4, // Increased from 2 to 4 for higher quality
-          useCORS: true,
-          allowTaint: true,
-          width: 384,
-          height: 384,
-          foreignObjectRendering: false, // Better text rendering
-          imageTimeout: 15000,
-          removeContainer: true,
-          logging: false
-        });
-        
-        console.log('🎯 Back card captured, canvas size:', canvas.width, 'x', canvas.height);
-        
-        if (canvas.width === 0 || canvas.height === 0) {
-          console.error('❌ Canvas has zero dimensions');
-          return null;
-        }
-        
-        return new Promise<string>((resolve) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              console.log('✅ Back image blob created, size:', blob.size);
-              resolve(url);
-            } else {
-              console.error('❌ Failed to create blob from back canvas');
-              resolve('');
-            }
-          }, 'image/png', 1.0); // Maximum quality PNG
-        });
+        console.log('🎯 Using Canvas API for back image generation...');
+        const backImageUrl = await canvasRendererRef.current.generateBackImage();
+        console.log('✅ Back image generated:', !!backImageUrl);
+        return backImageUrl;
       } catch (error) {
         console.error('❌ Error generating back card image:', error);
         return null;
@@ -143,10 +67,7 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
   return (
     <div className="w-full max-w-sm mx-auto">
       <div className="relative group">
-        <div 
-          ref={setFrontElement}
-          className="transition-transform duration-300 group-hover:scale-[1.02]"
-        >
+        <div className="transition-transform duration-300 group-hover:scale-[1.02]">
           <FlippableCardPreview 
             card={card}
             deckTheme={deckTheme}
@@ -186,13 +107,10 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
         )}
       </div>
 
-      {/* Hidden element for back image capture */}
-      <div 
-        ref={setBackElement}
-        className="fixed left-[-2000px] top-0 pointer-events-none"
-        style={{ width: '384px', height: '384px', visibility: 'hidden' }}
-      >
-        <FlippableCardPreview 
+      {/* Hidden canvas renderer for image generation */}
+      <div style={{ display: 'none' }}>
+        <CanvasCardRenderer
+          ref={canvasRendererRef}
           card={card}
           deckTheme={deckTheme}
           deckFont={deckFont}

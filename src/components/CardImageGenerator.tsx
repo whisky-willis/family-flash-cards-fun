@@ -1,7 +1,6 @@
 
 import React, { useRef, forwardRef } from 'react';
-import { CardPreview, CardPreviewRef } from "./CardPreview";
-import { FlipCardPreview, FlipCardPreviewRef } from "./FlipCardPreview";
+import { CanvasCardRenderer, CanvasCardRendererRef } from "./CanvasCardRenderer";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 
 interface CardImageGeneratorProps {
@@ -23,8 +22,7 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
   deckFont,
   onImagesGenerated
 }, ref) => {
-  const cardPreviewRef = useRef<CardPreviewRef>(null);
-  const flipCardPreviewRef = useRef<FlipCardPreviewRef>(null);
+  const canvasRendererRef = useRef<CanvasCardRendererRef>(null);
 
   // Expose generation method for external use
   React.useImperativeHandle(ref, () => ({
@@ -33,12 +31,20 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
         let frontImageUrl: string | null = null;
         let backImageUrl: string | null = null;
 
-        if (isFlipCard && flipCardPreviewRef.current) {
-          frontImageUrl = await flipCardPreviewRef.current.generateFrontImage();
-          backImageUrl = await flipCardPreviewRef.current.generateBackImage();
-        } else if (cardPreviewRef.current) {
-          frontImageUrl = await cardPreviewRef.current.generateFrontImage();
+        if (canvasRendererRef.current) {
+          console.log('🎯 Generating images with Canvas API...');
+          
+          frontImageUrl = await canvasRendererRef.current.generateFrontImage();
+          
+          if (isFlipCard) {
+            backImageUrl = await canvasRendererRef.current.generateBackImage();
+          }
         }
+
+        console.log('🎯 Canvas generation result:', { 
+          frontImageUrl: !!frontImageUrl, 
+          backImageUrl: !!backImageUrl 
+        });
 
         if (onImagesGenerated) {
           onImagesGenerated(frontImageUrl || undefined, backImageUrl || undefined);
@@ -54,28 +60,20 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
 
   return (
     <div style={{
-      width: '384px', // Fixed width for consistent rendering
-      height: '384px', // Fixed height for consistent rendering
-      visibility: 'visible', // Keep visible for html2canvas
-      opacity: 1, // Keep opaque for html2canvas
-      position: 'relative'
+      width: '384px',
+      height: '384px',
+      visibility: 'hidden',
+      opacity: 0,
+      position: 'absolute',
+      left: '-2000px',
+      top: '0'
     }}>
-      {/* Preview components for image generation */}
-      {isFlipCard ? (
-        <FlipCardPreview
-          ref={flipCardPreviewRef}
-          card={card}
-          deckTheme={deckTheme}
-          deckFont={deckFont}
-        />
-      ) : (
-        <CardPreview
-          ref={cardPreviewRef}
-          card={card}
-          deckTheme={deckTheme}
-          deckFont={deckFont}
-        />
-      )}
+      <CanvasCardRenderer
+        ref={canvasRendererRef}
+        card={card}
+        deckTheme={deckTheme}
+        deckFont={deckFont}
+      />
     </div>
   );
 });

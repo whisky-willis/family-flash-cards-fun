@@ -1,8 +1,10 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+
+import React, { useState, useEffect, forwardRef, useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, RotateCcw, RefreshCw } from "lucide-react";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
+import { CanvasCardRenderer, CanvasCardRendererRef } from "@/components/CanvasCardRenderer";
 
 interface FlipCardPreviewProps {
   card: Partial<FamilyCard>;
@@ -21,131 +23,41 @@ export interface FlipCardPreviewRef {
 
 export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewProps>(({ card, onEdit, onDelete, showActions = false, nameFont = 'font-fredoka-one', deckTheme, deckFont }, ref) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [frontElement, setFrontElement] = useState<HTMLDivElement | null>(null);
-  const [backElement, setBackElement] = useState<HTMLDivElement | null>(null);
+  const canvasRendererRef = useRef<CanvasCardRendererRef>(null);
 
   // Expose image generation methods via ref
   React.useImperativeHandle(ref, () => ({
     generateFrontImage: async () => {
-      console.log('🎯 generateFrontImage called, frontElement:', !!frontElement);
+      console.log('🎯 generateFrontImage called for FlipCardPreview');
       
-      if (!frontElement) {
-        console.error('❌ Front element not available for capture');
+      if (!canvasRendererRef.current) {
+        console.error('❌ Canvas renderer not available');
         return null;
       }
       
       try {
-        console.log('🎯 Loading html2canvas...');
-        const html2canvas = (await import('html2canvas')).default;
-        
-        // Wait for fonts to be ready
-        await document.fonts.ready;
-        
-        // Add a small delay to ensure rendering is complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        console.log('🎯 Capturing front card with html2canvas...');
-        const canvas = await html2canvas(frontElement, {
-          backgroundColor: null,
-          scale: 4, // Increased from 2 to 4 for higher quality
-          useCORS: true,
-          allowTaint: true,
-          width: 384,
-          height: 384,
-          foreignObjectRendering: false, // Better text rendering
-          imageTimeout: 15000,
-          removeContainer: true,
-          logging: false
-        });
-        
-        console.log('🎯 Front card captured, canvas size:', canvas.width, 'x', canvas.height);
-        
-        if (canvas.width === 0 || canvas.height === 0) {
-          console.error('❌ Canvas has zero dimensions');
-          return null;
-        }
-        
-        return new Promise<string>((resolve) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              console.log('✅ Front image blob created, size:', blob.size);
-              resolve(url);
-            } else {
-              console.error('❌ Failed to create blob from front canvas');
-              resolve('');
-            }
-          }, 'image/png', 1.0); // Maximum quality PNG
-        });
+        console.log('🎯 Using Canvas API for front image generation...');
+        const frontImageUrl = await canvasRendererRef.current.generateFrontImage();
+        console.log('✅ Front image generated:', !!frontImageUrl);
+        return frontImageUrl;
       } catch (error) {
         console.error('❌ Error generating front card image:', error);
         return null;
       }
     },
     generateBackImage: async () => {
-      console.log('🎯 generateBackImage called, backElement:', !!backElement);
+      console.log('🎯 generateBackImage called for FlipCardPreview');
       
-      if (!backElement) {
-        console.error('❌ Back element not available for capture');
+      if (!canvasRendererRef.current) {
+        console.error('❌ Canvas renderer not available');
         return null;
       }
       
       try {
-        console.log('🎯 Loading html2canvas...');
-        const html2canvas = (await import('html2canvas')).default;
-        
-        // Wait for fonts to be ready
-        await document.fonts.ready;
-        
-        // Temporarily remove the rotation transform before capture
-        const originalTransform = backElement.style.transform;
-        const originalClass = backElement.className;
-        
-        console.log('🎯 Removing rotation transform for capture...');
-        backElement.style.transform = 'rotateY(0deg)';
-        backElement.className = originalClass.replace('rotate-y-180', '');
-        
-        // Wait for DOM to update and fonts to be ready
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        console.log('🎯 Capturing back card with html2canvas...');
-        const canvas = await html2canvas(backElement, {
-          backgroundColor: null,
-          scale: 4, // Increased from 2 to 4 for higher quality
-          useCORS: true,
-          allowTaint: true,
-          width: 384,
-          height: 384,
-          foreignObjectRendering: false, // Better text rendering
-          imageTimeout: 15000,
-          removeContainer: true,
-          logging: false
-        });
-        
-        // Restore the original transform
-        console.log('🎯 Restoring original transform...');
-        backElement.style.transform = originalTransform;
-        backElement.className = originalClass;
-        
-        console.log('🎯 Back card captured, canvas size:', canvas.width, 'x', canvas.height);
-        
-        if (canvas.width === 0 || canvas.height === 0) {
-          console.error('❌ Canvas has zero dimensions');
-          return null;
-        }
-        
-        return new Promise<string>((resolve) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              console.log('✅ Back image blob created, size:', blob.size);
-              resolve(url);
-            } else {
-              console.error('❌ Failed to create blob from back canvas');
-              resolve('');
-            }
-          }, 'image/png', 1.0); // Maximum quality PNG
-        });
+        console.log('🎯 Using Canvas API for back image generation...');
+        const backImageUrl = await canvasRendererRef.current.generateBackImage();
+        console.log('✅ Back image generated:', !!backImageUrl);
+        return backImageUrl;
       } catch (error) {
         console.error('❌ Error generating back card image:', error);
         return null;
@@ -254,7 +166,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         >
           {/* Front Side - Photo */}
           <Card 
-            ref={setFrontElement}
             className="absolute inset-0 backface-hidden backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
             style={{
               ...getBackgroundStyle(),
@@ -297,7 +208,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
 
           {/* Back Side - Attributes */}
           <Card 
-            ref={setBackElement}
             className="absolute inset-0 backface-hidden rotate-y-180 backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
             style={{
               ...getBackgroundStyle(),
@@ -396,6 +306,18 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           <span>Kindred Cards</span>
         </div>
       </div>
+
+      {/* Hidden canvas renderer for image generation */}
+      {card.id && (
+        <div style={{ display: 'none' }}>
+          <CanvasCardRenderer
+            ref={canvasRendererRef}
+            card={card as FamilyCard}
+            deckTheme={deckTheme}
+            deckFont={deckFont}
+          />
+        </div>
+      )}
     </div>
   );
 });
