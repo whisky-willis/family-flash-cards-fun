@@ -53,6 +53,161 @@ const waitForFonts = async () => {
   await new Promise(resolve => setTimeout(resolve, 100));
 };
 
+// Get preview container dimensions dynamically
+const getPreviewDimensions = () => {
+  // Look for the preview container in the DOM
+  const previewContainer = document.querySelector('.aspect-square');
+  if (previewContainer) {
+    const rect = previewContainer.getBoundingClientRect();
+    console.log('📐 Preview container dimensions:', { width: rect.width, height: rect.height });
+    return { width: rect.width, height: rect.height };
+  }
+  
+  // Fallback to fixed dimensions
+  console.log('📐 Using fallback dimensions: 384x384');
+  return { width: 384, height: 384 };
+};
+
+// Draw background with proper CSS background-size: cover behavior
+const drawBackgroundImage = (
+  ctx: CanvasRenderingContext2D,
+  backgroundImg: HTMLImageElement,
+  canvasWidth: number,
+  canvasHeight: number,
+  borderRadius: number
+) => {
+  // Calculate scale to cover the canvas (like CSS background-size: cover)
+  const scaleX = canvasWidth / backgroundImg.width;
+  const scaleY = canvasHeight / backgroundImg.height;
+  const scale = Math.max(scaleX, scaleY); // Use max to ensure full coverage
+  
+  // Calculate dimensions of scaled image
+  const scaledWidth = backgroundImg.width * scale;
+  const scaledHeight = backgroundImg.height * scale;
+  
+  // Calculate position to center the image (like CSS background-position: center)
+  const x = (canvasWidth - scaledWidth) / 2;
+  const y = (canvasHeight - scaledHeight) / 2;
+  
+  console.log('🎨 Background image scaling:', {
+    originalSize: { width: backgroundImg.width, height: backgroundImg.height },
+    scale,
+    scaledSize: { width: scaledWidth, height: scaledHeight },
+    position: { x, y }
+  });
+  
+  // Clip to rounded rectangle
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(0, 0, canvasWidth, canvasHeight, borderRadius);
+  ctx.clip();
+  
+  // Draw the scaled and positioned background image
+  ctx.drawImage(backgroundImg, x, y, scaledWidth, scaledHeight);
+  
+  ctx.restore();
+};
+
+// Calculate exact photo area dimensions matching flexbox behavior
+const calculatePhotoArea = (canvasWidth: number, canvasHeight: number, cardPadding: number) => {
+  // In the preview, the photo area uses flex-1 and the name area has fixed height
+  // Name area is h-16 (64px) in the preview
+  const nameAreaHeight = 64;
+  
+  // Photo area takes remaining space after padding and name area
+  const photoAreaWidth = canvasWidth - (cardPadding * 2);
+  const photoAreaHeight = canvasHeight - (cardPadding * 2) - nameAreaHeight;
+  
+  return {
+    x: cardPadding,
+    y: cardPadding,
+    width: photoAreaWidth,
+    height: photoAreaHeight
+  };
+};
+
+// Draw photo with exact CSS background-image positioning
+const drawPhotoImage = (
+  ctx: CanvasRenderingContext2D,
+  photoImg: HTMLImageElement,
+  photoArea: { x: number; y: number; width: number; height: number },
+  imagePosition: { scale: number; x: number; y: number } | undefined,
+  borderRadius: number
+) => {
+  // Draw white border around photo area (matching preview's border-4 border-white)
+  const photoBorderWidth = 4;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(
+    photoArea.x - photoBorderWidth,
+    photoArea.y - photoBorderWidth,
+    photoArea.width + (photoBorderWidth * 2),
+    photoArea.height + (photoBorderWidth * 2),
+    borderRadius
+  );
+  ctx.fill();
+  
+  // Clip to photo area
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(photoArea.x, photoArea.y, photoArea.width, photoArea.height, borderRadius);
+  ctx.clip();
+  
+  if (imagePosition) {
+    // Use exact same positioning logic as CSS background-image
+    const scale = imagePosition.scale;
+    const offsetX = imagePosition.x;
+    const offsetY = imagePosition.y;
+    
+    // Calculate background-size equivalent
+    const backgroundWidth = photoImg.width / scale;
+    const backgroundHeight = photoImg.height / scale;
+    
+    // Calculate scale to fit the photo area (like CSS background-size)
+    const scaleToFit = Math.max(
+      photoArea.width / backgroundWidth,
+      photoArea.height / backgroundHeight
+    );
+    
+    const finalWidth = backgroundWidth * scaleToFit;
+    const finalHeight = backgroundHeight * scaleToFit;
+    
+    // Calculate background-position equivalent
+    const positionX = 50 + (offsetX / (3.6 * scale));
+    const positionY = 50 + (offsetY / (3.6 * scale));
+    
+    // Convert percentage to pixels
+    const x = photoArea.x + ((photoArea.width - finalWidth) * (positionX / 100));
+    const y = photoArea.y + ((photoArea.height - finalHeight) * (positionY / 100));
+    
+    console.log('📷 Photo positioning:', {
+      imagePosition,
+      backgroundSize: { width: backgroundWidth, height: backgroundHeight },
+      scaleToFit,
+      finalSize: { width: finalWidth, height: finalHeight },
+      position: { x, y }
+    });
+    
+    ctx.drawImage(photoImg, x, y, finalWidth, finalHeight);
+  } else {
+    // Default cover positioning
+    const scale = Math.max(
+      photoArea.width / photoImg.width,
+      photoArea.height / photoImg.height
+    );
+    
+    const scaledWidth = photoImg.width * scale;
+    const scaledHeight = photoImg.height * scale;
+    
+    const x = photoArea.x + (photoArea.width - scaledWidth) / 2;
+    const y = photoArea.y + (photoArea.height - scaledHeight) / 2;
+    
+    ctx.drawImage(photoImg, x, y, scaledWidth, scaledHeight);
+  }
+  
+  ctx.restore();
+};
+
 export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRendererProps>(({
   card,
   deckTheme,
@@ -69,134 +224,73 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
 
-      // Set canvas size to match preview exactly (384x384px)
-      const size = 384;
+      // Get actual preview dimensions
+      const { width: previewWidth, height: previewHeight } = getPreviewDimensions();
+      
+      // Set canvas size to match preview exactly
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = size * dpr;
-      canvas.height = size * dpr;
+      canvas.width = previewWidth * dpr;
+      canvas.height = previewHeight * dpr;
       ctx.scale(dpr, dpr);
 
       // Wait for fonts to be ready
       await waitForFonts();
 
-      // Card styling constants to match FlippableCardPreview
+      // Card styling constants to match preview exactly
       const cardPadding = 16; // p-4 in preview
       const cardRadius = 24; // rounded-3xl
       const borderWidth = 2; // border-2
       
-      // Calculate layout dimensions to match preview's flex layout
-      // In preview: name area is fixed at bottom, photo area takes flex-1
-      const nameAreaHeight = 64; // h-16 for name area in preview
-      const photoAreaHeight = size - (cardPadding * 2) - nameAreaHeight;
+      // Calculate photo area dimensions using exact preview layout
+      const photoArea = calculatePhotoArea(previewWidth, previewHeight, cardPadding);
       
-      // Draw theme background first (full card)
+      console.log('📐 Canvas dimensions:', {
+        preview: { width: previewWidth, height: previewHeight },
+        canvas: { width: canvas.width, height: canvas.height },
+        photoArea
+      });
+
+      // Draw theme background with proper CSS cover behavior
       const backgroundSrc = getBackgroundImage(deckTheme);
       if (backgroundSrc) {
         try {
           const backgroundImg = await loadImage(backgroundSrc);
-          ctx.save();
-          ctx.beginPath();
-          ctx.roundRect(0, 0, size, size, cardRadius);
-          ctx.clip();
-          ctx.drawImage(backgroundImg, 0, 0, size, size);
-          ctx.restore();
+          drawBackgroundImage(ctx, backgroundImg, previewWidth, previewHeight, cardRadius);
         } catch (error) {
           console.warn('Could not load background image:', error);
           // Fallback to white background
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.roundRect(0, 0, size, size, cardRadius);
+          ctx.roundRect(0, 0, previewWidth, previewHeight, cardRadius);
           ctx.fill();
         }
       } else {
         // Draw white background if no theme
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(0, 0, size, size, cardRadius);
+        ctx.roundRect(0, 0, previewWidth, previewHeight, cardRadius);
         ctx.fill();
       }
 
       // Draw card border (matching preview border styling)
       if (deckTheme !== 'rainbow') {
-        // For non-rainbow themes, draw a subtle border
         ctx.strokeStyle = 'rgba(236, 72, 153, 0.3)'; // art-pink/30
         ctx.lineWidth = borderWidth;
         ctx.beginPath();
-        ctx.roundRect(borderWidth/2, borderWidth/2, size - borderWidth, size - borderWidth, cardRadius);
+        ctx.roundRect(borderWidth/2, borderWidth/2, previewWidth - borderWidth, previewHeight - borderWidth, cardRadius);
         ctx.stroke();
       }
 
-      // Calculate photo area dimensions and position
-      const photoArea = {
-        x: cardPadding,
-        y: cardPadding,
-        width: size - (cardPadding * 2),
-        height: photoAreaHeight
-      };
-
-      // Draw photo with exact styling from preview
+      // Draw photo with exact positioning from preview
       if (card.photo_url) {
         try {
           const photoImg = await loadImage(card.photo_url);
-          
-          ctx.save();
-          
-          // Create rounded photo area with white border (matching preview)
-          const photoBorderWidth = 4; // border-4 in preview
-          const photoRadius = 16; // rounded-2xl
-          
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.roundRect(
-            photoArea.x - photoBorderWidth, 
-            photoArea.y - photoBorderWidth, 
-            photoArea.width + (photoBorderWidth * 2), 
-            photoArea.height + (photoBorderWidth * 2), 
-            photoRadius
-          );
-          ctx.fill();
-          
-          // Clip to photo area
-          ctx.beginPath();
-          ctx.roundRect(photoArea.x, photoArea.y, photoArea.width, photoArea.height, photoRadius);
-          ctx.clip();
-
-          // Calculate photo positioning to match CSS background-image behavior exactly
-          let sourceX = 0, sourceY = 0, sourceWidth = photoImg.width, sourceHeight = photoImg.height;
-          
-          if (card.imagePosition) {
-            const scale = card.imagePosition.scale;
-            const offsetX = card.imagePosition.x;
-            const offsetY = card.imagePosition.y;
-            
-            // Match CSS background-size calculation exactly
-            const scaledWidth = photoImg.width / scale;
-            const scaledHeight = photoImg.height / scale;
-            
-            // Match CSS background-position calculation exactly
-            const positionX = 50 + (offsetX / (3.6 * scale));
-            const positionY = 50 + (offsetY / (3.6 * scale));
-            
-            // Calculate crop area
-            sourceX = Math.max(0, (photoImg.width - scaledWidth) * (positionX / 100));
-            sourceY = Math.max(0, (photoImg.height - scaledHeight) * (positionY / 100));
-            sourceWidth = Math.min(scaledWidth, photoImg.width - sourceX);
-            sourceHeight = Math.min(scaledHeight, photoImg.height - sourceY);
-          }
-
-          // Draw photo
-          ctx.drawImage(
-            photoImg,
-            sourceX, sourceY, sourceWidth, sourceHeight,
-            photoArea.x, photoArea.y, photoArea.width, photoArea.height
-          );
-          
-          ctx.restore();
+          drawPhotoImage(ctx, photoImg, photoArea, card.imagePosition, 16);
         } catch (error) {
           console.warn('Could not load photo:', error);
           // Draw placeholder matching preview
-          const placeholderSize = 128; // w-32 h-32 in preview
-          const placeholderX = (size - placeholderSize) / 2;
+          const placeholderSize = 128;
+          const placeholderX = (previewWidth - placeholderSize) / 2;
           const placeholderY = photoArea.y + (photoArea.height - placeholderSize) / 2;
           
           ctx.fillStyle = 'rgba(251, 191, 36, 0.2)'; // art-yellow/20
@@ -213,18 +307,17 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       // Draw name with exact text styling from preview
       if (card.name) {
         const fontFamily = getFontFamily(deckFont);
-        // Match CSS text-3xl exactly (30px, not 32px)
+        // Match CSS text-3xl exactly (30px)
         const fontSize = 30;
         
         ctx.font = `${fontSize}px ${fontFamily}`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        // Position text in name area at bottom
-        const nameY = size - nameAreaHeight / 2;
+        // Position text in name area at bottom (64px height area)
+        const nameY = previewHeight - 32; // Center of 64px name area
         
-        // Create multi-layer text shadow effect matching CSS
-        // CSS: textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)'
+        // Create text shadow effect matching CSS
         ctx.shadowColor = 'rgba(255, 255, 255, 1)';
         ctx.shadowBlur = 30;
         ctx.shadowOffsetX = 0;
@@ -234,13 +327,13 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         for (let i = 0; i < 3; i++) {
           ctx.shadowBlur = 30 - (i * 10);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.fillText(card.name, size / 2, nameY);
+          ctx.fillText(card.name, previewWidth / 2, nameY);
         }
         
         // Draw main text
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#000000';
-        ctx.fillText(card.name, size / 2, nameY);
+        ctx.fillText(card.name, previewWidth / 2, nameY);
       }
 
       // Convert to blob URL
@@ -269,11 +362,13 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
 
+      // Get actual preview dimensions
+      const { width: previewWidth, height: previewHeight } = getPreviewDimensions();
+      
       // Set canvas size to match preview exactly
-      const size = 384;
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = size * dpr;
-      canvas.height = size * dpr;
+      canvas.width = previewWidth * dpr;
+      canvas.height = previewHeight * dpr;
       ctx.scale(dpr, dpr);
 
       // Wait for fonts to be ready
@@ -284,28 +379,23 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const cardRadius = 24;
       const borderWidth = 2;
 
-      // Draw theme background first
+      // Draw theme background with proper CSS cover behavior
       const backgroundSrc = getBackgroundImage(deckTheme);
       if (backgroundSrc) {
         try {
           const backgroundImg = await loadImage(backgroundSrc);
-          ctx.save();
-          ctx.beginPath();
-          ctx.roundRect(0, 0, size, size, cardRadius);
-          ctx.clip();
-          ctx.drawImage(backgroundImg, 0, 0, size, size);
-          ctx.restore();
+          drawBackgroundImage(ctx, backgroundImg, previewWidth, previewHeight, cardRadius);
         } catch (error) {
           console.warn('Could not load background image:', error);
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.roundRect(0, 0, size, size, cardRadius);
+          ctx.roundRect(0, 0, previewWidth, previewHeight, cardRadius);
           ctx.fill();
         }
       } else {
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(0, 0, size, size, cardRadius);
+        ctx.roundRect(0, 0, previewWidth, previewHeight, cardRadius);
         ctx.fill();
       }
 
@@ -314,14 +404,14 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)'; // art-blue/30 for back
         ctx.lineWidth = borderWidth;
         ctx.beginPath();
-        ctx.roundRect(borderWidth/2, borderWidth/2, size - borderWidth, size - borderWidth, cardRadius);
+        ctx.roundRect(borderWidth/2, borderWidth/2, previewWidth - borderWidth, previewHeight - borderWidth, cardRadius);
         ctx.stroke();
       }
 
       // Draw white content area (matching preview)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
       ctx.beginPath();
-      ctx.roundRect(cardPadding, cardPadding, size - (cardPadding * 2), size - (cardPadding * 2), 16);
+      ctx.roundRect(cardPadding, cardPadding, previewWidth - (cardPadding * 2), previewHeight - (cardPadding * 2), 16);
       ctx.fill();
 
       // Draw attributes with exact styling from preview
@@ -341,7 +431,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
 
       // Helper function to draw attribute
       const drawAttribute = (emoji: string, title: string, value: string, color: string) => {
-        const x = col === 0 ? 120 : 264;
+        const x = col === 0 ? previewWidth * 0.3125 : previewWidth * 0.6875; // 30% and 70% of width
         const y = yOffset;
 
         // Draw emoji
@@ -396,9 +486,14 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
 
       // Draw fun fact if available (matching preview styling)
       if (card.funFact?.trim()) {
+        const funFactWidth = previewWidth - 96;
+        const funFactHeight = 80;
+        const funFactX = 48;
+        const funFactY = yOffset;
+        
         ctx.fillStyle = 'rgba(254, 240, 138, 0.8)';
         ctx.beginPath();
-        ctx.roundRect(48, yOffset, size - 96, 80, 16);
+        ctx.roundRect(funFactX, funFactY, funFactWidth, funFactHeight, 16);
         ctx.fill();
 
         ctx.strokeStyle = '#fbbf24';
@@ -409,12 +504,12 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         ctx.font = `20px Arial`;
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
-        ctx.fillText('✨', size / 2, yOffset + 16);
+        ctx.fillText('✨', previewWidth / 2, funFactY + 16);
 
         // Fun fact title
         ctx.font = `${titleFontSize}px ${fontFamily}`;
         ctx.fillStyle = '#ef4444';
-        ctx.fillText('Fun Fact', size / 2, yOffset + 40);
+        ctx.fillText('Fun Fact', previewWidth / 2, funFactY + 40);
 
         // Fun fact text (truncated to match preview)
         ctx.font = `${fontSize}px ${fontFamily}`;
@@ -422,7 +517,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const truncatedFact = card.funFact.length > 40 ? 
           card.funFact.substring(0, 40) : 
           card.funFact;
-        ctx.fillText(truncatedFact, size / 2, yOffset + 64);
+        ctx.fillText(truncatedFact, previewWidth / 2, funFactY + 64);
       }
 
       // Convert to blob URL
