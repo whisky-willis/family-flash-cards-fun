@@ -34,15 +34,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.error('❌ Front element not available for capture');
         return null;
       }
-
-      // Check element dimensions
-      const rect = frontElement.getBoundingClientRect();
-      console.log('🎯 Front element dimensions:', rect.width, 'x', rect.height);
-      
-      if (rect.width === 0 || rect.height === 0) {
-        console.error('❌ Front element has zero dimensions:', rect);
-        return null;
-      }
       
       try {
         console.log('🎯 Loading html2canvas...');
@@ -54,8 +45,8 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           scale: 2, // High resolution for print
           useCORS: true,
           allowTaint: true,
-          width: rect.width,
-          height: rect.height,
+          width: 384, // Explicit width
+          height: 384, // Explicit height
           logging: false
         });
         
@@ -90,15 +81,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.error('❌ Back element not available for capture');
         return null;
       }
-
-      // Check element dimensions
-      const rect = backElement.getBoundingClientRect();
-      console.log('🎯 Back element dimensions:', rect.width, 'x', rect.height);
-      
-      if (rect.width === 0 || rect.height === 0) {
-        console.error('❌ Back element has zero dimensions:', rect);
-        return null;
-      }
       
       try {
         console.log('🎯 Loading html2canvas...');
@@ -121,8 +103,8 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           scale: 2, // High resolution for print
           useCORS: true,
           allowTaint: true,
-          width: rect.width,
-          height: rect.height,
+          width: 384, // Explicit width
+          height: 384, // Explicit height
           logging: false
         });
         
@@ -249,8 +231,8 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         </div>
       )}
 
-      {/* Flip Card Container */}
-      <div className="aspect-square perspective-1000">
+      {/* Flip Card Container - Fixed dimensions wrapper */}
+      <div className="aspect-square perspective-1000" style={{ width: '384px', height: '384px', margin: '0 auto' }}>
         <div 
           className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d ${
             isFlipped ? 'rotate-y-180' : ''
@@ -262,13 +244,13 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
             className="absolute inset-0 backface-hidden backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
             style={{
               ...getBackgroundStyle(),
-              width: '384px', // Explicit width
-              height: '384px' // Explicit height
+              width: '384px',
+              height: '384px'
             }}
           >
             <CardContent className="p-4 relative z-10 h-full flex flex-col">
               {/* Photo Section */}
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 flex items-center justify-center mb-4">
                 {card.photo_url ? (
                   <div 
                     className="w-full h-full rounded-2xl border-4 border-white shadow-md" 
@@ -288,15 +270,14 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
                 )}
               </div>
 
-              {/* Name at bottom */}
-              <div className="mt-4">
-                <h3 className={`${deckFont === 'bubblegum' ? 'text-5xl' : 'text-3xl'} ${fontClass} text-center text-foreground`} style={{
+              {/* Name at bottom with fixed height */}
+              <div className="h-16 flex items-center justify-center">
+                <h3 className={`${deckFont === 'bubblegum' ? 'text-4xl' : 'text-2xl'} ${fontClass} text-center text-foreground leading-tight`} style={{
                   textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)',
                 }}>
                   {card.name}
                 </h3>
               </div>
-
             </CardContent>
           </Card>
 
@@ -306,8 +287,8 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
             className="absolute inset-0 backface-hidden rotate-y-180 backdrop-blur-sm border-2 border-art-pink/30 rounded-3xl shadow-lg overflow-hidden"
             style={{
               ...getBackgroundStyle(),
-              width: '384px', // Explicit width
-              height: '384px' // Explicit height
+              width: '384px',
+              height: '384px'
             }}
           >
             <CardContent className="p-4 relative z-10 h-full">
@@ -367,7 +348,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
                   )}
                 </div>
               </div>
-
             </CardContent>
           </Card>
         </div>
