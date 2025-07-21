@@ -47,7 +47,7 @@ const CreateCards = () => {
     setPreviewCard(previewData);
   }, []);
 
-  // Enhanced image generation function with better data access
+  // Enhanced image generation function with user ID and card name
   const generateImagesForCard = async (cardId: string, cardData?: FamilyCard) => {
     console.log('🎯 Starting image generation for card:', cardId);
     console.log('🎯 Deck settings:', { deckTheme, deckFont });
@@ -112,7 +112,20 @@ const CreateCards = () => {
       
       if (frontImageUrl || backImageUrl) {
         console.log('✅ Images generated successfully, uploading to database...');
-        const result = await generateCardImages(cardId, frontImageUrl || undefined, backImageUrl || undefined);
+        
+        // Get user ID for filename
+        const userId = user?.id;
+        const cardName = card?.name;
+        
+        console.log('🎯 Using user ID:', userId, 'and card name:', cardName);
+        
+        const result = await generateCardImages(
+          cardId, 
+          frontImageUrl || undefined, 
+          backImageUrl || undefined,
+          cardName,
+          userId
+        );
         
         if (result.success) {
           console.log('✅ Card images saved successfully for card:', cardId);

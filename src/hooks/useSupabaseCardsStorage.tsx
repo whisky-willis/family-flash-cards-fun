@@ -36,6 +36,11 @@ export const useSupabaseCardsStorage = () => {
     return sessionId;
   };
 
+  // Utility function to sanitize card names for filenames
+  const sanitizeCardName = (name: string): string => {
+    return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  };
+
   // Upload image to Supabase Storage
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
@@ -70,12 +75,21 @@ export const useSupabaseCardsStorage = () => {
   };
 
   // Upload generated card image to storage
-  const uploadCardRender = async (imageBlob: Blob, cardId: string, side: 'front' | 'back'): Promise<string | null> => {
+  const uploadCardRender = async (
+    imageBlob: Blob, 
+    cardId: string, 
+    side: 'front' | 'back',
+    cardName?: string,
+    userId?: string
+  ): Promise<string | null> => {
     try {
       const sessionId = getSessionId();
-      const fileName = `${sessionId}/${cardId}_${side}.png`;
+      const userFolder = userId || sessionId;
+      const fileBaseName = cardName ? sanitizeCardName(cardName) : cardId;
+      const fileName = `${userFolder}/${fileBaseName}_${side}.png`;
       
       console.log(`🎯 Uploading ${side} image for card ${cardId}, blob size:`, imageBlob.size);
+      console.log(`📁 Using filename: ${fileName}`);
       
       const { data, error } = await supabase.storage
         .from('card-renders')
@@ -126,10 +140,13 @@ export const useSupabaseCardsStorage = () => {
   const generateCardImages = async (
     cardId: string, 
     frontImageUrl?: string, 
-    backImageUrl?: string
+    backImageUrl?: string,
+    cardName?: string,
+    userId?: string
   ): Promise<{ front_image_url?: string; back_image_url?: string; success: boolean }> => {
     try {
       console.log('🎯 Starting generateCardImages for card:', cardId);
+      console.log('🎯 Card name:', cardName, 'User ID:', userId);
       console.log('🎯 Received URLs:', { frontImageUrl: !!frontImageUrl, backImageUrl: !!backImageUrl });
       
       const updateData: any = {};
@@ -140,7 +157,7 @@ export const useSupabaseCardsStorage = () => {
         
         if (frontBlob) {
           console.log('🎯 Front blob ready, size:', frontBlob.size);
-          const frontUploadUrl = await uploadCardRender(frontBlob, cardId, 'front');
+          const frontUploadUrl = await uploadCardRender(frontBlob, cardId, 'front', cardName, userId);
           if (frontUploadUrl) {
             updateData.front_image_url = frontUploadUrl;
             console.log('✅ Front image uploaded successfully');
@@ -158,7 +175,7 @@ export const useSupabaseCardsStorage = () => {
         
         if (backBlob) {
           console.log('🎯 Back blob ready, size:', backBlob.size);
-          const backUploadUrl = await uploadCardRender(backBlob, cardId, 'back');
+          const backUploadUrl = await uploadCardRender(backBlob, cardId, 'back', cardName, userId);
           if (backUploadUrl) {
             updateData.back_image_url = backUploadUrl;
             console.log('✅ Back image uploaded successfully');
