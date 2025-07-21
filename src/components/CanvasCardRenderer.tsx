@@ -379,6 +379,13 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const cardRadius = 24;
       const borderWidth = 2;
 
+      // Add drop shadow before drawing the main card shape
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 6;
+
       // Draw theme background with proper CSS cover behavior
       const backgroundSrc = getBackgroundImage(deckTheme);
       if (backgroundSrc) {
@@ -408,11 +415,19 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         ctx.stroke();
       }
 
+      // Clear shadow for internal elements
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
       // Draw white content area (matching preview)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
       ctx.beginPath();
       ctx.roundRect(cardPadding, cardPadding, previewWidth - (cardPadding * 2), previewHeight - (cardPadding * 2), 16);
       ctx.fill();
+
+      ctx.restore();
 
       // Draw attributes with exact styling from preview
       const fontFamily = getFontFamily(deckFont);
