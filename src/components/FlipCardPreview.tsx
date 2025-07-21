@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,12 +47,12 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.log('🎯 Capturing front card with html2canvas...');
         const canvas = await html2canvas(frontElement, {
           backgroundColor: null,
-          scale: 4,
+          scale: 4, // Increased from 2 to 4 for higher quality
           useCORS: true,
           allowTaint: true,
           width: 384,
           height: 384,
-          foreignObjectRendering: false,
+          foreignObjectRendering: false, // Better text rendering
           imageTimeout: 15000,
           removeContainer: true,
           logging: false
@@ -76,7 +75,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
               console.error('❌ Failed to create blob from front canvas');
               resolve('');
             }
-          }, 'image/png', 1.0);
+          }, 'image/png', 1.0); // Maximum quality PNG
         });
       } catch (error) {
         console.error('❌ Error generating front card image:', error);
@@ -112,12 +111,12 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.log('🎯 Capturing back card with html2canvas...');
         const canvas = await html2canvas(backElement, {
           backgroundColor: null,
-          scale: 4,
+          scale: 4, // Increased from 2 to 4 for higher quality
           useCORS: true,
           allowTaint: true,
           width: 384,
           height: 384,
-          foreignObjectRendering: false,
+          foreignObjectRendering: false, // Better text rendering
           imageTimeout: 15000,
           removeContainer: true,
           logging: false
@@ -145,7 +144,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
               console.error('❌ Failed to create blob from back canvas');
               resolve('');
             }
-          }, 'image/png', 1.0);
+          }, 'image/png', 1.0); // Maximum quality PNG
         });
       } catch (error) {
         console.error('❌ Error generating back card image:', error);
@@ -263,24 +262,21 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
               height: '384px'
             }}
           >
-            <CardContent className="p-6 h-full flex flex-col">
-              {/* Photo Section - Takes most of the space */}
+            <CardContent className="p-4 relative z-10 h-full flex flex-col">
+              {/* Photo Section */}
               <div className="flex-1 flex items-center justify-center mb-4">
                 {card.photo_url ? (
-                  <div className="relative w-full h-full rounded-2xl border-4 border-white shadow-md overflow-hidden">
-                    <img 
-                      src={card.photo_url}
-                      alt={card.name || 'Card photo'}
-                      className="w-full h-full object-cover"
-                      style={{
-                        objectFit: 'cover',
-                        objectPosition: card.imagePosition
-                          ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`
-                          : 'center center',
-                        transform: card.imagePosition ? `scale(${card.imagePosition.scale})` : 'scale(1)'
-                      }}
-                    />
-                  </div>
+                  <div 
+                    className="w-full h-full rounded-2xl border-4 border-white shadow-md" 
+                    style={{ 
+                      backgroundImage: `url(${card.photo_url})`,
+                      backgroundSize: card.imagePosition ? `${100 * card.imagePosition.scale}%` : 'cover',
+                      backgroundPosition: card.imagePosition
+                        ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`
+                        : 'center center',
+                      backgroundRepeat: 'no-repeat'
+                    }}
+                  />
                 ) : (
                   <div className="w-32 h-32 bg-art-yellow/20 rounded-full border-4 border-white shadow-md flex items-center justify-center">
                     <Users className="h-12 w-12 text-art-yellow" />
@@ -288,9 +284,9 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
                 )}
               </div>
 
-              {/* Name Section - Fixed at bottom with proper spacing */}
-              <div className="flex-shrink-0 flex items-center justify-center min-h-[60px]">
-                <h3 className={`${deckFont === 'bubblegum' ? 'text-4xl' : 'text-3xl'} ${fontClass} text-center text-foreground leading-tight`} style={{
+              {/* Name at bottom with fixed height */}
+              <div className="h-16 flex items-center justify-center">
+                <h3 className={`${deckFont === 'bubblegum' ? 'text-5xl' : 'text-3xl'} ${fontClass} text-center text-foreground leading-tight`} style={{
                   textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)',
                 }}>
                   {card.name}
