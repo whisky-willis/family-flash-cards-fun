@@ -52,7 +52,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           allowTaint: true,
           width: 384,
           height: 384,
-          pixelRatio: window.devicePixelRatio || 1,
           foreignObjectRendering: false, // Better text rendering
           imageTimeout: 15000,
           removeContainer: true,
@@ -117,7 +116,6 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
           allowTaint: true,
           width: 384,
           height: 384,
-          pixelRatio: window.devicePixelRatio || 1,
           foreignObjectRendering: false, // Better text rendering
           imageTimeout: 15000,
           removeContainer: true,

@@ -37,7 +37,7 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
           frontImageUrl = await flipCardPreviewRef.current.generateFrontImage();
           backImageUrl = await flipCardPreviewRef.current.generateBackImage();
         } else if (cardPreviewRef.current) {
-          frontImageUrl = await cardPreviewRef.current.generateImage();
+          frontImageUrl = await cardPreviewRef.current.generateFrontImage();
         }
 
         if (onImagesGenerated) {
