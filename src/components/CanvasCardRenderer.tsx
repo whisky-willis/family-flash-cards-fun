@@ -307,8 +307,8 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       // Draw name with exact text styling from preview
       if (card.name) {
         const fontFamily = getFontFamily(deckFont);
-        // Match CSS text-3xl exactly (30px)
-        const fontSize = 30;
+        // Match CSS text-3xl exactly (36px instead of 30px)
+        const fontSize = 36;
         
         ctx.font = `${fontSize}px ${fontFamily}`;
         ctx.textAlign = 'center';
