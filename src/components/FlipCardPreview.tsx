@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,14 +38,24 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.log('🎯 Loading html2canvas...');
         const html2canvas = (await import('html2canvas')).default;
         
+        // Wait for fonts to be ready
+        await document.fonts.ready;
+        
+        // Add a small delay to ensure rendering is complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         console.log('🎯 Capturing front card with html2canvas...');
         const canvas = await html2canvas(frontElement, {
           backgroundColor: null,
-          scale: 2, // High resolution for print
+          scale: 4, // Increased from 2 to 4 for higher quality
           useCORS: true,
           allowTaint: true,
-          width: 384, // Explicit width
-          height: 384, // Explicit height
+          width: 384,
+          height: 384,
+          pixelRatio: window.devicePixelRatio || 1,
+          foreignObjectRendering: false, // Better text rendering
+          imageTimeout: 15000,
+          removeContainer: true,
           logging: false
         });
         
@@ -67,7 +76,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
               console.error('❌ Failed to create blob from front canvas');
               resolve('');
             }
-          }, 'image/png', 1.0);
+          }, 'image/png', 1.0); // Maximum quality PNG
         });
       } catch (error) {
         console.error('❌ Error generating front card image:', error);
@@ -86,6 +95,9 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         console.log('🎯 Loading html2canvas...');
         const html2canvas = (await import('html2canvas')).default;
         
+        // Wait for fonts to be ready
+        await document.fonts.ready;
+        
         // Temporarily remove the rotation transform before capture
         const originalTransform = backElement.style.transform;
         const originalClass = backElement.className;
@@ -94,17 +106,21 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
         backElement.style.transform = 'rotateY(0deg)';
         backElement.className = originalClass.replace('rotate-y-180', '');
         
-        // Wait a moment for the DOM to update
-        await new Promise(resolve => setTimeout(resolve, 50));
+        // Wait for DOM to update and fonts to be ready
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         console.log('🎯 Capturing back card with html2canvas...');
         const canvas = await html2canvas(backElement, {
           backgroundColor: null,
-          scale: 2, // High resolution for print
+          scale: 4, // Increased from 2 to 4 for higher quality
           useCORS: true,
           allowTaint: true,
-          width: 384, // Explicit width
-          height: 384, // Explicit height
+          width: 384,
+          height: 384,
+          pixelRatio: window.devicePixelRatio || 1,
+          foreignObjectRendering: false, // Better text rendering
+          imageTimeout: 15000,
+          removeContainer: true,
           logging: false
         });
         
@@ -130,7 +146,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
               console.error('❌ Failed to create blob from back canvas');
               resolve('');
             }
-          }, 'image/png', 1.0);
+          }, 'image/png', 1.0); // Maximum quality PNG
         });
       } catch (error) {
         console.error('❌ Error generating back card image:', error);
