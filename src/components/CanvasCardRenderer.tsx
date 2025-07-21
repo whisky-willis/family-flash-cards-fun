@@ -499,40 +499,59 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         drawAttribute('🌟', 'Hobbies', firstHobby, '#f97316');
       }
 
-      // Draw fun fact if available (matching preview styling)
+      // Draw fun fact if available with exact DOM styling
       if (card.funFact?.trim()) {
-        const funFactWidth = previewWidth - 96;
-        const funFactHeight = 80;
-        const funFactX = 48;
-        const funFactY = yOffset;
+        // Calculate proper dimensions - full width with margins like col-span-2
+        const funFactPadding = 12; // p-3 = 12px padding
+        const funFactMargin = 24; // mx-6 equivalent
+        const funFactWidth = previewWidth - (funFactMargin * 2);
         
-        ctx.fillStyle = 'rgba(254, 240, 138, 0.8)';
+        // Calculate height based on content - need room for emoji, title, and text
+        const funFactHeight = 100; // Increased height for proper spacing
+        
+        const funFactX = funFactMargin;
+        const funFactY = yOffset + 10; // Small gap after attributes
+        
+        // Draw background with exact Tailwind colors: bg-yellow-100/80
+        ctx.fillStyle = 'rgba(254, 243, 199, 0.8)'; // #fef3c7 with 80% opacity
         ctx.beginPath();
-        ctx.roundRect(funFactX, funFactY, funFactWidth, funFactHeight, 16);
+        ctx.roundRect(funFactX, funFactY, funFactWidth, funFactHeight, 16); // rounded-2xl = 16px
         ctx.fill();
 
-        ctx.strokeStyle = '#fbbf24';
+        // Draw border with exact Tailwind color: border-yellow-300
+        ctx.strokeStyle = '#fde047'; // yellow-300
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Fun fact emoji
+        // Calculate center point for proper text positioning
+        const centerX = funFactX + (funFactWidth / 2);
+        const contentStartY = funFactY + funFactPadding;
+
+        // Fun fact emoji - positioned at top center with proper spacing
         ctx.font = `20px Arial`;
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
-        ctx.fillText('✨', previewWidth / 2, funFactY + 16);
+        ctx.textBaseline = 'top';
+        ctx.fillText('✨', centerX, contentStartY);
 
-        // Fun fact title
+        // Fun fact title - positioned below emoji with proper spacing
         ctx.font = `${titleFontSize}px ${fontFamily}`;
-        ctx.fillStyle = '#ef4444';
-        ctx.fillText('Fun Fact', previewWidth / 2, funFactY + 40);
+        ctx.fillStyle = '#ef4444'; // red-500
+        ctx.textBaseline = 'top';
+        ctx.fillText('Fun Fact', centerX, contentStartY + 28);
 
-        // Fun fact text (truncated to match preview)
+        // Fun fact text - positioned below title with proper spacing
         ctx.font = `${fontSize}px ${fontFamily}`;
         ctx.fillStyle = '#000000';
-        const truncatedFact = card.funFact.length > 40 ? 
-          card.funFact.substring(0, 40) : 
+        ctx.textBaseline = 'top';
+        
+        // Handle text wrapping for longer fun facts
+        const maxWidth = funFactWidth - (funFactPadding * 2);
+        const truncatedFact = card.funFact.length > 45 ? 
+          card.funFact.substring(0, 45) + '...' : 
           card.funFact;
-        ctx.fillText(truncatedFact, previewWidth / 2, funFactY + 64);
+        
+        ctx.fillText(truncatedFact, centerX, contentStartY + 56);
       }
 
       // Convert to blob URL
