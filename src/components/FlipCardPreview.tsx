@@ -272,7 +272,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
 
               {/* Name at bottom with fixed height */}
               <div className="h-16 flex items-center justify-center">
-                <h3 className={`${deckFont === 'bubblegum' ? 'text-4xl' : 'text-2xl'} ${fontClass} text-center text-foreground leading-tight`} style={{
+                <h3 className={`${deckFont === 'bubblegum' ? 'text-5xl' : 'text-3xl'} ${fontClass} text-center text-foreground leading-tight`} style={{
                   textShadow: '0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6)',
                 }}>
                   {card.name}
