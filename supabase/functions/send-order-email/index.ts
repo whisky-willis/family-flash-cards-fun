@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -13,28 +14,37 @@ const corsHeaders = {
 interface Card {
   id: string;
   name: string;
-  image: string;
-  backImage?: string;
   relationship: string;
-  story: string;
-  memories: string[];
-  favoriteThings: string[];
+  user_session_id: string;
+  front_image_url?: string;
+  back_image_url?: string;
+  created_at: string;
+  print_ready: boolean;
 }
 
-// Function to convert image to high-res square format
-async function processCardImage(imageUrl: string, cardName: string, side: 'front' | 'back'): Promise<{ buffer: Uint8Array; filename: string }> {
+interface OrderData {
+  customer_email: string;
+  customer_name: string;
+  stripe_session_id: string;
+  total_amount: number;
+  card_count: number;
+  special_instructions?: string;
+}
+
+// Function to fetch and process card image
+async function fetchCardImage(imageUrl: string, cardName: string, side: 'front' | 'back'): Promise<{ buffer: Uint8Array; filename: string } | null> {
   try {
-    // Fetch the image
+    console.log(`Fetching ${side} image for ${cardName}: ${imageUrl}`);
+    
     const response = await fetch(imageUrl);
     if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
+      console.error(`Failed to fetch ${side} image: ${response.statusText}`);
+      return null;
     }
     
     const imageBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(imageBuffer);
     
-    // For now, return the image as-is. In a production environment,
-    // you might want to use a service like Sharp or similar for image processing
     const filename = `${cardName.replace(/[^a-zA-Z0-9]/g, '_')}_${side}.jpg`;
     
     return {
@@ -42,9 +52,81 @@ async function processCardImage(imageUrl: string, cardName: string, side: 'front
       filename: filename
     };
   } catch (error) {
-    console.error(`Error processing image for ${cardName} ${side}:`, error);
-    throw error;
+    console.error(`Error fetching ${side} image for ${cardName}:`, error);
+    return null;
   }
+}
+
+// Function to group cards by session
+function groupCardsBySession(cards: Card[]): Record<string, Card[]> {
+  return cards.reduce((groups, card) => {
+    const sessionId = card.user_session_id;
+    if (!groups[sessionId]) {
+      groups[sessionId] = [];
+    }
+    groups[sessionId].push(card);
+    return groups;
+  }, {} as Record<string, Card[]>);
+}
+
+// Function to generate email HTML with session grouping
+function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderData): string {
+  const sessionCount = Object.keys(cardGroups).length;
+  const totalCards = Object.values(cardGroups).flat().length;
+  
+  const sessionHTML = Object.entries(cardGroups).map(([sessionId, cards]) => {
+    const cardList = cards.map(card => `
+      <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+        <h4 style="margin: 0 0 5px 0; color: #333;">${card.name}</h4>
+        <p style="margin: 0; color: #666;"><strong>Relationship:</strong> ${card.relationship}</p>
+        <p style="margin: 5px 0; color: #666;"><strong>Created:</strong> ${new Date(card.created_at).toLocaleString()}</p>
+        <p style="margin: 5px 0; color: #666;"><strong>Print Ready:</strong> ${card.print_ready ? 'Yes' : 'No'}</p>
+        <p style="margin: 5px 0; color: #666;">
+          <strong>Images:</strong> 
+          Front: ${card.front_image_url ? '✓' : '✗'} | 
+          Back: ${card.back_image_url ? '✓' : '✗'}
+        </p>
+      </div>
+    `).join('');
+    
+    return `
+      <div style="margin-bottom: 30px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; background-color: #f5f5f5;">
+        <h3 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">
+          Session: ${sessionId.slice(-8)} (${cards.length} cards)
+        </h3>
+        ${cardList}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+      <h1 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">New Kindred Cards Order</h1>
+      
+      <div style="background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h2 style="color: #34495e; margin-top: 0;">Order Summary</h2>
+        <p><strong>Customer:</strong> ${orderData.customer_name || 'Not provided'}</p>
+        <p><strong>Email:</strong> ${orderData.customer_email || 'Not provided'}</p>
+        <p><strong>Total Cards:</strong> ${totalCards}</p>
+        <p><strong>Sessions:</strong> ${sessionCount}</p>
+        <p><strong>Order Total:</strong> $${(orderData.total_amount / 100).toFixed(2)}</p>
+        <p><strong>Stripe Session ID:</strong> ${orderData.stripe_session_id}</p>
+        ${orderData.special_instructions ? `<p><strong>Special Instructions:</strong> ${orderData.special_instructions}</p>` : ''}
+      </div>
+      
+      <h2 style="color: #34495e;">Cards by Session</h2>
+      ${sessionHTML}
+      
+      <div style="margin-top: 30px; padding: 15px; background-color: #d5f4e6; border-radius: 8px;">
+        <p style="margin: 0; color: #27ae60;"><strong>✓ High-resolution images for printing are attached to this email</strong></p>
+      </div>
+      
+      <hr style="margin: 30px 0; border: none; border-top: 2px solid #bdc3c7;">
+      <p style="color: #7f8c8d; font-size: 12px; text-align: center;">
+        This email was automatically generated when a customer completed their order.
+      </p>
+    </div>
+  `;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -76,103 +158,95 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Retrieve order data from database
-    const { data: orderData, error: dbError } = await supabase
+    // Get order data
+    const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .select('*')
       .eq('stripe_session_id', sessionId)
       .single();
 
-    if (dbError || !orderData) {
-      throw new Error(`Order not found for session ${sessionId}: ${dbError?.message || 'No data'}`);
+    if (orderError || !orderData) {
+      throw new Error(`Order not found for session ${sessionId}: ${orderError?.message || 'No data'}`);
     }
 
-    const cards = orderData.cards_data;
-    const orderDetails = orderData.order_details;
+    // Get cards from the cards table using the order ID
+    const { data: cards, error: cardsError } = await supabase
+      .from('cards')
+      .select('*')
+      .eq('order_id', orderData.id)
+      .order('user_session_id')
+      .order('created_at');
+
+    if (cardsError) {
+      throw new Error(`Failed to fetch cards: ${cardsError.message}`);
+    }
 
     if (!cards || cards.length === 0) {
-      throw new Error("No cards found in order");
+      throw new Error("No cards found for this order");
     }
 
-    console.log(`Processing order for ${cards.length} cards`);
+    console.log(`Found ${cards.length} cards for order ${orderData.id}`);
 
-    // Process all card images
+    // Group cards by session
+    const cardGroups = groupCardsBySession(cards);
+    const sessionCount = Object.keys(cardGroups).length;
+    
+    console.log(`Cards grouped into ${sessionCount} sessions`);
+
+    // Process all card images for attachments
     const attachments = [];
     
     for (const card of cards) {
       try {
         // Process front image
-        if (card.image) {
-          const frontImage = await processCardImage(card.image, card.name, 'front');
-          attachments.push({
-            filename: frontImage.filename,
-            content: frontImage.buffer,
-          });
+        if (card.front_image_url) {
+          const frontImage = await fetchCardImage(card.front_image_url, card.name, 'front');
+          if (frontImage) {
+            attachments.push({
+              filename: frontImage.filename,
+              content: frontImage.buffer,
+            });
+          }
         }
 
-        // Process back image if available
-        if (card.backImage) {
-          const backImage = await processCardImage(card.backImage, card.name, 'back');
-          attachments.push({
-            filename: backImage.filename,
-            content: backImage.buffer,
-          });
-        } else {
-          // Create a simple back design with card details
-          const backContent = `
-Card: ${card.name}
-Relationship: ${card.relationship}
-Story: ${card.story}
-Memories: ${card.memories?.join(', ') || 'None'}
-Favorite Things: ${card.favoriteThings?.join(', ') || 'None'}
-          `.trim();
-          
-          const backFilename = `${card.name.replace(/[^a-zA-Z0-9]/g, '_')}_back_details.txt`;
-          attachments.push({
-            filename: backFilename,
-            content: new TextEncoder().encode(backContent),
-          });
+        // Process back image
+        if (card.back_image_url) {
+          const backImage = await fetchCardImage(card.back_image_url, card.name, 'back');
+          if (backImage) {
+            attachments.push({
+              filename: backImage.filename,
+              content: backImage.buffer,
+            });
+          }
+        }
+
+        // Log if images are missing
+        if (!card.front_image_url && !card.back_image_url) {
+          console.warn(`Card ${card.name} has no images available`);
         }
       } catch (error) {
-        console.error(`Error processing card ${card.name}:`, error);
+        console.error(`Error processing images for card ${card.name}:`, error);
         // Continue with other cards even if one fails
       }
     }
 
-    // Create card list for email
-    const cardList = cards.map((card: Card) => `
-      <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-        <h3 style="margin: 0 0 5px 0; color: #333;">${card.name}</h3>
-        <p style="margin: 0; color: #666;"><strong>Relationship:</strong> ${card.relationship}</p>
-        ${card.story ? `<p style="margin: 5px 0; color: #666;"><strong>Story:</strong> ${card.story}</p>` : ''}
-        ${card.memories?.length ? `<p style="margin: 5px 0; color: #666;"><strong>Memories:</strong> ${card.memories.join(', ')}</p>` : ''}
-        ${card.favoriteThings?.length ? `<p style="margin: 5px 0; color: #666;"><strong>Favorite Things:</strong> ${card.favoriteThings.join(', ')}</p>` : ''}
-      </div>
-    `).join('');
+    console.log(`Processed ${attachments.length} image attachments`);
 
-    const emailHtml = `
-      <h1>New Kindred Cards Order</h1>
-      <h2>Order Details</h2>
-      <p><strong>Customer Email:</strong> ${orderDetails?.email || 'Not provided'}</p>
-      <p><strong>Customer Name:</strong> ${orderDetails?.name || 'Not provided'}</p>
-      <p><strong>Number of Cards:</strong> ${cards.length}</p>
-      <p><strong>Stripe Session ID:</strong> ${sessionId || 'Not provided'}</p>
-      ${orderDetails?.specialInstructions ? `<p><strong>Special Instructions:</strong> ${orderDetails.specialInstructions}</p>` : ''}
-      
-      <h2>Cards Ordered</h2>
-      ${cardList}
-      
-      <p>High-resolution images for printing are attached to this email.</p>
-      
-      <hr style="margin: 20px 0;">
-      <p style="color: #888; font-size: 12px;">This email was automatically generated when a customer completed their order.</p>
-    `;
+    // Generate email HTML
+    const emailHtml = generateEmailHTML(cardGroups, {
+      customer_email: orderData.customer_email,
+      customer_name: orderData.customer_name,
+      stripe_session_id: orderData.stripe_session_id,
+      total_amount: orderData.total_amount || 0,
+      card_count: cards.length,
+      special_instructions: orderData.special_instructions
+    });
 
     // Send email with attachments
     const emailResponse = await resend.emails.send({
-      from: "Kindred Cards <delivered@resend.dev>",
-      to: ["nick.g.williss@gmail.com"],
-      subject: `New Kindred Cards Order - ${cards.length} cards`,
+      from: "Kindred Cards <orders@kindred-cards.com>",
+      to: ["nick.g.willis@gmail.com"],
+      subject: `New Kindred Cards Order - ${cards.length} cards from ${sessionCount} sessions`,
       html: emailHtml,
       attachments: attachments,
     });
@@ -184,7 +258,13 @@ Favorite Things: ${card.favoriteThings?.join(', ') || 'None'}
       throw new Error(`Email sending failed: ${emailResponse.error.message || 'Unknown error'}`);
     }
 
-    return new Response(JSON.stringify({ success: true, emailId: emailResponse.data?.id }), {
+    return new Response(JSON.stringify({ 
+      success: true, 
+      emailId: emailResponse.data?.id,
+      cardCount: cards.length,
+      sessionCount: sessionCount,
+      attachmentCount: attachments.length
+    }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
