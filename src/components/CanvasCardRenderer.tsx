@@ -70,7 +70,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
 
-      // Set canvas size with high DPI support
+      // Set canvas size with high DPI support - match preview dimensions exactly
       const size = 384;
       const dpr = window.devicePixelRatio || 1;
       canvas.width = size * dpr;
@@ -80,38 +80,62 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       // Wait for fonts to be ready
       await waitForFonts();
 
-      // Draw background
+      // Draw card background with rounded corners and border (matching preview)
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, 24); // 24px = rounded-3xl
+      ctx.fill();
+
+      // Draw card border (matching preview border)
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.3)'; // art-pink/30
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Draw theme background inside the card
       const backgroundSrc = getBackgroundImage(deckTheme);
       if (backgroundSrc) {
         try {
           const backgroundImg = await loadImage(backgroundSrc);
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(0, 0, size, size, 24);
+          ctx.clip();
           ctx.drawImage(backgroundImg, 0, 0, size, size);
+          ctx.restore();
         } catch (error) {
           console.warn('Could not load background image:', error);
-          // Fallback to white background
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, size, size);
         }
-      } else {
-        // White background if no theme
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, size, size);
       }
 
-      // Draw photo
+      // Calculate layout areas to match preview exactly
+      const cardPadding = 16; // p-4
+      const nameHeight = 64; // h-16 for name area
+      const photoArea = {
+        x: cardPadding,
+        y: cardPadding,
+        width: size - (cardPadding * 2),
+        height: size - (cardPadding * 2) - nameHeight
+      };
+
+      // Draw photo with exact styling from preview
       if (card.photo_url) {
         try {
           const photoImg = await loadImage(card.photo_url);
           
-          // Calculate photo dimensions and position
-          const photoArea = {
-            x: 32,
-            y: 32,
-            width: size - 64,
-            height: size - 128 // Leave space for name at bottom
-          };
+          ctx.save();
+          
+          // Create rounded photo area with white border (matching preview)
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(photoArea.x - 4, photoArea.y - 4, photoArea.width + 8, photoArea.height + 8, 16);
+          ctx.fill();
+          
+          // Clip to photo area
+          ctx.beginPath();
+          ctx.roundRect(photoArea.x, photoArea.y, photoArea.width, photoArea.height, 16);
+          ctx.clip();
 
-          // Apply image positioning if available
+          // Calculate photo positioning to match CSS background-image behavior
           let sourceX = 0, sourceY = 0, sourceWidth = photoImg.width, sourceHeight = photoImg.height;
           
           if (card.imagePosition) {
@@ -119,64 +143,71 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
             const offsetX = card.imagePosition.x;
             const offsetY = card.imagePosition.y;
             
-            // Calculate source rectangle based on positioning
+            // Match CSS background-size and background-position calculations
             const scaledWidth = photoImg.width / scale;
             const scaledHeight = photoImg.height / scale;
             
-            sourceX = Math.max(0, (photoImg.width - scaledWidth) / 2 - offsetX);
-            sourceY = Math.max(0, (photoImg.height - scaledHeight) / 2 - offsetY);
+            // Calculate position based on CSS background-position formula
+            const positionX = 50 + (offsetX / (3.6 * scale));
+            const positionY = 50 + (offsetY / (3.6 * scale));
+            
+            sourceX = Math.max(0, (photoImg.width - scaledWidth) * (positionX / 100));
+            sourceY = Math.max(0, (photoImg.height - scaledHeight) * (positionY / 100));
             sourceWidth = Math.min(scaledWidth, photoImg.width - sourceX);
             sourceHeight = Math.min(scaledHeight, photoImg.height - sourceY);
           }
 
-          // Draw photo with rounded corners effect
-          ctx.save();
-          ctx.beginPath();
-          ctx.roundRect(photoArea.x, photoArea.y, photoArea.width, photoArea.height, 16);
-          ctx.clip();
-          
-          // Draw white border
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(photoArea.x - 4, photoArea.y - 4, photoArea.width + 8, photoArea.height + 8);
-          
           // Draw photo
           ctx.drawImage(
             photoImg,
             sourceX, sourceY, sourceWidth, sourceHeight,
             photoArea.x, photoArea.y, photoArea.width, photoArea.height
           );
+          
           ctx.restore();
         } catch (error) {
           console.warn('Could not load photo:', error);
-          // Draw placeholder
-          ctx.fillStyle = '#f3f4f6';
+          // Draw placeholder circle (matching preview)
+          ctx.fillStyle = 'rgba(251, 191, 36, 0.2)'; // art-yellow/20
           ctx.beginPath();
-          ctx.roundRect(120, 120, 144, 144, 72);
+          ctx.arc(size / 2, size / 2 - nameHeight / 2, 64, 0, 2 * Math.PI);
           ctx.fill();
+          
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 4;
+          ctx.stroke();
         }
       }
 
-      // Draw name text
+      // Draw name with exact text styling from preview
       if (card.name) {
         const fontFamily = getFontFamily(deckFont);
-        const fontSize = deckFont === 'bubblegum' ? 48 : 32;
+        const fontSize = deckFont === 'bubblegum' ? 48 : 32; // Match text-5xl vs text-3xl
         
         ctx.font = `${fontSize}px ${fontFamily}`;
-        ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        // Add text shadow for better visibility
+        // Multi-layer text shadow effect (matching CSS textShadow)
+        const nameY = size - nameHeight / 2;
+        
+        // Shadow layers for visibility
         ctx.shadowColor = 'rgba(255, 255, 255, 1)';
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 30;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         
-        // Draw text
-        ctx.fillText(card.name, size / 2, size - 48);
+        // Draw multiple shadow layers for stronger effect
+        for (let i = 0; i < 3; i++) {
+          ctx.shadowBlur = 30 - (i * 10);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.fillText(card.name, size / 2, nameY);
+        }
         
-        // Reset shadow
+        // Draw main text
         ctx.shadowBlur = 0;
+        ctx.fillStyle = '#000000';
+        ctx.fillText(card.name, size / 2, nameY);
       }
 
       // Convert to blob URL
@@ -215,29 +246,41 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       // Wait for fonts to be ready
       await waitForFonts();
 
-      // Draw background
+      // Draw card background with rounded corners and border (matching preview)
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, 24); // 24px = rounded-3xl
+      ctx.fill();
+
+      // Draw card border (matching preview border)
+      ctx.strokeStyle = 'rgba(236, 72, 153, 0.3)'; // art-pink/30
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Draw theme background inside the card
       const backgroundSrc = getBackgroundImage(deckTheme);
       if (backgroundSrc) {
         try {
           const backgroundImg = await loadImage(backgroundSrc);
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(0, 0, size, size, 24);
+          ctx.clip();
           ctx.drawImage(backgroundImg, 0, 0, size, size);
+          ctx.restore();
         } catch (error) {
           console.warn('Could not load background image:', error);
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, size, size);
         }
-      } else {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, size, size);
       }
 
-      // Draw white content area
+      // Draw white content area (matching preview)
+      const contentPadding = 16;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
       ctx.beginPath();
-      ctx.roundRect(32, 32, size - 64, size - 64, 16);
+      ctx.roundRect(contentPadding, contentPadding, size - (contentPadding * 2), size - (contentPadding * 2), 16);
       ctx.fill();
 
-      // Draw attributes
+      // Draw attributes with exact styling from preview
       const fontFamily = getFontFamily(deckFont);
       const fontSize = deckFont === 'bubblegum' ? 16 : 14;
       const titleFontSize = deckFont === 'bubblegum' ? 20 : 16;
@@ -278,7 +321,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         }
       };
 
-      // Draw attributes
+      // Draw attributes with exact colors from preview
       if (card.relationship?.trim()) {
         drawAttribute('🏠', 'Where they live', card.relationship, '#60a5fa');
       }
@@ -304,7 +347,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         drawAttribute('🌟', 'Hobbies', card.hobbies, '#f97316');
       }
 
-      // Draw fun fact if available (spans full width)
+      // Draw fun fact if available (matching preview styling)
       if (card.funFact?.trim()) {
         ctx.fillStyle = 'rgba(254, 240, 138, 0.8)';
         ctx.beginPath();
