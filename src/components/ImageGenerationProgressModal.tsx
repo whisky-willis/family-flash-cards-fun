@@ -44,7 +44,6 @@ export const ImageGenerationProgressModal: React.FC<ImageGenerationProgressModal
                     card={currentCard}
                     deckTheme={deckTheme}
                     deckFont={deckFont}
-                    showActions={false}
                   />
                 </div>
               </div>
