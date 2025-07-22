@@ -84,9 +84,6 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
     const cardList = cards.map(card => `
       <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
         <h4 style="margin: 0 0 5px 0; color: #333;">${card.name}</h4>
-        <p style="margin: 0; color: #666;"><strong>Relationship:</strong> ${card.relationship || 'Not specified'}</p>
-        <p style="margin: 5px 0; color: #666;"><strong>Created:</strong> ${card.created_at ? new Date(card.created_at).toLocaleString() : 'Not available'}</p>
-        <p style="margin: 5px 0; color: #666;"><strong>Print Ready:</strong> ${card.print_ready ? 'Yes' : 'No'}</p>
         <p style="margin: 5px 0; color: #666;">
           <strong>Images:</strong><br>
           Front: ${card.front_image_url ? `✓ <a href="${card.front_image_url}" style="color: #2754C5;">View Image</a>` : '✗ Not available'}<br>
