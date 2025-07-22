@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCardsStorage, FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { ImageGenerationProgressModal } from "@/components/ImageGenerationProgressModal";
+import { useDraft } from "@/hooks/useDraft";
 
 const CreateCards = () => {
   const navigate = useNavigate();
@@ -30,6 +31,9 @@ const CreateCards = () => {
     refreshCards,
     generateCardImages
   } = useSupabaseCardsStorage();
+
+  // Draft management
+  const { getDraft, clearDraft } = useDraft();
   
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
@@ -43,6 +47,31 @@ const CreateCards = () => {
   const [recipientName, setRecipientName] = useState('');
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
+
+  // Load draft data on component mount
+  useEffect(() => {
+    const draftData = getDraft();
+    console.log('🎯 CreateCards: Loading draft data:', draftData);
+    
+    if (draftData.deckDesign) {
+      const { recipientName: draftRecipientName, theme, font } = draftData.deckDesign;
+      
+      if (draftRecipientName) {
+        console.log('🎯 CreateCards: Setting recipientName from draft:', draftRecipientName);
+        setRecipientName(draftRecipientName);
+      }
+      
+      if (theme) {
+        console.log('🎯 CreateCards: Setting deckTheme from draft:', theme);
+        setDeckTheme(theme);
+      }
+      
+      if (font) {
+        console.log('🎯 CreateCards: Setting deckFont from draft:', font);
+        setDeckFont(font);
+      }
+    }
+  }, [getDraft]);
 
   // Refs for CardImageGenerator components
   const imageGeneratorRefs = useRef<Map<string, CardImageGeneratorRef>>(new Map());
