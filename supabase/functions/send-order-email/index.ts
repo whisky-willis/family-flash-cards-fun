@@ -20,6 +20,11 @@ interface Card {
   back_image_url?: string;
   created_at: string;
   print_ready: boolean;
+  date_of_birth?: string;
+  favorite_color?: string;
+  hobbies?: string;
+  fun_fact?: string;
+  photo_url?: string;
 }
 
 interface OrderData {
@@ -29,6 +34,7 @@ interface OrderData {
   total_amount: number;
   card_count: number;
   special_instructions?: string;
+  cards_data: Card[];
 }
 
 // Function to fetch and process card image
@@ -78,8 +84,8 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
     const cardList = cards.map(card => `
       <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
         <h4 style="margin: 0 0 5px 0; color: #333;">${card.name}</h4>
-        <p style="margin: 0; color: #666;"><strong>Relationship:</strong> ${card.relationship}</p>
-        <p style="margin: 5px 0; color: #666;"><strong>Created:</strong> ${new Date(card.created_at).toLocaleString()}</p>
+        <p style="margin: 0; color: #666;"><strong>Relationship:</strong> ${card.relationship || 'Not specified'}</p>
+        <p style="margin: 5px 0; color: #666;"><strong>Created:</strong> ${card.created_at ? new Date(card.created_at).toLocaleString() : 'Not available'}</p>
         <p style="margin: 5px 0; color: #666;"><strong>Print Ready:</strong> ${card.print_ready ? 'Yes' : 'No'}</p>
         <p style="margin: 5px 0; color: #666;">
           <strong>Images:</strong> 
@@ -169,23 +175,16 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Order not found for session ${sessionId}: ${orderError?.message || 'No data'}`);
     }
 
-    // Get cards from the cards table using the order ID
-    const { data: cards, error: cardsError } = await supabase
-      .from('cards')
-      .select('*')
-      .eq('order_id', orderData.id)
-      .order('user_session_id')
-      .order('created_at');
+    console.log(`Found order ${orderData.id} for session ${sessionId}`);
 
-    if (cardsError) {
-      throw new Error(`Failed to fetch cards: ${cardsError.message}`);
-    }
+    // Parse cards from orders.cards_data
+    const cards: Card[] = Array.isArray(orderData.cards_data) ? orderData.cards_data : [];
 
     if (!cards || cards.length === 0) {
-      throw new Error("No cards found for this order");
+      throw new Error("No cards found in order data");
     }
 
-    console.log(`Found ${cards.length} cards for order ${orderData.id}`);
+    console.log(`Found ${cards.length} cards in order data`);
 
     // Group cards by session
     const cardGroups = groupCardsBySession(cards);
@@ -239,7 +238,8 @@ const handler = async (req: Request): Promise<Response> => {
       stripe_session_id: orderData.stripe_session_id,
       total_amount: orderData.total_amount || 0,
       card_count: cards.length,
-      special_instructions: orderData.special_instructions
+      special_instructions: orderData.special_instructions,
+      cards_data: cards
     });
 
     // Send email with attachments
