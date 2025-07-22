@@ -29,7 +29,8 @@ const CreateCards = () => {
     deleteCard, 
     linkCardsToOrder,
     refreshCards,
-    generateCardImages
+    generateCardImages,
+    setInitialCards
   } = useSupabaseCardsStorage();
 
   // Draft management
@@ -53,6 +54,7 @@ const CreateCards = () => {
     const draftData = getDraft();
     console.log('🎯 CreateCards: Loading draft data:', draftData);
     
+    // Load deck design settings
     if (draftData.deckDesign) {
       const { recipientName: draftRecipientName, theme, font } = draftData.deckDesign;
       
@@ -71,7 +73,13 @@ const CreateCards = () => {
         setDeckFont(font);
       }
     }
-  }, [getDraft]);
+
+    // Load draft cards
+    if (draftData.cards && draftData.cards.length > 0) {
+      console.log('🎯 CreateCards: Loading draft cards:', draftData.cards.length);
+      setInitialCards(draftData.cards);
+    }
+  }, [getDraft, setInitialCards]);
 
   // Refs for CardImageGenerator components
   const imageGeneratorRefs = useRef<Map<string, CardImageGeneratorRef>>(new Map());

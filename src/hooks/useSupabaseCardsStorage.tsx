@@ -26,6 +26,7 @@ export const useSupabaseCardsStorage = () => {
   const [cards, setCards] = useState<FamilyCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Generate or get session ID for temporary storage
   const getSessionId = () => {
@@ -216,8 +217,21 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
+  // Set initial cards from draft (new function)
+  const setInitialCards = (initialCards: FamilyCard[]) => {
+    console.log('🎯 useSupabaseCardsStorage: Setting initial cards from draft:', initialCards.length);
+    setCards(initialCards);
+    setIsInitialized(true);
+  };
+
   // Load cards from database
   const loadCards = async () => {
+    // Don't load from database if we've already been initialized with draft cards
+    if (isInitialized) {
+      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized with draft cards');
+      return;
+    }
+
     setLoading(true);
     try {
       const sessionId = getSessionId();
@@ -250,7 +264,9 @@ export const useSupabaseCardsStorage = () => {
         print_ready: card.print_ready || false
       }));
 
+      console.log('🎯 useSupabaseCardsStorage: Loaded cards from database:', formattedCards.length);
       setCards(formattedCards);
+      setIsInitialized(true);
     } catch (error) {
       console.error('Load error:', error);
       toast.error('Failed to load cards');
@@ -382,10 +398,12 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Load cards on component mount
+  // Load cards on component mount only if not initialized
   useEffect(() => {
-    loadCards();
-  }, []);
+    if (!isInitialized) {
+      loadCards();
+    }
+  }, [isInitialized]);
 
   return {
     cards,
@@ -397,6 +415,7 @@ export const useSupabaseCardsStorage = () => {
     deleteCard,
     linkCardsToOrder,
     refreshCards: loadCards,
-    generateCardImages
+    generateCardImages,
+    setInitialCards
   };
 };
