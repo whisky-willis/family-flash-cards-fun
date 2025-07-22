@@ -184,14 +184,14 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     // Get the recipient name from deck design in order details
-    const recipientName = orderData.order_details?.deckDesign?.recipientName || 
-                          (cards.length > 0 ? cards[0].name : 'Unknown');
+    const recipientName = orderData.order_details?.deckDesign?.recipientName;
+    const emailSubject = recipientName ? `New Kindred Cards Order - for ${recipientName}` : 'New Kindred Cards Order';
 
     // Send email
     const emailResponse = await resend.emails.send({
       from: "Kindred Cards <orders@kindred-cards.com>",
       to: ["nick.g.willis@gmail.com"],
-      subject: `New Kindred Cards Order - for ${recipientName}`,
+      subject: emailSubject,
       html: emailHtml,
     });
 
