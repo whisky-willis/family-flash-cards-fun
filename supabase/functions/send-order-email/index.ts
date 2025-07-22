@@ -37,31 +37,7 @@ interface OrderData {
   cards_data: Card[];
 }
 
-// Function to fetch and process card image
-async function fetchCardImage(imageUrl: string, cardName: string, side: 'front' | 'back'): Promise<{ buffer: Uint8Array; filename: string } | null> {
-  try {
-    console.log(`Fetching ${side} image for ${cardName}: ${imageUrl}`);
-    
-    const response = await fetch(imageUrl);
-    if (!response.ok) {
-      console.error(`Failed to fetch ${side} image: ${response.statusText}`);
-      return null;
-    }
-    
-    const imageBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(imageBuffer);
-    
-    const filename = `${cardName.replace(/[^a-zA-Z0-9]/g, '_')}_${side}.jpg`;
-    
-    return {
-      buffer: uint8Array,
-      filename: filename
-    };
-  } catch (error) {
-    console.error(`Error fetching ${side} image for ${cardName}:`, error);
-    return null;
-  }
-}
+// Note: Image fetching removed to prevent memory issues - images are now included as URLs in email body
 
 // Function to group cards by session
 function groupCardsBySession(cards: Card[]): Record<string, Card[]> {
