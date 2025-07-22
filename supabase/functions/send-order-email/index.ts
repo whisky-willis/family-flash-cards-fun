@@ -119,7 +119,6 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
         <p><strong>Total Cards:</strong> ${totalCards}</p>
         <p><strong>Sessions:</strong> ${sessionCount}</p>
         <p><strong>Order Total:</strong> $${(orderData.total_amount / 100).toFixed(2)}</p>
-        <p><strong>Stripe Session ID:</strong> ${orderData.stripe_session_id}</p>
         ${orderData.special_instructions ? `<p><strong>Special Instructions:</strong> ${orderData.special_instructions}</p>` : ''}
       </div>
       
