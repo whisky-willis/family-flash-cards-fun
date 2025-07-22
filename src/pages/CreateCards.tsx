@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCardsStorage, FamilyCard } from "@/hooks/useSupabaseCardsStorage";
+import { ImageGenerationProgressModal } from "@/components/ImageGenerationProgressModal";
 
 const CreateCards = () => {
   const navigate = useNavigate();
@@ -37,7 +37,8 @@ const CreateCards = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [imageGenerationProgress, setImageGenerationProgress] = useState({ current: 0, total: 0 });
-  
+  const [currentCardBeingGenerated, setCurrentCardBeingGenerated] = useState<FamilyCard | null>(null);
+
   // Deck-level state
   const [recipientName, setRecipientName] = useState('');
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
@@ -67,6 +68,7 @@ const CreateCards = () => {
 
     setIsGeneratingImages(true);
     setImageGenerationProgress({ current: 0, total: cards.length });
+    setCurrentCardBeingGenerated(null);
 
     try {
       console.log('🎯 Starting bulk image generation for', cards.length, 'cards');
@@ -79,6 +81,7 @@ const CreateCards = () => {
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i];
         setImageGenerationProgress({ current: i + 1, total: cards.length });
+        setCurrentCardBeingGenerated(card);
         
         console.log(`🎯 Generating images for card ${i + 1}/${cards.length}: ${card.name}`);
         
@@ -165,6 +168,7 @@ const CreateCards = () => {
     } finally {
       setIsGeneratingImages(false);
       setImageGenerationProgress({ current: 0, total: 0 });
+      setCurrentCardBeingGenerated(null);
     }
   };
 
@@ -502,6 +506,15 @@ const CreateCards = () => {
           </div>
         )}
       </div>
+
+      {/* Image Generation Progress Modal */}
+      <ImageGenerationProgressModal
+        isOpen={isGeneratingImages}
+        currentCard={currentCardBeingGenerated}
+        progress={imageGenerationProgress}
+        deckTheme={deckTheme}
+        deckFont={deckFont}
+      />
 
       {/* Image generators positioned off-screen but visible for html2canvas */}
       <div style={{
