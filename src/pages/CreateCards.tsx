@@ -1,7 +1,8 @@
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, Image as ImageIcon, Save, ArrowLeft } from "lucide-react";
+import { Heart, Users, Image as ImageIcon, Save, ArrowLeft, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { FlipCardPreview } from "@/components/FlipCardPreview";
@@ -34,6 +35,8 @@ const CreateCards = () => {
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
+  const [imageGenerationProgress, setImageGenerationProgress] = useState({ current: 0, total: 0 });
   
   // Deck-level state
   const [recipientName, setRecipientName] = useState('');
@@ -47,114 +50,127 @@ const CreateCards = () => {
     setPreviewCard(previewData);
   }, []);
 
-  // Enhanced image generation function with user ID and card name
-  const generateImagesForCard = async (cardId: string, cardData?: FamilyCard) => {
-    console.log('🎯 Starting image generation for card:', cardId);
-    console.log('🎯 Deck settings:', { deckTheme, deckFont });
-    console.log('🎯 Card data provided:', !!cardData);
-    
-    // Use provided card data or find in current state
-    let card = cardData || cards.find(c => c.id === cardId);
-    
-    // If still no card data, try to fetch from database
-    if (!card) {
-      console.log('🎯 Card not found in state, will proceed without card data check');
-      // We'll let the image generator handle the missing card case
-    }
-    
+  // Bulk image generation function for all cards
+  const regenerateAllCardImages = async () => {
     if (!deckTheme || !deckFont) {
-      console.log('❌ Cannot generate images: missing theme or font', { deckTheme, deckFont });
       toast({
-        title: "Image Generation Skipped",
-        description: "Please select both theme and font in the deck designer first.",
+        title: "Missing Deck Design",
+        description: "Please select both theme and font before generating images.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
+
+    if (cards.length === 0) {
+      return true; // No cards to generate
+    }
+
+    setIsGeneratingImages(true);
+    setImageGenerationProgress({ current: 0, total: cards.length });
 
     try {
-      console.log('🎯 Available refs:', Array.from(imageGeneratorRefs.current.keys()));
+      console.log('🎯 Starting bulk image generation for', cards.length, 'cards');
       
       // Wait for DOM to stabilize
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Get the CardImageGenerator ref for this card
-      const generatorRef = imageGeneratorRefs.current.get(cardId);
-      if (!generatorRef) {
-        console.error('❌ No image generator ref found for card:', cardId);
-        // Retry once after a longer delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const retryRef = imageGeneratorRefs.current.get(cardId);
-        if (!retryRef) {
-          console.error('❌ Still no ref after retry for card:', cardId);
-          return;
-        }
-        console.log('✅ Found generator ref on retry');
-      }
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const activeRef = generatorRef || imageGeneratorRefs.current.get(cardId);
-      if (!activeRef) {
-        console.error('❌ No active ref available for card:', cardId);
-        return;
-      }
+      let successCount = 0;
+      
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        setImageGenerationProgress({ current: i + 1, total: cards.length });
+        
+        console.log(`🎯 Generating images for card ${i + 1}/${cards.length}: ${card.name}`);
+        
+        try {
+          // Get the CardImageGenerator ref for this card
+          const generatorRef = imageGeneratorRefs.current.get(card.id);
+          if (!generatorRef) {
+            console.warn(`❌ No generator ref found for card: ${card.id}`);
+            continue;
+          }
 
-      console.log('✅ Found generator ref, calling generateImages...');
-      
-      // Generate images using the ref
-      const { frontImageUrl, backImageUrl } = await activeRef.generateImages();
-      
-      console.log('🎯 Image generation result:', { 
-        frontImageUrl: !!frontImageUrl, 
-        backImageUrl: !!backImageUrl,
-        frontLength: frontImageUrl?.length,
-        backLength: backImageUrl?.length 
-      });
-      
-      if (frontImageUrl || backImageUrl) {
-        console.log('✅ Images generated successfully, uploading to database...');
-        
-        // Get user ID for filename
-        const userId = user?.id;
-        const cardName = card?.name;
-        
-        console.log('🎯 Using user ID:', userId, 'and card name:', cardName);
-        
-        const result = await generateCardImages(
-          cardId, 
-          frontImageUrl || undefined, 
-          backImageUrl || undefined,
-          cardName,
-          userId
-        );
-        
-        if (result.success) {
-          console.log('✅ Card images saved successfully for card:', cardId);
-          toast({
-            title: "Images Generated",
-            description: "Card images have been generated and saved.",
+          console.log(`✅ Found generator ref for card: ${card.name}`);
+          
+          // Generate images using the ref
+          const { frontImageUrl, backImageUrl } = await generatorRef.generateImages();
+          
+          console.log(`🎯 Generated images for ${card.name}:`, { 
+            frontImageUrl: !!frontImageUrl, 
+            backImageUrl: !!backImageUrl 
           });
-        } else {
-          console.error('❌ Failed to save card images for card:', cardId);
+          
+          if (frontImageUrl || backImageUrl) {
+            // Get user ID for filename
+            const userId = user?.id;
+            const cardName = card.name;
+            
+            console.log(`🎯 Saving images for ${card.name} with userId:`, userId);
+            
+            const result = await generateCardImages(
+              card.id, 
+              frontImageUrl || undefined, 
+              backImageUrl || undefined,
+              cardName,
+              userId
+            );
+            
+            if (result.success) {
+              successCount++;
+              console.log(`✅ Successfully saved images for card: ${card.name}`);
+            } else {
+              console.error(`❌ Failed to save images for card: ${card.name}`);
+            }
+          } else {
+            console.error(`❌ No images generated for card: ${card.name}`);
+          }
+        } catch (error) {
+          console.error(`❌ Error generating images for card ${card.name}:`, error);
         }
+        
+        // Small delay between cards to prevent overwhelming the system
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      console.log(`🎯 Bulk generation complete. Success: ${successCount}/${cards.length}`);
+      
+      if (successCount === cards.length) {
+        toast({
+          title: "Images Generated!",
+          description: `Successfully generated images for all ${cards.length} cards.`,
+        });
+        return true;
+      } else if (successCount > 0) {
+        toast({
+          title: "Partial Success",
+          description: `Generated images for ${successCount} of ${cards.length} cards. You can still proceed with your order.`,
+        });
+        return true;
       } else {
-        console.error('❌ Image generation failed - no images returned');
+        toast({
+          title: "Image Generation Failed",
+          description: "Failed to generate images for your cards. Please try again.",
+          variant: "destructive",
+        });
+        return false;
       }
     } catch (error) {
-      console.error('❌ Error generating images for card:', cardId, error);
+      console.error('❌ Error in bulk image generation:', error);
       toast({
-        title: "Image Generation Error",
-        description: "Failed to generate card images. Please try again.",
+        title: "Generation Error",
+        description: "An error occurred while generating images. Please try again.",
         variant: "destructive",
       });
+      return false;
+    } finally {
+      setIsGeneratingImages(false);
+      setImageGenerationProgress({ current: 0, total: 0 });
     }
   };
 
   const handleAddCard = async (card: Omit<FamilyCard, 'id'>) => {
-    const cardId = await saveCard(card, async (newCardId) => {
-      // Pass the card data directly to avoid race condition
-      const cardWithId: FamilyCard = { ...card, id: newCardId };
-      await generateImagesForCard(newCardId, cardWithId);
-    });
+    // Save card without image generation
+    const cardId = await saveCard(card);
     
     if (cardId) {
       setCurrentCard({});
@@ -175,11 +191,8 @@ const CreateCards = () => {
 
   const handleUpdateCard = async (updatedCard: Omit<FamilyCard, 'id'>) => {
     if (currentCard.id) {
-      const success = await updateCard(currentCard.id, updatedCard, async (cardId) => {
-        // Pass the updated card data directly
-        const cardWithId: FamilyCard = { ...updatedCard, id: cardId };
-        await generateImagesForCard(cardId, cardWithId);
-      });
+      // Update card without image generation
+      const success = await updateCard(currentCard.id, updatedCard);
       
       if (success) {
         setCurrentCard({});
@@ -237,9 +250,18 @@ const CreateCards = () => {
       });
       return;
     }
+
+    // Generate all card images with current deck design before proceeding
+    const imagesGenerated = await regenerateAllCardImages();
     
-    // Here you would create an order and link the cards to it
-    // For now, just navigate to the order page
+    if (!imagesGenerated) {
+      return; // Don't proceed if image generation failed
+    }
+
+    // Wait for cards to be refreshed with new image URLs
+    await refreshCards();
+    
+    // Navigate to order page
     navigate('/order', { 
       state: { 
         cards,
@@ -328,16 +350,23 @@ const CreateCards = () => {
                 <Button 
                   onClick={handleProceedToOrder}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 sm:px-5 sm:py-1.5 text-xs sm:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none"
-                  disabled={cards.length === 0}
+                  disabled={cards.length === 0 || isGeneratingImages}
                 >
-                  Order Cards
+                  {isGeneratingImages ? (
+                    <>
+                      <Loader2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    "Order Cards"
+                  )}
                 </Button>
               <div className="hidden sm:flex w-8 h-8 bg-primary rounded-full items-center justify-center text-primary-foreground text-sm font-bold">
                 {cards.length}
               </div>
-              {saving && (
+              {(saving || isGeneratingImages) && (
                 <div className="text-sm text-muted-foreground">
-                  Saving...
+                  {isGeneratingImages ? `Generating ${imageGenerationProgress.current}/${imageGenerationProgress.total}` : 'Saving...'}
                 </div>
               )}
             </div>
@@ -354,6 +383,31 @@ const CreateCards = () => {
             Design your deck style, then add photos and details for each family member or friend
           </p>
         </div>
+
+        {/* Image Generation Progress */}
+        {isGeneratingImages && (
+          <div className="mb-8">
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-blue/20 rounded-3xl shadow-lg">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-art-blue mr-2" />
+                    <span className="text-lg font-medium">Generating Card Images...</span>
+                  </div>
+                  <p className="text-muted-foreground mb-4">
+                    Creating images for card {imageGenerationProgress.current} of {imageGenerationProgress.total}
+                  </p>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-art-blue h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(imageGenerationProgress.current / imageGenerationProgress.total) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Column - Deck Designer and Card Form */}

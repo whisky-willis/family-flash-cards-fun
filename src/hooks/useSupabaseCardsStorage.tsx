@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -258,8 +259,8 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Save card to database
-  const saveCard = async (card: Omit<FamilyCard, 'id'>, generateImages?: (cardId: string) => Promise<void>): Promise<string | null> => {
+  // Save card to database (without image generation)
+  const saveCard = async (card: Omit<FamilyCard, 'id'>): Promise<string | null> => {
     setSaving(true);
     try {
       const sessionId = getSessionId();
@@ -287,13 +288,6 @@ export const useSupabaseCardsStorage = () => {
       }
 
       await loadCards(); // Refresh the cards list
-      
-      // Generate images in background after save with longer delay
-      if (generateImages) {
-        console.log('🎯 Triggering image generation for new card:', data.id);
-        setTimeout(() => generateImages(data.id), 2000); // Increased delay
-      }
-      
       return data.id;
     } catch (error) {
       console.error('Save error:', error);
@@ -304,8 +298,8 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Update existing card
-  const updateCard = async (cardId: string, updates: Partial<FamilyCard>, generateImages?: (cardId: string) => Promise<void>): Promise<boolean> => {
+  // Update existing card (without image generation)
+  const updateCard = async (cardId: string, updates: Partial<FamilyCard>): Promise<boolean> => {
     setSaving(true);
     try {
       const { error } = await supabase
@@ -329,13 +323,6 @@ export const useSupabaseCardsStorage = () => {
       }
 
       await loadCards(); // Refresh the cards list
-      
-      // Generate images in background after update with increased delay
-      if (generateImages) {
-        console.log('🎯 Triggering image generation for updated card:', cardId);
-        setTimeout(() => generateImages(cardId), 1500); // Increased delay
-      }
-      
       return true;
     } catch (error) {
       console.error('Update error:', error);
