@@ -126,7 +126,7 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
       ${sessionHTML}
       
       <div style="margin-top: 30px; padding: 15px; background-color: #d5f4e6; border-radius: 8px;">
-        <p style="margin: 0; color: #27ae60;"><strong>✓ High-resolution images for printing are attached to this email</strong></p>
+        <p style="margin: 0; color: #27ae60;"><strong>✓ High-resolution image URLs are included above for each card</strong></p>
       </div>
       
       <hr style="margin: 30px 0; border: none; border-top: 2px solid #bdc3c7;">
@@ -194,44 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log(`Cards grouped into ${sessionCount} sessions`);
 
-    // Process all card images for attachments
-    const attachments = [];
-    
-    for (const card of cards) {
-      try {
-        // Process front image
-        if (card.front_image_url) {
-          const frontImage = await fetchCardImage(card.front_image_url, card.name, 'front');
-          if (frontImage) {
-            attachments.push({
-              filename: frontImage.filename,
-              content: frontImage.buffer,
-            });
-          }
-        }
-
-        // Process back image
-        if (card.back_image_url) {
-          const backImage = await fetchCardImage(card.back_image_url, card.name, 'back');
-          if (backImage) {
-            attachments.push({
-              filename: backImage.filename,
-              content: backImage.buffer,
-            });
-          }
-        }
-
-        // Log if images are missing
-        if (!card.front_image_url && !card.back_image_url) {
-          console.warn(`Card ${card.name} has no images available`);
-        }
-      } catch (error) {
-        console.error(`Error processing images for card ${card.name}:`, error);
-        // Continue with other cards even if one fails
-      }
-    }
-
-    console.log(`Processed ${attachments.length} image attachments`);
+    console.log(`Found ${cards.length} cards, image URLs will be included in email body`);
 
     // Generate email HTML
     const emailHtml = generateEmailHTML(cardGroups, {
@@ -244,13 +207,12 @@ const handler = async (req: Request): Promise<Response> => {
       cards_data: cards
     });
 
-    // Send email with attachments
+    // Send email
     const emailResponse = await resend.emails.send({
       from: "Kindred Cards <orders@kindred-cards.com>",
       to: ["nick.g.willis@gmail.com"],
       subject: `New Kindred Cards Order - ${cards.length} cards from ${sessionCount} sessions`,
       html: emailHtml,
-      attachments: attachments,
     });
 
     console.log("Order email sent successfully:", emailResponse);
@@ -264,8 +226,7 @@ const handler = async (req: Request): Promise<Response> => {
       success: true, 
       emailId: emailResponse.data?.id,
       cardCount: cards.length,
-      sessionCount: sessionCount,
-      attachmentCount: attachments.length
+      sessionCount: sessionCount
     }), {
       status: 200,
       headers: {
