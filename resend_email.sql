@@ -1,4 +1,7 @@
--- Run this in Supabase SQL Editor to resend the email for the last order
+-- First, enable the pg_net extension
+CREATE EXTENSION IF NOT EXISTS pg_net;
+
+-- Then run this to resend the email for the last order
 select
   net.http_post(
     url := 'https://ngxvbmxhziirnxkycodx.supabase.co/functions/v1/send-order-email',
