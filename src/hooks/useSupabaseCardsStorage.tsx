@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -217,12 +217,12 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Set initial cards from draft (new function)
-  const setInitialCards = (initialCards: FamilyCard[]) => {
+  // Set initial cards from draft - now properly memoized
+  const setInitialCards = useCallback((initialCards: FamilyCard[]) => {
     console.log('🎯 useSupabaseCardsStorage: Setting initial cards from draft:', initialCards.length);
     setCards(initialCards);
     setIsInitialized(true);
-  };
+  }, []);
 
   // Load cards from database
   const loadCards = async () => {

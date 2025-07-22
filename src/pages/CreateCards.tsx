@@ -49,8 +49,15 @@ const CreateCards = () => {
   const [deckTheme, setDeckTheme] = useState<'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports' | undefined>();
   const [deckFont, setDeckFont] = useState<'bubblegum' | 'luckiest-guy' | 'fredoka-one' | undefined>();
 
-  // Load draft data on component mount
+  // Use ref to track if draft has been loaded to prevent multiple loads
+  const draftLoadedRef = useRef(false);
+
+  // Load draft data on component mount - only run once
   useEffect(() => {
+    if (draftLoadedRef.current) {
+      return; // Draft already loaded, skip
+    }
+
     const draftData = getDraft();
     console.log('🎯 CreateCards: Loading draft data:', draftData);
     
@@ -79,7 +86,10 @@ const CreateCards = () => {
       console.log('🎯 CreateCards: Loading draft cards:', draftData.cards.length);
       setInitialCards(draftData.cards);
     }
-  }, [getDraft, setInitialCards]);
+
+    // Mark draft as loaded
+    draftLoadedRef.current = true;
+  }, []); // Empty dependency array - only run once on mount
 
   // Refs for CardImageGenerator components
   const imageGeneratorRefs = useRef<Map<string, CardImageGeneratorRef>>(new Map());
