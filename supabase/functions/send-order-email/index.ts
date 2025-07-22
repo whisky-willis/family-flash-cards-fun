@@ -183,8 +183,9 @@ const handler = async (req: Request): Promise<Response> => {
       cards_data: cards
     });
 
-    // Get the first card's name for the subject line
-    const recipientName = cards.length > 0 ? cards[0].name : 'Unknown';
+    // Get the recipient name from deck design in order details
+    const recipientName = orderData.order_details?.deckDesign?.recipientName || 
+                          (cards.length > 0 ? cards[0].name : 'Unknown');
 
     // Send email
     const emailResponse = await resend.emails.send({
