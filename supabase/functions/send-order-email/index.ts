@@ -88,10 +88,16 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
         <p style="margin: 5px 0; color: #666;"><strong>Created:</strong> ${card.created_at ? new Date(card.created_at).toLocaleString() : 'Not available'}</p>
         <p style="margin: 5px 0; color: #666;"><strong>Print Ready:</strong> ${card.print_ready ? 'Yes' : 'No'}</p>
         <p style="margin: 5px 0; color: #666;">
-          <strong>Images:</strong> 
-          Front: ${card.front_image_url ? '✓' : '✗'} | 
-          Back: ${card.back_image_url ? '✓' : '✗'}
+          <strong>Images:</strong><br>
+          Front: ${card.front_image_url ? `✓ <a href="${card.front_image_url}" style="color: #2754C5;">View Image</a>` : '✗ Not available'}<br>
+          Back: ${card.back_image_url ? `✓ <a href="${card.back_image_url}" style="color: #2754C5;">View Image</a>` : '✗ Not available'}
         </p>
+        ${card.front_image_url || card.back_image_url ? `
+        <div style="margin: 10px 0; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #2754C5;">
+          <p style="margin: 0; font-size: 12px; color: #555;"><strong>Image URLs:</strong></p>
+          ${card.front_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Front:</strong> ${card.front_image_url}</p>` : ''}
+          ${card.back_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Back:</strong> ${card.back_image_url}</p>` : ''}
+        </div>` : ''}
       </div>
     `).join('');
     
