@@ -183,11 +183,14 @@ const handler = async (req: Request): Promise<Response> => {
       cards_data: cards
     });
 
+    // Get the first card's name for the subject line
+    const recipientName = cards.length > 0 ? cards[0].name : 'Unknown';
+
     // Send email
     const emailResponse = await resend.emails.send({
       from: "Kindred Cards <orders@kindred-cards.com>",
       to: ["nick.g.willis@gmail.com"],
-      subject: `New Kindred Cards Order - ${cards.length} cards from ${sessionCount} sessions`,
+      subject: `New Kindred Cards Order - for ${recipientName}`,
       html: emailHtml,
     });
 
