@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -10,13 +9,13 @@ import { Heart, Users } from "lucide-react";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { CardPreview } from "@/components/CardPreview";
 import { useToast } from "@/hooks/use-toast";
-const kindredLogo = "/lovable-uploads/b059ee5b-3853-4004-9b40-6da60dbfe02f.png";
 
 const OrderSummary = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const cards = location.state?.cards as FamilyCard[] || [];
+  const deckDesign = location.state?.deckDesign || {};
   
   const [orderDetails, setOrderDetails] = useState({
     name: '',
@@ -54,7 +53,13 @@ const OrderSummary = () => {
       localStorage.setItem('orderDetails', JSON.stringify(essentialOrderData));
       
       const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: { cards, orderDetails }
+        body: { 
+          cards, 
+          orderDetails: {
+            ...orderDetails,
+            deckDesign
+          }
+        }
       });
 
       if (error) throw error;
@@ -127,6 +132,11 @@ const OrderSummary = () => {
           </h1>
           <p className="text-xl text-gray-600">
             Review your cards and complete your order
+            {deckDesign.recipientName && (
+              <span className="block text-lg text-pink-600 font-medium mt-2">
+                Creating cards for: {deckDesign.recipientName}
+              </span>
+            )}
           </p>
         </div>
 

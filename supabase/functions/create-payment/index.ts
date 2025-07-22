@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -78,6 +79,7 @@ serve(async (req) => {
         card_count: cards.length.toString(),
         customer_email: orderDetails.email,
         special_instructions: orderDetails.specialInstructions || "",
+        recipient_name: orderDetails.deckDesign?.recipientName || "",
       },
     });
 
@@ -89,7 +91,7 @@ serve(async (req) => {
       .insert({
         stripe_session_id: session.id,
         cards_data: cards,
-        order_details: orderDetails,
+        order_details: orderDetails, // This now includes the deckDesign data
         customer_name: orderDetails.name,
         customer_email: orderDetails.email,
         total_amount: totalAmount,
