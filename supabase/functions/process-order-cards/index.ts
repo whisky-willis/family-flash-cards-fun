@@ -139,10 +139,9 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // If no cards needed processing, use the existing cards data
+    // If no cards needed processing, we already have all processed cards
     if (cardsToProcess.length === 0) {
       console.log('✅ All cards already processed, using existing data');
-      processedCards.push(...cards);
     }
 
     // Update order with processed cards data
