@@ -62,8 +62,8 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
         <h4 style="margin: 0 0 5px 0; color: #333;">${card.name}</h4>
         <p style="margin: 5px 0; color: #666;">
           <strong>Images:</strong><br>
-          Front: ${card.front_image_url ? `✓ <a href="${card.front_image_url}" style="color: #2754C5;">View Image</a>` : '✗ Not available'}<br>
-          Back: ${card.back_image_url ? `✓ <a href="${card.back_image_url}" style="color: #2754C5;">View Image</a>` : '✗ Not available'}
+          Front: ✓ <a href="${card.front_image_url}" style="color: #2754C5;">View Image</a><br>
+          Back: ✓ <a href="${card.back_image_url}" style="color: #2754C5;">View Image</a>
         </p>
         ${card.front_image_url || card.back_image_url ? `
         <div style="margin: 10px 0; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #2754C5;">

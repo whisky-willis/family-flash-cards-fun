@@ -124,6 +124,7 @@ export type Database = {
           id: string
           order_details: Json
           payment_status: string | null
+          processing_status: string | null
           shipping_address: Json | null
           special_instructions: string | null
           status: string | null
@@ -143,6 +144,7 @@ export type Database = {
           id?: string
           order_details: Json
           payment_status?: string | null
+          processing_status?: string | null
           shipping_address?: Json | null
           special_instructions?: string | null
           status?: string | null
@@ -162,6 +164,7 @@ export type Database = {
           id?: string
           order_details?: Json
           payment_status?: string | null
+          processing_status?: string | null
           shipping_address?: Json | null
           special_instructions?: string | null
           status?: string | null

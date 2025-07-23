@@ -2,40 +2,45 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [emailSent, setEmailSent] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState<'processing' | 'completed' | 'failed'>('processing');
+  const [processingMessage, setProcessingMessage] = useState('Processing your cards...');
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    const sendOrderEmail = async () => {
-      if (!sessionId || emailSent) return;
+    const processOrderCards = async () => {
+      if (!sessionId) return;
 
       try {
-        // Retrieve order data from database using session ID
-        const { data, error } = await supabase.functions.invoke('send-order-email', {
-          body: {
-            sessionId,
-          },
+        setProcessingMessage('Processing your cards and generating images...');
+        
+        const { data, error } = await supabase.functions.invoke('process-order-cards', {
+          body: { sessionId }
         });
 
         if (error) {
-          console.error('Error sending order email:', error);
+          console.error('Error processing order cards:', error);
+          setProcessingStatus('failed');
+          setProcessingMessage('Failed to process your cards. Please contact support.');
         } else {
-          console.log('Order email sent successfully:', data);
-          setEmailSent(true);
+          console.log('Order cards processed successfully:', data);
+          setProcessingStatus('completed');
+          setProcessingMessage('Your cards have been processed and order confirmation sent!');
         }
       } catch (error) {
-        console.error('Error sending order email:', error);
+        console.error('Error processing order cards:', error);
+        setProcessingStatus('failed');
+        setProcessingMessage('Failed to process your cards. Please contact support.');
       }
     };
 
-    sendOrderEmail();
-  }, [sessionId, emailSent]);
+    processOrderCards();
+  }, [sessionId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
@@ -65,22 +70,52 @@ const PaymentSuccess = () => {
             Payment Successful!
           </h1>
           <p className="text-xl text-gray-600">
-            Thank you for your order. Your cards are now being prepared.
+            {processingStatus === 'processing' && 'Thank you for your order. Your cards are being processed...'}
+            {processingStatus === 'completed' && 'Thank you for your order. Your cards have been processed successfully!'}
+            {processingStatus === 'failed' && 'Thank you for your order. There was an issue processing your cards.'}
           </p>
         </div>
 
-        <Card className="border-green-100">
+        <Card className={`${processingStatus === 'failed' ? 'border-red-100' : 'border-green-100'}`}>
           <CardHeader>
-            <CardTitle className="text-center text-green-800">What happens next?</CardTitle>
+            <CardTitle className={`text-center ${processingStatus === 'failed' ? 'text-red-800' : 'text-green-800'}`}>
+              {processingStatus === 'processing' && (
+                <div className="flex items-center justify-center space-x-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Processing Your Order</span>
+                </div>
+              )}
+              {processingStatus === 'completed' && 'Order Complete!'}
+              {processingStatus === 'failed' && 'Processing Issue'}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {processingStatus === 'processing' && (
+              <div className="text-center">
+                <p className="text-gray-600">{processingMessage}</p>
+                <p className="text-sm text-gray-500 mt-2">This may take a few moments...</p>
+              </div>
+            )}
+            
+            {processingStatus === 'failed' && (
+              <div className="text-center">
+                <p className="text-red-600">{processingMessage}</p>
+                <p className="text-sm text-gray-500 mt-2">Order reference: {sessionId?.slice(-12)}</p>
+              </div>
+            )}
+
+            {processingStatus === 'completed' && (
+              <>
+                <div className="text-center mb-4">
+                  <p className="text-green-600 font-medium">{processingMessage}</p>
+                </div>
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-green-600 text-sm font-bold">1</span>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-800">Order Confirmation</h3>
-                <p className="text-gray-600">You'll receive an email confirmation shortly with your order details.</p>
+                <p className="text-gray-600">You've received an email confirmation with your order details and card images.</p>
               </div>
             </div>
 
@@ -104,12 +139,14 @@ const PaymentSuccess = () => {
               </div>
             </div>
 
-            {sessionId && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  <strong>Order Reference:</strong> {sessionId.slice(-12)}
-                </p>
-              </div>
+                {sessionId && (
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600">
+                      <strong>Order Reference:</strong> {sessionId.slice(-12)}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -118,6 +155,7 @@ const PaymentSuccess = () => {
           <Button 
             onClick={() => navigate('/create')}
             className="bg-pink-500 hover:bg-pink-600"
+            disabled={processingStatus === 'processing'}
           >
             Create More Cards
             <ArrowRight className="ml-2 h-4 w-4" />
@@ -126,6 +164,7 @@ const PaymentSuccess = () => {
             <Button 
               variant="outline"
               onClick={() => navigate('/')}
+              disabled={processingStatus === 'processing'}
             >
               Return to Home
             </Button>
