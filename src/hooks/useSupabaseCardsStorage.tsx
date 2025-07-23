@@ -27,6 +27,7 @@ export const useSupabaseCardsStorage = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [loadedFromDraft, setLoadedFromDraft] = useState(false);
 
   // Generate or get session ID for temporary storage
   const getSessionId = () => {
@@ -222,17 +223,20 @@ export const useSupabaseCardsStorage = () => {
     console.log('🎯 useSupabaseCardsStorage: Setting initial cards from draft:', initialCards.length);
     setCards(initialCards);
     setIsInitialized(true);
+    setLoadedFromDraft(true); // Mark that cards came from draft
   }, []);
 
   // Load cards from database
   const loadCards = async () => {
     // Don't load from database if we've already been initialized with draft cards
-    if (isInitialized) {
+    if (isInitialized && loadedFromDraft) {
       console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized with draft cards');
       return;
     }
 
     setLoading(true);
+    setLoadedFromDraft(false); // Reset flag when explicitly loading from database
+    
     try {
       const sessionId = getSessionId();
       
@@ -398,12 +402,12 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Load cards on component mount only if not initialized
+  // Load cards on component mount only if not initialized and not loaded from draft
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized && !loadedFromDraft) {
       loadCards();
     }
-  }, [isInitialized]);
+  }, [isInitialized, loadedFromDraft]);
 
   return {
     cards,
