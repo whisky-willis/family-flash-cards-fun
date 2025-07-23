@@ -206,7 +206,24 @@ export const useSupabaseCardsStorage = () => {
         }
         
         console.log('✅ Database updated successfully');
-        await loadCardsFromDatabase(false); // Refresh cards without overwriting draft
+        
+        // Only refresh from database if we're not working with draft cards
+        if (!loadedFromDraft) {
+          console.log('🎯 Refreshing from database (not in draft mode)');
+          await loadCardsFromDatabase(false);
+        } else {
+          console.log('🎯 Skipping database refresh - working with draft cards');
+          
+          // Update the current cards state with the new image URLs
+          setCards(prevCards => 
+            prevCards.map(card => 
+              card.id === cardId 
+                ? { ...card, ...updateData }
+                : card
+            )
+          );
+        }
+        
         return { ...updateData, success: true };
       }
       
@@ -344,7 +361,14 @@ export const useSupabaseCardsStorage = () => {
         return null;
       }
 
-      await loadCardsFromDatabase(false); // Refresh without overwriting draft
+      // Only refresh from database if we're not working with draft cards
+      if (!loadedFromDraft) {
+        console.log('🎯 Refreshing from database after save (not in draft mode)');
+        await loadCardsFromDatabase(false);
+      } else {
+        console.log('🎯 Skipping database refresh after save - working with draft cards');
+      }
+      
       return data.id;
     } catch (error) {
       console.error('❌ Save error:', error);
@@ -379,7 +403,14 @@ export const useSupabaseCardsStorage = () => {
         return false;
       }
 
-      await loadCardsFromDatabase(false); // Refresh without overwriting draft
+      // Only refresh from database if we're not working with draft cards
+      if (!loadedFromDraft) {
+        console.log('🎯 Refreshing from database after update (not in draft mode)');
+        await loadCardsFromDatabase(false);
+      } else {
+        console.log('🎯 Skipping database refresh after update - working with draft cards');
+      }
+      
       return true;
     } catch (error) {
       console.error('❌ Update error:', error);
@@ -405,7 +436,14 @@ export const useSupabaseCardsStorage = () => {
         return false;
       }
 
-      await loadCardsFromDatabase(false); // Refresh without overwriting draft
+      // Only refresh from database if we're not working with draft cards
+      if (!loadedFromDraft) {
+        console.log('🎯 Refreshing from database after delete (not in draft mode)');
+        await loadCardsFromDatabase(false);
+      } else {
+        console.log('🎯 Skipping database refresh after delete - working with draft cards');
+      }
+      
       return true;
     } catch (error) {
       console.error('❌ Delete error:', error);
