@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -27,6 +27,9 @@ export const useSupabaseCardsStorage = () => {
   const [saving, setSaving] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [loadedFromDraft, setLoadedFromDraft] = useState(false);
+  
+  // Ref to track current loadedFromDraft value for async functions
+  const loadedFromDraftRef = useRef(false);
 
   // Generate or get session ID for temporary storage
   const getSessionId = () => {
@@ -234,6 +237,11 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
+  // Update ref whenever loadedFromDraft state changes
+  useEffect(() => {
+    loadedFromDraftRef.current = loadedFromDraft;
+  }, [loadedFromDraft]);
+
   // Set initial cards from draft - now properly memoized
   const setInitialCards = useCallback((initialCards: FamilyCard[]) => {
     console.log('🎯 useSupabaseCardsStorage: Setting initial cards from draft:', initialCards.length);
@@ -246,6 +254,7 @@ export const useSupabaseCardsStorage = () => {
     setCards(initialCards);
     setIsInitialized(true);
     setLoadedFromDraft(true); // Mark that cards came from draft
+    loadedFromDraftRef.current = true; // Update ref immediately
     
     console.log('🎯 useSupabaseCardsStorage: After setInitialCards - marked as loadedFromDraft=true');
   }, [isInitialized, loadedFromDraft, cards.length]);
@@ -313,12 +322,16 @@ export const useSupabaseCardsStorage = () => {
 
       console.log('🎯 useSupabaseCardsStorage: Loaded cards from database:', formattedCards.length);
       
+      // CRITICAL: Use ref to get current loadedFromDraft value (not stale state from when async call started)
+      const currentLoadedFromDraft = loadedFromDraftRef.current;
+      console.log('🎯 useSupabaseCardsStorage: Current loadedFromDraft value (via ref):', currentLoadedFromDraft);
+      
       // Only update cards if we haven't loaded from draft OR this is a forced refresh
-      if (!loadedFromDraft || forceRefresh) {
+      if (!currentLoadedFromDraft || forceRefresh) {
         console.log('🎯 useSupabaseCardsStorage: Updating cards from database');
         setCards(formattedCards);
       } else {
-        console.log('🎯 useSupabaseCardsStorage: Skipping setCards - preserving draft data');
+        console.log('🎯 useSupabaseCardsStorage: Skipping setCards - draft was loaded during database request');
       }
       
       setIsInitialized(true);
