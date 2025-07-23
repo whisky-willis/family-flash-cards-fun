@@ -206,7 +206,7 @@ export const useSupabaseCardsStorage = () => {
         }
         
         console.log('✅ Database updated successfully');
-        await loadCards(); // Refresh cards
+        await loadCardsFromDatabase(false); // Refresh cards without overwriting draft
         return { ...updateData, success: true };
       }
       
@@ -221,21 +221,42 @@ export const useSupabaseCardsStorage = () => {
   // Set initial cards from draft - now properly memoized
   const setInitialCards = useCallback((initialCards: FamilyCard[]) => {
     console.log('🎯 useSupabaseCardsStorage: Setting initial cards from draft:', initialCards.length);
+    console.log('🎯 useSupabaseCardsStorage: Current state before setInitialCards:', { 
+      isInitialized, 
+      loadedFromDraft, 
+      cardsLength: cards.length 
+    });
+    
     setCards(initialCards);
     setIsInitialized(true);
     setLoadedFromDraft(true); // Mark that cards came from draft
-  }, []);
+    
+    console.log('🎯 useSupabaseCardsStorage: After setInitialCards - marked as loadedFromDraft=true');
+  }, [isInitialized, loadedFromDraft, cards.length]);
 
-  // Load cards from database
-  const loadCards = async () => {
+  // Load cards from database with proper draft protection
+  const loadCardsFromDatabase = async (forceRefresh: boolean = false) => {
+    console.log('🎯 useSupabaseCardsStorage: loadCardsFromDatabase called with forceRefresh:', forceRefresh);
+    console.log('🎯 useSupabaseCardsStorage: Current state:', { 
+      isInitialized, 
+      loadedFromDraft, 
+      cardsLength: cards.length 
+    });
+    
     // Don't load from database if we've already been initialized with draft cards
-    if (isInitialized && loadedFromDraft) {
-      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized with draft cards');
+    // UNLESS this is a forced refresh (explicit user action)
+    if (isInitialized && loadedFromDraft && !forceRefresh) {
+      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized with draft cards and not forced');
       return;
     }
 
     setLoading(true);
-    setLoadedFromDraft(false); // Reset flag when explicitly loading from database
+    
+    // Only reset loadedFromDraft flag when it's a forced refresh
+    if (forceRefresh) {
+      console.log('🎯 useSupabaseCardsStorage: Forced refresh - resetting loadedFromDraft flag');
+      setLoadedFromDraft(false);
+    }
     
     try {
       const sessionId = getSessionId();
@@ -248,7 +269,7 @@ export const useSupabaseCardsStorage = () => {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Load error:', error);
+        console.error('❌ Load error:', error);
         toast.error('Failed to load cards');
         return;
       }
@@ -269,15 +290,31 @@ export const useSupabaseCardsStorage = () => {
       }));
 
       console.log('🎯 useSupabaseCardsStorage: Loaded cards from database:', formattedCards.length);
+      console.log('🎯 useSupabaseCardsStorage: Setting cards and isInitialized=true');
+      
       setCards(formattedCards);
       setIsInitialized(true);
+      
+      // Only set loadedFromDraft=false if this was a forced refresh
+      if (forceRefresh) {
+        console.log('🎯 useSupabaseCardsStorage: Forced refresh complete - loadedFromDraft=false');
+      } else {
+        console.log('🎯 useSupabaseCardsStorage: Non-forced refresh complete - preserving loadedFromDraft state');
+      }
+      
     } catch (error) {
-      console.error('Load error:', error);
+      console.error('❌ Load error:', error);
       toast.error('Failed to load cards');
     } finally {
       setLoading(false);
     }
   };
+
+  // Legacy function name for backward compatibility
+  const loadCards = () => loadCardsFromDatabase(false);
+
+  // Explicit refresh function that forces a database load
+  const forceRefreshCards = () => loadCardsFromDatabase(true);
 
   // Save card to database (without image generation)
   const saveCard = async (card: Omit<FamilyCard, 'id'>): Promise<string | null> => {
@@ -302,15 +339,15 @@ export const useSupabaseCardsStorage = () => {
         .single();
 
       if (error) {
-        console.error('Save error:', error);
+        console.error('❌ Save error:', error);
         toast.error('Failed to save card');
         return null;
       }
 
-      await loadCards(); // Refresh the cards list
+      await loadCardsFromDatabase(false); // Refresh without overwriting draft
       return data.id;
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('❌ Save error:', error);
       toast.error('Failed to save card');
       return null;
     } finally {
@@ -337,15 +374,15 @@ export const useSupabaseCardsStorage = () => {
         .eq('id', cardId);
 
       if (error) {
-        console.error('Update error:', error);
+        console.error('❌ Update error:', error);
         toast.error('Failed to update card');
         return false;
       }
 
-      await loadCards(); // Refresh the cards list
+      await loadCardsFromDatabase(false); // Refresh without overwriting draft
       return true;
     } catch (error) {
-      console.error('Update error:', error);
+      console.error('❌ Update error:', error);
       toast.error('Failed to update card');
       return false;
     } finally {
@@ -363,15 +400,15 @@ export const useSupabaseCardsStorage = () => {
         .eq('id', cardId);
 
       if (error) {
-        console.error('Delete error:', error);
+        console.error('❌ Delete error:', error);
         toast.error('Failed to delete card');
         return false;
       }
 
-      await loadCards(); // Refresh the cards list
+      await loadCardsFromDatabase(false); // Refresh without overwriting draft
       return true;
     } catch (error) {
-      console.error('Delete error:', error);
+      console.error('❌ Delete error:', error);
       toast.error('Failed to delete card');
       return false;
     } finally {
@@ -391,21 +428,29 @@ export const useSupabaseCardsStorage = () => {
         .is('order_id', null);
 
       if (error) {
-        console.error('Link error:', error);
+        console.error('❌ Link error:', error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Link error:', error);
+      console.error('❌ Link error:', error);
       return false;
     }
   };
 
   // Load cards on component mount only if not initialized and not loaded from draft
   useEffect(() => {
+    console.log('🎯 useSupabaseCardsStorage: useEffect triggered with state:', { 
+      isInitialized, 
+      loadedFromDraft 
+    });
+    
     if (!isInitialized && !loadedFromDraft) {
-      loadCards();
+      console.log('🎯 useSupabaseCardsStorage: Loading cards from database on mount');
+      loadCardsFromDatabase(false);
+    } else {
+      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized or loaded from draft');
     }
   }, [isInitialized, loadedFromDraft]);
 
@@ -418,7 +463,8 @@ export const useSupabaseCardsStorage = () => {
     updateCard,
     deleteCard,
     linkCardsToOrder,
-    refreshCards: loadCards,
+    refreshCards: loadCardsFromDatabase, // Use the new function that accepts forceRefresh parameter
+    forceRefreshCards, // Explicit force refresh function
     generateCardImages,
     setInitialCards
   };
