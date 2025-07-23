@@ -313,17 +313,14 @@ export const useSupabaseCardsStorage = () => {
 
       console.log('🎯 useSupabaseCardsStorage: Loaded cards from database:', formattedCards.length);
       
-      // CRITICAL: Final check before setting cards to prevent overwriting draft data
-      // If draft cards were loaded while this database call was in progress, don't overwrite them
-      if (loadedFromDraft && !forceRefresh) {
-        console.log('🎯 useSupabaseCardsStorage: PREVENTED database overwrite - draft cards were loaded during database call');
-        setLoading(false);
-        return;
+      // Only update cards if we haven't loaded from draft OR this is a forced refresh
+      if (!loadedFromDraft || forceRefresh) {
+        console.log('🎯 useSupabaseCardsStorage: Updating cards from database');
+        setCards(formattedCards);
+      } else {
+        console.log('🎯 useSupabaseCardsStorage: Skipping setCards - preserving draft data');
       }
       
-      console.log('🎯 useSupabaseCardsStorage: Setting cards and isInitialized=true');
-      
-      setCards(formattedCards);
       setIsInitialized(true);
       
       // Only set loadedFromDraft=false if this was a forced refresh
