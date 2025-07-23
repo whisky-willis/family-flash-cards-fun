@@ -357,7 +357,7 @@ export const useSupabaseCardsStorage = () => {
   // Explicit refresh function that forces a database load
   const forceRefreshCards = () => loadCardsFromDatabase(true);
 
-  // Save card to database (without image generation)
+  // Save card to database (without image generation) - FIXED to update local state
   const saveCard = async (card: Omit<FamilyCard, 'id'>): Promise<string | null> => {
     setSaving(true);
     try {
@@ -385,13 +385,25 @@ export const useSupabaseCardsStorage = () => {
         return null;
       }
 
-      // Only refresh from database if we're not working with draft cards
-      if (!loadedFromDraft) {
-        console.log('🎯 Refreshing from database after save (not in draft mode)');
-        await loadCardsFromDatabase(false);
-      } else {
-        console.log('🎯 Skipping database refresh after save - working with draft cards');
-      }
+      // Convert database response to FamilyCard format
+      const newCard: FamilyCard = {
+        id: data.id,
+        name: data.name,
+        relationship: data.relationship || undefined,
+        dateOfBirth: data.date_of_birth || undefined,
+        favoriteColor: data.favorite_color || undefined,
+        hobbies: data.hobbies || undefined,
+        funFact: data.fun_fact || undefined,
+        photo_url: data.photo_url || undefined,
+        imagePosition: (data.image_position as { x: number; y: number; scale: number }) || { x: 0, y: 0, scale: 1 },
+        front_image_url: data.front_image_url || undefined,
+        back_image_url: data.back_image_url || undefined,
+        print_ready: data.print_ready || false
+      };
+
+      // Update local state immediately
+      setCards(prevCards => [...prevCards, newCard]);
+      console.log('✅ Card saved and added to local state:', newCard.name);
       
       return data.id;
     } catch (error) {
@@ -403,7 +415,7 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Update existing card (without image generation)
+  // Update existing card (without image generation) - FIXED to update local state
   const updateCard = async (cardId: string, updates: Partial<FamilyCard>): Promise<boolean> => {
     setSaving(true);
     try {
@@ -427,13 +439,15 @@ export const useSupabaseCardsStorage = () => {
         return false;
       }
 
-      // Only refresh from database if we're not working with draft cards
-      if (!loadedFromDraft) {
-        console.log('🎯 Refreshing from database after update (not in draft mode)');
-        await loadCardsFromDatabase(false);
-      } else {
-        console.log('🎯 Skipping database refresh after update - working with draft cards');
-      }
+      // Update local state immediately
+      setCards(prevCards => 
+        prevCards.map(card => 
+          card.id === cardId 
+            ? { ...card, ...updates }
+            : card
+        )
+      );
+      console.log('✅ Card updated in local state:', cardId);
       
       return true;
     } catch (error) {
@@ -445,7 +459,7 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Delete card
+  // Delete card - FIXED to update local state
   const deleteCard = async (cardId: string): Promise<boolean> => {
     setSaving(true);
     try {
@@ -460,13 +474,9 @@ export const useSupabaseCardsStorage = () => {
         return false;
       }
 
-      // Only refresh from database if we're not working with draft cards
-      if (!loadedFromDraft) {
-        console.log('🎯 Refreshing from database after delete (not in draft mode)');
-        await loadCardsFromDatabase(false);
-      } else {
-        console.log('🎯 Skipping database refresh after delete - working with draft cards');
-      }
+      // Update local state immediately
+      setCards(prevCards => prevCards.filter(card => card.id !== cardId));
+      console.log('✅ Card deleted from local state:', cardId);
       
       return true;
     } catch (error) {
