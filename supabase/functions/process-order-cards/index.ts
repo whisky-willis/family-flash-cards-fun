@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -65,40 +66,48 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Found order ${orderData.id} for session ${sessionId}`);
 
-    // Get cards from the cards table that belong to this order
+    // Extract card IDs from the cards_data in the order
     const cardsData = orderData.cards_data as Card[];
-    const sessionIds = [...new Set(cardsData.map((card: Card) => card.user_session_id))];
+    const cardIds = cardsData.map((card: Card) => card.id);
     
-    console.log(`Found ${sessionIds.length} unique session IDs in order: ${sessionIds.join(', ')}`);
+    console.log(`Found ${cardIds.length} card IDs in order: ${cardIds.join(', ')}`);
 
-    // Get actual card records from database
+    // Get actual card records from database using the card IDs
     const { data: cards, error: cardsError } = await supabase
       .from('cards')
       .select('*')
-      .in('user_session_id', sessionIds);
+      .in('id', cardIds);
 
     if (cardsError) {
       throw new Error(`Error fetching cards: ${cardsError.message}`);
     }
 
     if (!cards || cards.length === 0) {
-      throw new Error("No cards found for this order");
+      throw new Error(`No cards found with IDs: ${cardIds.join(', ')}`);
     }
 
-    console.log(`Found ${cards.length} cards to process`);
+    console.log(`Found ${cards.length} cards in database`);
 
-    // Here we would normally process each card to generate images
-    // For now, we'll simulate this by calling the image generation API
-    // In a real implementation, you would use the canvas rendering logic
+    // Check if cards are already processed
+    const alreadyProcessedCards = cards.filter(card => 
+      card.front_image_url && card.back_image_url && card.print_ready
+    );
+
+    const cardsToProcess = cards.filter(card => 
+      !card.front_image_url || !card.back_image_url || !card.print_ready
+    );
+
+    console.log(`${alreadyProcessedCards.length} cards already processed, ${cardsToProcess.length} cards need processing`);
+
+    // Process cards that need processing
+    const processedCards = [...alreadyProcessedCards];
     
-    const processedCards = [];
-    
-    for (const card of cards) {
+    for (const card of cardsToProcess) {
       try {
         console.log(`Processing card: ${card.name} (${card.id})`);
         
         // Simulate image generation (in real implementation, use CanvasCardRenderer)
-        // For now, we'll create placeholder URLs or use existing photo_url
+        // For now, we'll use existing photo_url or create placeholder URLs
         const frontImageUrl = card.front_image_url || `https://placeholder-image-url/front-${card.id}.png`;
         const backImageUrl = card.back_image_url || `https://placeholder-image-url/back-${card.id}.png`;
         
@@ -128,6 +137,12 @@ const handler = async (req: Request): Promise<Response> => {
       } catch (error) {
         console.error(`Error processing card ${card.id}:`, error);
       }
+    }
+
+    // If no cards needed processing, use the existing cards data
+    if (cardsToProcess.length === 0) {
+      console.log('✅ All cards already processed, using existing data');
+      processedCards.push(...cards);
     }
 
     // Update order with processed cards data
@@ -166,6 +181,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(JSON.stringify({ 
       success: true, 
       processedCards: processedCards.length,
+      alreadyProcessed: alreadyProcessedCards.length,
+      newlyProcessed: cardsToProcess.length,
       emailSent: true,
       emailData
     }), {
@@ -181,7 +198,10 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Try to mark order as failed if we have a sessionId
     try {
-      const { sessionId } = await req.json();
+      const body = await req.text();
+      const parsedBody = JSON.parse(body);
+      const sessionId = parsedBody.sessionId;
+      
       if (sessionId) {
         const supabase = createClient(
           Deno.env.get("SUPABASE_URL") ?? "",
