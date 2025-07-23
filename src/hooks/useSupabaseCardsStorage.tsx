@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -267,6 +266,12 @@ export const useSupabaseCardsStorage = () => {
       return;
     }
 
+    // Also skip if we're already initialized and this is not a forced refresh
+    if (isInitialized && !forceRefresh) {
+      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized and not forced');
+      return;
+    }
+
     setLoading(true);
     
     // Only reset loadedFromDraft flag when it's a forced refresh
@@ -477,20 +482,22 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Load cards on component mount only if not initialized and not loaded from draft
+  // Load cards on component mount - FIXED to prevent race condition
   useEffect(() => {
     console.log('🎯 useSupabaseCardsStorage: useEffect triggered with state:', { 
       isInitialized, 
       loadedFromDraft 
     });
     
-    if (!isInitialized && !loadedFromDraft) {
-      console.log('🎯 useSupabaseCardsStorage: Loading cards from database on mount');
+    // Only load from database if we haven't been initialized at all
+    // This prevents the race condition with setInitialCards
+    if (!isInitialized) {
+      console.log('🎯 useSupabaseCardsStorage: Loading cards from database on mount (not initialized)');
       loadCardsFromDatabase(false);
     } else {
-      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized or loaded from draft');
+      console.log('🎯 useSupabaseCardsStorage: Skipping database load - already initialized');
     }
-  }, [isInitialized, loadedFromDraft]);
+  }, []); // Empty dependency array - only run on mount
 
   return {
     cards,
