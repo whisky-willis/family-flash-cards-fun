@@ -13,7 +13,7 @@ const Index = () => {
   const {
     user
   } = useAuth();
-  const names = ['Sofia', 'Henry', 'Mia', 'James', 'William', 'Charlotte', 'Sophia', 'Ava', 'Mateo', 'Amelia', 'Evelyn', 'Olivia', 'Noah', 'Emma', 'Oliver', 'Isabella', 'Elijah', 'Lucas', 'Liam', 'Theodore'];
+  const names = ['Sofia', 'Henry', 'Mia', 'James', 'William', 'Sophia', 'Ava', 'Mateo', 'Amelia', 'Evelyn', 'Olivia', 'Noah', 'Emma', 'Oliver', 'Isabella', 'Elijah', 'Lucas', 'Liam', 'Theodore'];
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
