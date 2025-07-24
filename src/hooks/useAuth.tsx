@@ -74,8 +74,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    // Clear any local draft data when signing out
+    // Clear all sensitive data from localStorage on logout
     localStorage.removeItem('kindred-cards-draft');
+    localStorage.removeItem('kindred-cards-guest-session');
+    // Clear any other potentially sensitive data
+    const keysToRemove = Object.keys(localStorage).filter(key => 
+      key.startsWith('kindred-cards-') || key.startsWith('supabase-')
+    );
+    keysToRemove.forEach(key => localStorage.removeItem(key));
   };
 
   const value = {

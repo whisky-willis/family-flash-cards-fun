@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImagePositionAdjuster } from "./ImagePositionAdjuster";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { toast } from 'sonner';
+import { validateCardData, sanitizeString, validateFileUpload } from "@/lib/security";
 
 interface CardFormProps {
   initialData?: Partial<FamilyCard>;
@@ -65,15 +66,32 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check all required fields
+    // Sanitize input data
+    const sanitizedData = {
+      ...formData,
+      name: sanitizeString(formData.name || '', 100),
+      relationship: sanitizeString(formData.relationship || '', 50),
+      favoriteColor: sanitizeString(formData.favoriteColor || '', 30),
+      hobbies: sanitizeString(formData.hobbies || '', 30),
+      funFact: sanitizeString(formData.funFact || '', 80),
+    };
+
+    // Validate the sanitized data
+    const validation = validateCardData(sanitizedData);
+    if (!validation.valid) {
+      toast.error(`Validation Error: ${validation.errors.join(', ')}`);
+      return;
+    }
+
+    // Check all required fields after sanitization
     const requiredFields = {
-      name: formData.name?.trim() || '',
-      photo: formData.photo || '',
-      relationship: formData.relationship?.trim() || '',
-      dateOfBirth: formData.dateOfBirth || '',
-      favoriteColor: formData.favoriteColor?.trim() || '',
-      hobbies: formData.hobbies?.trim() || '',
-      funFact: formData.funFact?.trim() || ''
+      name: sanitizedData.name,
+      photo: sanitizedData.photo || '',
+      relationship: sanitizedData.relationship,
+      dateOfBirth: sanitizedData.dateOfBirth || '',
+      favoriteColor: sanitizedData.favoriteColor,
+      hobbies: sanitizedData.hobbies,
+      funFact: sanitizedData.funFact
     };
     
     // Check if any required field is empty
@@ -104,7 +122,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     
     // Use deck theme and font for final submission
     const finalData = {
-      ...formData,
+      ...sanitizedData,
       theme: deckTheme,
       font: deckFont
     } as Omit<FamilyCard, 'id'>;
@@ -131,7 +149,17 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && onUploadImage) {
+    if (!file) return;
+
+    // Validate file before processing
+    const validation = validateFileUpload(file);
+    if (!validation.valid) {
+      toast.error(`Invalid File: ${validation.error}`);
+      e.target.value = ''; // Clear the input
+      return;
+    }
+
+    if (onUploadImage) {
       setUploading(true);
       try {
         const photoUrl = await onUploadImage(file);

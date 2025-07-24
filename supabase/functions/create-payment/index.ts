@@ -8,6 +8,26 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Rate limiting map
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+const checkRateLimit = (clientIp: string, maxRequests: number = 5, windowMs: number = 300000): boolean => {
+  const now = Date.now();
+  const record = rateLimitMap.get(clientIp);
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(clientIp, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+
+  if (record.count >= maxRequests) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -15,14 +35,40 @@ serve(async (req) => {
   }
 
   try {
-    const { cards, orderDetails } = await req.json();
-    
-    if (!cards || cards.length === 0) {
-      throw new Error("No cards provided");
+    // Rate limiting
+    const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
+    if (!checkRateLimit(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    if (!orderDetails?.email) {
-      throw new Error("Email is required");
+    const { cards, orderDetails } = await req.json();
+
+    // Input validation
+    if (!cards || !Array.isArray(cards) || cards.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid cards data provided' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const customerEmail = orderDetails?.customerEmail || orderDetails?.email;
+    if (!customerEmail || typeof customerEmail !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Valid customer email is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerEmail)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Initialize Stripe
@@ -67,7 +113,7 @@ serve(async (req) => {
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
-      customer_email: orderDetails.email,
+      customer_email: customerEmail,
       line_items: lineItems,
       mode: "payment",
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
@@ -77,7 +123,7 @@ serve(async (req) => {
       },
       metadata: {
         card_count: cards.length.toString(),
-        customer_email: orderDetails.email,
+        customer_email: customerEmail,
         special_instructions: orderDetails.specialInstructions || "",
         recipient_name: orderDetails.deckDesign?.recipientName || "",
       },
@@ -93,7 +139,7 @@ serve(async (req) => {
         cards_data: cards,
         order_details: orderDetails, // This now includes the deckDesign data
         customer_name: orderDetails.name,
-        customer_email: orderDetails.email,
+        customer_email: customerEmail,
         total_amount: totalAmount,
         card_count: cards.length,
         special_instructions: orderDetails.specialInstructions || null,
@@ -113,7 +159,12 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("Payment creation error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    // Sanitize error messages to prevent information disclosure
+    const sanitizedError = error instanceof Error && error.message.includes('rate limit') 
+      ? error.message 
+      : 'An error occurred while processing your request';
+    
+    return new Response(JSON.stringify({ error: sanitizedError }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

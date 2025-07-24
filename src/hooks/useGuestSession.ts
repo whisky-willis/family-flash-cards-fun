@@ -9,10 +9,12 @@ const GUEST_SESSION_KEY = 'kindred-cards-guest-session';
 export const useGuestSession = () => {
   const [guestSessionId, setGuestSessionId] = useState<string | null>(null);
 
-  // Generate a unique guest session ID
+  // Generate a secure guest session ID using crypto API
   const generateGuestSessionId = (): string => {
     const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    const randomString = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     return `guest_${timestamp}_${randomString}`;
   };
 
