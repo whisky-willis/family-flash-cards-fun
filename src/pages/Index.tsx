@@ -211,7 +211,7 @@ const Index = () => {
                   favoriteColor: "green",
                   hobbies: "Guitar, Hiking",
                   funFact: "Plays 5 instruments!",
-                  photo_url: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
+                  photo: "/lovable-uploads/6ca747eb-2e0e-4df5-a923-b308667a2c29.png",
                   
                 }} nameFont="font-luckiest-guy" deckTheme="organic" />
                  </div>
@@ -226,7 +226,7 @@ const Index = () => {
                   favoriteColor: "purple",
                   hobbies: "Gardening, Baking",
                   funFact: "Visited 23 countries and speaks 4 languages",
-                  photo_url: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
+                  photo: "/lovable-uploads/00688876-c570-4a61-8586-3b428a7e46b1.png",
                   
                 }} nameFont="font-bubblegum" deckTheme="rainbow" />
                  </div>
@@ -241,7 +241,7 @@ const Index = () => {
                   favoriteColor: "orange",
                   hobbies: "Soccer, Video Games",
                   funFact: "Scored the winning goal last year!",
-                  photo_url: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
+                  photo: "/lovable-uploads/6ff989e2-a2fb-470d-82cb-589820de96c7.png",
                   
                 }} nameFont="font-fredoka-one" deckTheme="sports" />
                  </div>
@@ -256,7 +256,7 @@ const Index = () => {
                   favoriteColor: "pink",
                   hobbies: "Photography, Yoga",
                   funFact: "Takes amazing nature photos!",
-                  photo_url: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
+                  photo: "/lovable-uploads/8b55075c-8547-448b-9c63-19aa466ce449.png",
                   
                 }} nameFont="font-bubblegum" deckTheme="mosaic" />
                  </div>
@@ -271,7 +271,7 @@ const Index = () => {
                   favoriteColor: "blue",
                   hobbies: "Cooking, Fishing",
                   funFact: "Makes the best pancakes in town!",
-                  photo_url: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
+                  photo: "/lovable-uploads/fc2d12ec-41a1-4c14-8b5a-ce36b1a8cfaa.png",
                   imagePosition: {
                     x: 0,
                     y: -100,
@@ -291,7 +291,7 @@ const Index = () => {
                   favoriteColor: "yellow",
                   hobbies: "Dancing, Reading",
                   funFact: "Won first place in talent show!",
-                  photo_url: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
+                  photo: "/lovable-uploads/d48bef4c-e82d-471c-bf70-1c8e45145709.png",
                   
                 }} nameFont="font-fredoka-one" deckTheme="space" />
                  </div>

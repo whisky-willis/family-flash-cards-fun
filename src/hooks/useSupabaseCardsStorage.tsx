@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useDraft } from './useDraft';
+import { useAuth } from './useAuth';
 
 export interface FamilyCard {
   id: string;
@@ -11,7 +12,7 @@ export interface FamilyCard {
   favoriteColor?: string;
   hobbies?: string;
   funFact?: string;
-  photo_url?: string;
+  photo?: string;
   imagePosition?: {
     x: number;
     y: number;
@@ -23,17 +24,19 @@ export interface FamilyCard {
 }
 
 export const useSupabaseCardsStorage = () => {
+  const { user } = useAuth();
   const [cards, setCards] = useState<FamilyCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [loadedFromDraft, setLoadedFromDraft] = useState(false);
+  const [hasAttemptedMigration, setHasAttemptedMigration] = useState(false);
   
   // Ref to track current loadedFromDraft value for async functions
   const loadedFromDraftRef = useRef(false);
   
   // Import draft functionality
-  const { getDraft, saveDraftToLocal } = useDraft();
+  const { getDraft, saveDraftToLocal, clearDraft } = useDraft();
 
   // Generate or get session ID for temporary storage with proper isolation
   const getSessionId = () => {
@@ -319,12 +322,23 @@ export const useSupabaseCardsStorage = () => {
       const sessionId = getSessionId();
       console.log('🆔 Loading cards for session ID:', sessionId);
       
-      const { data, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('user_session_id', sessionId)
-        .is('order_id', null)
-        .order('created_at', { ascending: true });
+      let query = supabase.from('cards').select('*').order('created_at', { ascending: true });
+
+      if (user) {
+        // Load authenticated user's cards
+        console.log('🔑 Loading cards for authenticated user:', user.id);
+        query = query.eq('user_id', user.id);
+      } else {
+        // Load guest session cards
+        const sessionId = getSessionId();
+        console.log('🆔 Loading cards for guest session:', sessionId);
+        query = query.eq('guest_session_id', sessionId).is('user_id', null);
+      }
+
+      // Only include cards not linked to orders
+      query = query.is('order_id', null);
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('❌ Load error:', error);
@@ -340,7 +354,7 @@ export const useSupabaseCardsStorage = () => {
         favoriteColor: card.favorite_color || undefined,
         hobbies: card.hobbies || undefined,
         funFact: card.fun_fact || undefined,
-        photo_url: card.photo_url || undefined,
+        photo: card.photo || undefined,
         imagePosition: (card.image_position as { x: number; y: number; scale: number }) || { x: 0, y: 0, scale: 1 },
         front_image_url: card.front_image_url || undefined,
         back_image_url: card.back_image_url || undefined,
@@ -409,19 +423,27 @@ export const useSupabaseCardsStorage = () => {
     try {
       const sessionId = getSessionId();
       
+      const insertData: any = {
+        name: card.name,
+        relationship: card.relationship || null,
+        date_of_birth: card.dateOfBirth || null,
+        favorite_color: card.favoriteColor || null,
+        hobbies: card.hobbies || null,
+        fun_fact: card.funFact || null,
+        photo: card.photo || null,
+        image_position: card.imagePosition || { x: 0, y: 0, scale: 1 }
+      };
+
+      if (user) {
+        insertData.user_id = user.id;
+      } else {
+        const sessionId = getSessionId();
+        insertData.guest_session_id = sessionId;
+      }
+
       const { data, error } = await supabase
         .from('cards')
-        .insert({
-          user_session_id: sessionId,
-          name: card.name,
-          relationship: card.relationship || null,
-          date_of_birth: card.dateOfBirth || null,
-          favorite_color: card.favoriteColor || null,
-          hobbies: card.hobbies || null,
-          fun_fact: card.funFact || null,
-          photo_url: card.photo_url || null,
-          image_position: card.imagePosition || { x: 0, y: 0, scale: 1 }
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -440,7 +462,7 @@ export const useSupabaseCardsStorage = () => {
         favoriteColor: data.favorite_color || undefined,
         hobbies: data.hobbies || undefined,
         funFact: data.fun_fact || undefined,
-        photo_url: data.photo_url || undefined,
+        photo: data.photo || undefined,
         imagePosition: (data.image_position as { x: number; y: number; scale: number }) || { x: 0, y: 0, scale: 1 },
         front_image_url: data.front_image_url || undefined,
         back_image_url: data.back_image_url || undefined,
@@ -474,7 +496,7 @@ export const useSupabaseCardsStorage = () => {
           favorite_color: updates.favoriteColor || null,
           hobbies: updates.hobbies || null,
           fun_fact: updates.funFact || null,
-          photo_url: updates.photo_url || null,
+          photo: updates.photo || null,
           image_position: updates.imagePosition || { x: 0, y: 0, scale: 1 }
         })
         .eq('id', cardId);
@@ -570,7 +592,7 @@ export const useSupabaseCardsStorage = () => {
       const { error } = await supabase
         .from('cards')
         .update({ order_id: orderId })
-        .eq('user_session_id', sessionId)
+        .eq('guest_session_id', sessionId)
         .is('order_id', null);
 
       if (error) {
@@ -584,6 +606,53 @@ export const useSupabaseCardsStorage = () => {
       return false;
     }
   };
+
+  // Migrate guest cards to authenticated user
+  const migrateGuestCardsToUser = async () => {
+    if (!user || hasAttemptedMigration) return;
+    
+    try {
+      const sessionId = localStorage.getItem('card_session_id');
+      if (!sessionId) return;
+
+      console.log('🔄 Migrating guest cards to authenticated user:', user.id);
+      
+      const { data, error } = await supabase.rpc('migrate_guest_cards_to_user', {
+        guest_session_id_param: sessionId,
+        user_id_param: user.id
+      });
+
+      if (error) {
+        console.error('❌ Migration error:', error);
+        return;
+      }
+
+      const cardsMigrated = data || 0;
+      console.log('✅ Successfully migrated cards:', cardsMigrated);
+
+      if (cardsMigrated > 0) {
+        toast.success(`Successfully transferred ${cardsMigrated} card${cardsMigrated === 1 ? '' : 's'} to your account.`);
+        
+        // Clear the guest session after successful migration
+        localStorage.removeItem('card_session_id');
+        localStorage.removeItem('last_session_check');
+        clearDraft();
+        
+        // Force refresh to load user's cards including migrated ones
+        setHasAttemptedMigration(true);
+        await loadCardsFromDatabase(true);
+      }
+    } catch (error) {
+      console.error('❌ Migration error:', error);
+    }
+  };
+
+  // Handle authentication changes
+  useEffect(() => {
+    if (user && !hasAttemptedMigration) {
+      migrateGuestCardsToUser();
+    }
+  }, [user, hasAttemptedMigration]);
 
   // Load cards on component mount - FIXED to prevent race condition
   useEffect(() => {

@@ -218,9 +218,9 @@ const OrderSummary = () => {
                 <div className="grid gap-4 max-h-96 overflow-y-auto">
                   {cards.map((card) => (
                     <div key={card.id} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                      {card.photo_url ? (
+                      {card.photo ? (
                         <img 
-                          src={card.photo_url} 
+                          src={card.photo}
                           alt={card.name}
                           className="w-12 h-12 object-cover rounded-full"
                         />

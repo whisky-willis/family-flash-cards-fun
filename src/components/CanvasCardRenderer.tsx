@@ -282,9 +282,9 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       }
 
       // Draw photo with exact positioning from preview
-      if (card.photo_url) {
+      if (card.photo) {
         try {
-          const photoImg = await loadImage(card.photo_url);
+          const photoImg = await loadImage(card.photo);
           drawPhotoImage(ctx, photoImg, photoArea, card.imagePosition, 16);
         } catch (error) {
           console.warn('Could not load photo:', error);

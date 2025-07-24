@@ -176,11 +176,11 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
             <CardContent className="p-4 relative z-10 h-full flex flex-col">
               {/* Photo Section */}
               <div className="flex-1 flex items-center justify-center mb-4">
-                {card.photo_url ? (
+                {card.photo ? (
                   <div 
                     className="w-full h-full rounded-2xl border-4 border-white shadow-md" 
                     style={{ 
-                      backgroundImage: `url(${card.photo_url})`,
+                      backgroundImage: `url(${card.photo})`,
                       backgroundSize: card.imagePosition ? `${100 * card.imagePosition.scale}%` : 'cover',
                       backgroundPosition: card.imagePosition
                         ? `${50 + (card.imagePosition.x / (3.6 * card.imagePosition.scale))}% ${50 + (card.imagePosition.y / (3.6 * card.imagePosition.scale))}%`

@@ -23,7 +23,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState<Partial<FamilyCard>>({
     name: '',
-    photo_url: '',
+    photo: '',
     relationship: '',
     dateOfBirth: '',
     favoriteColor: '',
@@ -38,7 +38,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     if (isEditing || Object.keys(initialData).length === 0) {
       setFormData({
         name: '',
-        photo_url: '',
+        photo: '',
         relationship: '',
         dateOfBirth: '',
         favoriteColor: '',
@@ -68,7 +68,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     // Check all required fields
     const requiredFields = {
       name: formData.name?.trim() || '',
-      photo_url: formData.photo_url || '',
+      photo: formData.photo || '',
       relationship: formData.relationship?.trim() || '',
       dateOfBirth: formData.dateOfBirth || '',
       favoriteColor: formData.favoriteColor?.trim() || '',
@@ -114,7 +114,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     if (!isEditing) {
       setFormData({
         name: '',
-        photo_url: '',
+        photo: '',
         relationship: '',
         dateOfBirth: '',
         favoriteColor: '',
@@ -138,7 +138,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         if (photoUrl) {
           setFormData(prev => ({ 
             ...prev, 
-            photo_url: photoUrl,
+            photo: photoUrl,
             imagePosition: { x: 0, y: 0, scale: 1 } // Reset position when new image is uploaded
           }));
           toast.success('Image uploaded successfully!');
@@ -158,7 +158,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
   const handleRemoveImage = () => {
     setFormData(prev => ({ 
       ...prev, 
-      photo_url: '',
+      photo: '',
       imagePosition: { x: 0, y: 0, scale: 1 }
     }));
     // Reset the file input
@@ -196,12 +196,12 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
         <div className="space-y-2">
           <Input
             ref={fileInputRef}
-            key={formData.photo_url ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
+            key={formData.photo ? 'has-photo' : 'no-photo'} // Force re-render when photo changes
             id="photo"
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            required={!formData.photo_url}
+            required={!formData.photo}
             disabled={uploading}
             className="h-12 flex items-center py-1.5 file:mr-4 file:my-0 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-art-pink/20 file:text-art-pink hover:file:bg-art-pink/30"
           />
@@ -210,7 +210,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
               <span>Uploading image...</span>
             </div>
           )}
-          {formData.photo_url && !uploading && (
+          {formData.photo && !uploading && (
             <div className="flex justify-between items-center text-sm bg-green-50 border border-green-200 rounded-lg p-2">
               <span className="text-green-700 font-medium">✓ Image uploaded successfully</span>
               <div className="flex space-x-2">
@@ -235,15 +235,15 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
               </div>
             </div>
           )}
-          {!formData.photo_url && !uploading && (
+          {!formData.photo && !uploading && (
             <p className="text-sm text-muted-foreground">Upload a photo to get started</p>
           )}
         </div>
-        {formData.photo_url && (
+        {formData.photo && (
           <div className="mt-3">
             <Label className="text-sm text-muted-foreground mb-2 block font-medium">Adjust Image Position</Label>
             <ImagePositionAdjuster
-              imageSrc={formData.photo_url}
+              imageSrc={formData.photo}
               alt={formData.name || "Preview"}
               onPositionChange={handlePositionChange}
               initialPosition={formData.imagePosition || { x: 0, y: 0, scale: 1 }}
