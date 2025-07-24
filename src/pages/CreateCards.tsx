@@ -14,6 +14,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCardsStorage, FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { ImageGenerationProgressModal } from "@/components/ImageGenerationProgressModal";
 import { useDraft } from "@/hooks/useDraft";
+import { supabase } from "@/integrations/supabase/client";
 
 const CreateCards = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const CreateCards = () => {
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [imageGenerationProgress, setImageGenerationProgress] = useState({ current: 0, total: 0 });
   const [currentCardBeingGenerated, setCurrentCardBeingGenerated] = useState<FamilyCard | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Deck-level state
   const [recipientName, setRecipientName] = useState('');
@@ -325,7 +327,7 @@ const CreateCards = () => {
     });
   };
 
-  const handleSaveCollection = () => {
+  const handleSaveCollection = async () => {
     if (cards.length === 0) {
       toast({
         title: "No Cards to Save",
@@ -342,11 +344,59 @@ const CreateCards = () => {
       return;
     }
     
-    // User is authenticated - cards are already auto-saved to their account
-    toast({
-      title: "Collection Saved!",
-      description: "Your cards are saved to your account and will persist across sessions.",
-    });
+    // User is authenticated - save collection to database
+    setIsSaving(true);
+    
+    try {
+      // Generate collection name
+      const collectionName = recipientName ? `${recipientName}'s Cards` : 'My Card Collection';
+      
+      // Prepare deck design data
+      const deckDesign = {
+        recipientName,
+        theme: deckTheme,
+        font: deckFont
+      };
+      
+      // Save to card_collections table
+      const { error } = await supabase
+        .from('card_collections')
+        .insert({
+          user_id: user.id,
+          name: collectionName,
+          description: `Collection created with ${cards.length} cards`,
+          cards: cards as any,
+          deck_design: deckDesign as any
+        });
+      
+      if (error) {
+        console.error('Error saving collection:', error);
+        toast({
+          title: "Save Failed",
+          description: "Failed to save your collection. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Clear draft after successful save
+      clearDraft();
+      
+      toast({
+        title: "Collection Saved!",
+        description: `"${collectionName}" has been saved to your account.`,
+      });
+      
+    } catch (error) {
+      console.error('Error saving collection:', error);
+      toast({
+        title: "Save Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleUploadImage = async (file: File): Promise<string | null> => {
@@ -401,10 +451,19 @@ const CreateCards = () => {
                   onClick={handleSaveCollection}
                   variant="outline"
                   className="px-3 py-1 sm:px-4 md:px-4 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wide flex-1 sm:flex-none md:flex-none"
-                  disabled={cards.length === 0}
+                  disabled={cards.length === 0 || isSaving}
                 >
-                  <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
-                  Save for Later
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-2" />
+                      Save for Later
+                    </>
+                  )}
                 </Button>
                 <Button 
                   onClick={handleProceedToOrder}
@@ -423,9 +482,10 @@ const CreateCards = () => {
               <div className="hidden sm:flex w-8 h-8 bg-primary rounded-full items-center justify-center text-primary-foreground text-sm font-bold">
                 {cards.length}
               </div>
-              {(saving || isGeneratingImages) && (
+              {(saving || isGeneratingImages || isSaving) && (
                 <div className="text-sm text-muted-foreground">
-                  {isGeneratingImages ? `Generating ${imageGenerationProgress.current}/${imageGenerationProgress.total}` : 'Saving...'}
+                  {isGeneratingImages ? `Generating ${imageGenerationProgress.current}/${imageGenerationProgress.total}` : 
+                   isSaving ? 'Saving collection...' : 'Saving...'}
                 </div>
               )}
             </div>
