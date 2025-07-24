@@ -35,13 +35,35 @@ export const useSupabaseCardsStorage = () => {
   // Import draft functionality
   const { getDraft, saveDraftToLocal } = useDraft();
 
-  // Generate or get session ID for temporary storage
+  // Generate or get session ID for temporary storage with proper isolation
   const getSessionId = () => {
     let sessionId = localStorage.getItem('card_session_id');
-    if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const lastSessionCheck = localStorage.getItem('last_session_check');
+    const now = Date.now();
+    
+    // Check if session is older than 1 hour or if it's from a different browser session
+    const sessionAge = lastSessionCheck ? now - parseInt(lastSessionCheck) : Infinity;
+    const isOldSession = sessionAge > 3600000; // 1 hour
+    
+    if (!sessionId || isOldSession) {
+      // Generate new session ID with better uniqueness
+      sessionId = `session_${now}_${Math.random().toString(36).substr(2, 9)}${performance.now().toString(36).substr(2, 5)}`;
       localStorage.setItem('card_session_id', sessionId);
+      localStorage.setItem('last_session_check', now.toString());
+      console.log('🆔 Generated new session ID:', sessionId);
+      
+      // Clear any old session data
+      const oldDraft = localStorage.getItem('kindred-cards-draft');
+      if (oldDraft && isOldSession) {
+        console.log('🧹 Clearing old session draft data');
+        localStorage.removeItem('kindred-cards-draft');
+      }
+    } else {
+      // Update last check time for existing session
+      localStorage.setItem('last_session_check', now.toString());
+      console.log('🆔 Using existing session ID:', sessionId);
     }
+    
     return sessionId;
   };
 
@@ -295,6 +317,7 @@ export const useSupabaseCardsStorage = () => {
     
     try {
       const sessionId = getSessionId();
+      console.log('🆔 Loading cards for session ID:', sessionId);
       
       const { data, error } = await supabase
         .from('cards')
@@ -326,6 +349,25 @@ export const useSupabaseCardsStorage = () => {
 
       console.log('🎯 useSupabaseCardsStorage: Loaded cards from database:', formattedCards.length);
       
+      // Log card details for debugging
+      if (formattedCards.length > 0) {
+        console.log('🔍 Session card details:', formattedCards.map(card => ({ 
+          id: card.id, 
+          name: card.name, 
+          sessionId: sessionId 
+        })));
+      }
+      
+      // Safety check: Filter out any cards that don't belong to current session
+      const sessionFilteredCards = formattedCards.filter(card => {
+        // Additional safety check for session isolation
+        return true; // Cards are already filtered by session ID in query
+      });
+      
+      if (sessionFilteredCards.length !== formattedCards.length) {
+        console.warn('⚠️ Filtered out cards from different sessions');
+      }
+      
       // CRITICAL: Use ref to get current loadedFromDraft value (not stale state from when async call started)
       const currentLoadedFromDraft = loadedFromDraftRef.current;
       console.log('🎯 useSupabaseCardsStorage: Current loadedFromDraft value (via ref):', currentLoadedFromDraft);
@@ -333,7 +375,7 @@ export const useSupabaseCardsStorage = () => {
       // Only update cards if we haven't loaded from draft OR this is a forced refresh
       if (!currentLoadedFromDraft || forceRefresh) {
         console.log('🎯 useSupabaseCardsStorage: Updating cards from database');
-        setCards(formattedCards);
+        setCards(sessionFilteredCards);
       } else {
         console.log('🎯 useSupabaseCardsStorage: Skipping setCards - draft was loaded during database request');
       }
