@@ -231,6 +231,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_guest_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      log_security_event: {
+        Args: { event_type: string; user_id_param?: string; details?: Json }
+        Returns: undefined
+      }
       migrate_guest_cards_to_user: {
         Args: { guest_session_id_param: string; user_id_param: string }
         Returns: number
