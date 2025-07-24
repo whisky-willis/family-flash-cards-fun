@@ -45,14 +45,7 @@ export const DeckDesigner = ({
     initiallyCollapsed
   });
   
-  // Auto-collapse only when design is complete and NOT loaded from profile
-  useEffect(() => {
-    if (!initiallyCollapsed && isDesignComplete) {
-      // Only auto-collapse for fresh sessions when design is complete
-      console.log('🎨 DeckDesigner: Auto-collapsing for completed design');
-      setIsExpanded(false);
-    }
-  }, [initiallyCollapsed, isDesignComplete]);
+  // Note: Auto-collapse removed - only collapse when Save Design button is pressed
   
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {
