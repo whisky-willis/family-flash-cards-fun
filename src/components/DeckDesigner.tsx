@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { User, Palette, Edit2, ChevronDown, ChevronUp, Heart } from "lucide-react";
 import { BackgroundThemeSelector } from "./BackgroundThemeSelector";
-
 interface DeckDesignerProps {
   recipientName: string;
   selectedTheme?: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports';
@@ -16,7 +15,6 @@ interface DeckDesignerProps {
   onFontChange: (font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
   onPreviewChange?: (theme: 'geometric' | 'organic' | 'rainbow' | 'mosaic' | 'space' | 'sports', font: 'bubblegum' | 'luckiest-guy' | 'fredoka-one') => void;
 }
-
 export const DeckDesigner = ({
   recipientName,
   selectedTheme,
@@ -33,20 +31,18 @@ export const DeckDesigner = ({
     selectedFont,
     initiallyCollapsed
   });
-
   const isDesignComplete = recipientName && selectedTheme && selectedFont;
   // When loaded from profile (initiallyCollapsed=true), start expanded to show loaded values
   // When fresh session (initiallyCollapsed=false), start expanded for user input
   const [isExpanded, setIsExpanded] = useState(true);
-  
   console.log('🎨 DeckDesigner: Initial state:', {
     isDesignComplete,
     isExpanded,
     initiallyCollapsed
   });
-  
+
   // Note: Auto-collapse removed - only collapse when Save Design button is pressed
-  
+
   // Helper functions to get display names
   const getThemeDisplayName = (theme?: string) => {
     const themeNames = {
@@ -59,7 +55,6 @@ export const DeckDesigner = ({
     };
     return theme ? themeNames[theme as keyof typeof themeNames] : 'Not selected';
   };
-
   const getFontDisplayName = (font?: string) => {
     const fontNames = {
       'bubblegum': 'Bubblegum',
@@ -75,9 +70,7 @@ export const DeckDesigner = ({
       // Keep expanded initially, but user can manually collapse
     }
   }, [isDesignComplete, isExpanded]);
-
-  return (
-    <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-purple/20 rounded-3xl shadow-lg mb-8">
+  return <Card className="bg-white/90 backdrop-blur-sm border-2 border-art-purple/20 rounded-3xl shadow-lg mb-8">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -85,67 +78,38 @@ export const DeckDesigner = ({
               <Heart className="h-6 w-6 text-art-purple" />
               <span>Design Your Deck</span>
             </CardTitle>
-            {!isExpanded && isDesignComplete && (
-              <div className="mt-2 text-sm text-muted-foreground space-y-1">
+            {!isExpanded && isDesignComplete && <div className="mt-2 text-sm text-muted-foreground space-y-1">
                 <p><strong>For:</strong> {recipientName}</p>
                 <p><strong>Theme:</strong> {getThemeDisplayName(selectedTheme)} • <strong>Font:</strong> {getFontDisplayName(selectedFont)}</p>
-              </div>
-            )}
-            {isExpanded && (
-              <p className="text-muted-foreground mt-1">
+              </div>}
+            {isExpanded && <p className="text-muted-foreground mt-1">
                 Choose the overall design for your family cards and tell us who they're for
-              </p>
-            )}
+              </p>}
           </div>
           <div className="flex items-center gap-2">
-            {!isExpanded && isDesignComplete && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsExpanded(true)}
-                className="text-art-purple border-art-purple/30 hover:bg-art-purple/10"
-              >
+            {!isExpanded && isDesignComplete && <Button variant="outline" size="sm" onClick={() => setIsExpanded(true)} className="text-art-purple border-art-purple/30 hover:bg-art-purple/10">
                 <Edit2 className="h-4 w-4 mr-1" />
                 Edit
-              </Button>
-            )}
-            {isDesignComplete && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-art-purple hover:bg-art-purple/10"
-              >
+              </Button>}
+            {isDesignComplete && <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="text-art-purple hover:bg-art-purple/10">
                 {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </Button>
-            )}
+              </Button>}
           </div>
         </div>
       </CardHeader>
       
-      {isExpanded && (
-        <CardContent className="space-y-6">
+      {isExpanded && <CardContent className="space-y-6">
           {/* Recipient Name */}
           <div>
             <Label htmlFor="recipientName" className="text-lg font-semibold flex items-center gap-2 mb-3">
               <User className="h-5 w-5 text-art-pink" />
               Who is this deck for?
             </Label>
-            <Input
-              id="recipientName"
-              value={recipientName}
-              onChange={(e) => {
-                console.log('Input change:', e.target.value);
-                onRecipientNameChange(e.target.value);
-              }}
-              placeholder="e.g., Grandma Sarah, The Johnson Family, My Cousin"
-              className="h-12 text-base"
-              autoComplete="off"
-              tabIndex={0}
-            />
-            <p className="text-sm text-muted-foreground mt-2">
-              This helps personalize the experience and could be used for special messaging
-            </p>
+            <Input id="recipientName" value={recipientName} onChange={e => {
+          console.log('Input change:', e.target.value);
+          onRecipientNameChange(e.target.value);
+        }} placeholder="e.g., Grandma Sarah, The Johnson Family, My Cousin" className="h-12 text-base" autoComplete="off" tabIndex={0} />
+            <p className="text-sm text-muted-foreground mt-2">This helps personalize the experience</p>
           </div>
 
           {/* Theme and Font Selection */}
@@ -154,29 +118,15 @@ export const DeckDesigner = ({
               <Palette className="h-5 w-5 text-art-blue" />
               Choose Your Style
             </Label>
-            <BackgroundThemeSelector
-              selectedTheme={selectedTheme}
-              selectedFont={selectedFont}
-              onThemeChange={onThemeChange}
-              onFontChange={onFontChange}
-              onPreviewChange={onPreviewChange}
-            />
+            <BackgroundThemeSelector selectedTheme={selectedTheme} selectedFont={selectedFont} onThemeChange={onThemeChange} onFontChange={onFontChange} onPreviewChange={onPreviewChange} />
           </div>
 
-          {isDesignComplete && (
-            <div className="pt-4 border-t">
-              <Button
-                onClick={() => setIsExpanded(false)}
-                variant="outline"
-                className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10 hover:text-art-purple"
-              >
+          {isDesignComplete && <div className="pt-4 border-t">
+              <Button onClick={() => setIsExpanded(false)} variant="outline" className="w-full text-art-purple border-art-purple/30 hover:bg-art-purple/10 hover:text-art-purple">
                 👍
                 Save Design
               </Button>
-            </div>
-          )}
-        </CardContent>
-      )}
-    </Card>
-  );
+            </div>}
+        </CardContent>}
+    </Card>;
 };
