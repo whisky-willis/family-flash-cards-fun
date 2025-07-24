@@ -459,22 +459,39 @@ export const useSupabaseCardsStorage = () => {
     }
   };
 
-  // Delete card - FIXED to update local state
+  // Delete card - handles both database cards and draft cards
   const deleteCard = async (cardId: string): Promise<boolean> => {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('cards')
-        .delete()
-        .eq('id', cardId);
+      console.log('🗑️ Deleting card:', cardId);
+      
+      // Check if this is a draft card (timestamp ID) or a database card (UUID)
+      const isDraftCard = /^\d+$/.test(cardId);
+      
+      if (!isDraftCard) {
+        // Try to delete from database for UUID cards
+        const { error } = await supabase
+          .from('cards')
+          .delete()
+          .eq('id', cardId);
 
-      if (error) {
-        console.error('❌ Delete error:', error);
-        toast.error('Failed to delete card');
-        return false;
+        if (error) {
+          console.error('❌ Delete error:', error);
+          // If it's a UUID format error or card not found, treat as draft card
+          if (error.message.includes('invalid input syntax for type uuid') || 
+              error.message.includes('No rows affected') ||
+              error.code === 'PGRST116') {
+            console.log('🔄 Card not found in database, treating as draft card');
+          } else {
+            toast.error('Failed to delete card');
+            return false;
+          }
+        }
+      } else {
+        console.log('📝 Deleting draft card (not in database)');
       }
 
-      // Update local state immediately
+      // Remove from local state regardless of database result
       setCards(prevCards => prevCards.filter(card => card.id !== cardId));
       console.log('✅ Card deleted from local state:', cardId);
       
