@@ -133,6 +133,27 @@
   }
 }
 
+/* Print and high-DPI media queries for consistent image capture */
+@media print, (min-resolution: 144dpi), (-webkit-min-device-pixel-ratio: 1.5) {
+  .card-name-capture {
+    font-size: 3rem !important; /* Larger for high-DPI capture */
+    line-height: 1.1 !important;
+  }
+  
+  .card-attributes-capture {
+    font-size: 1rem !important; /* Base size for high-DPI capture */
+  }
+  
+  .card-funfact-capture {
+    font-size: 0.875rem !important; /* sm size for high-DPI capture */
+    line-height: 1.4 !important;
+  }
+  
+  .card-emoji-capture {
+    font-size: 1.5rem !important; /* Larger emojis for capture */
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

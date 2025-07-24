@@ -47,6 +47,26 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   });
 };
 
+// Text wrapping helper for canvas
+const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let currentLine = words[0];
+
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const width = ctx.measureText(currentLine + ' ' + word).width;
+    if (width < maxWidth) {
+      currentLine += ' ' + word;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  lines.push(currentLine);
+  return lines;
+};
+
 // Wait for fonts to load
 const waitForFonts = async () => {
   await document.fonts.ready;
@@ -304,11 +324,13 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         }
       }
 
-      // Draw name with exact text styling from preview
+      // Draw name with DPI-aware text styling to match preview exactly
       if (card.name) {
         const fontFamily = getFontFamily(deckFont);
-        // Match CSS text-3xl exactly (36px instead of 30px)
-        const fontSize = 36;
+        // Scale font size based on DPI and font type to match browser preview
+        const dpiScale = Math.max(1, dpr * 0.8);
+        const baseFontSize = deckFont === 'bubblegum' ? 44 : 36; // Larger for bubblegum to match preview
+        const fontSize = baseFontSize * dpiScale;
         
         ctx.font = `${fontSize}px ${fontFamily}`;
         ctx.textAlign = 'center';
@@ -429,10 +451,12 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
 
       ctx.restore();
 
-      // Draw attributes with exact styling from preview
+      // Draw attributes with DPI-aware font sizing to match preview exactly
       const fontFamily = getFontFamily(deckFont);
-      const fontSize = deckFont === 'bubblegum' ? 16 : 14;
-      const titleFontSize = deckFont === 'bubblegum' ? 20 : 16;
+      // Scale font sizes to match browser preview - base sizes multiplied by DPI factor
+      const dpiScale = Math.max(1, dpr * 0.8); // Adjust scaling factor for better consistency
+      const fontSize = (deckFont === 'bubblegum' ? 18 : 16) * dpiScale;
+      const titleFontSize = (deckFont === 'bubblegum' ? 22 : 18) * dpiScale;
       
       ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'center';
@@ -545,13 +569,14 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         ctx.fillStyle = '#000000';
         ctx.textBaseline = 'top';
         
-        // Handle text wrapping for longer fun facts
+        // Handle text wrapping for longer fun facts - Remove truncation to match preview
         const maxWidth = funFactWidth - (funFactPadding * 2);
-        const truncatedFact = card.funFact.length > 45 ? 
-          card.funFact.substring(0, 45) + '...' : 
-          card.funFact;
+        const lines = wrapText(ctx, card.funFact, maxWidth);
         
-        ctx.fillText(truncatedFact, centerX, contentStartY + 56);
+        // Draw multiple lines if needed
+        lines.forEach((line, index) => {
+          ctx.fillText(line, centerX, contentStartY + 56 + (index * (fontSize + 4)));
+        });
       }
 
       // Convert to blob URL
