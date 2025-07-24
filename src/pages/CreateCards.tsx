@@ -335,9 +335,17 @@ const CreateCards = () => {
       return;
     }
     
+    // Check if user is authenticated
+    if (!user) {
+      // Show auth modal for unauthenticated users
+      setShowAuthModal(true);
+      return;
+    }
+    
+    // User is authenticated - cards are already auto-saved to their account
     toast({
       title: "Collection Saved!",
-      description: "Your cards are automatically saved and will persist across sessions.",
+      description: "Your cards are saved to your account and will persist across sessions.",
     });
   };
 
@@ -586,6 +594,26 @@ const CreateCards = () => {
           </div>
         ))}
       </div>
+
+      {/* Auth Modal for Save Collection */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        cards={cards}
+        deckDesign={{
+          recipientName,
+          theme: deckTheme,
+          font: deckFont
+        }}
+        onSuccess={() => {
+          setShowAuthModal(false);
+          clearDraft();
+          toast({
+            title: "Account Created!",
+            description: "Your cards have been saved to your new account.",
+          });
+        }}
+      />
     </div>
   );
 };
