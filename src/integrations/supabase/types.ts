@@ -55,16 +55,17 @@ export type Database = {
           favorite_color: string | null
           front_image_url: string | null
           fun_fact: string | null
+          guest_session_id: string | null
           hobbies: string | null
           id: string
           image_position: Json | null
           name: string
           order_id: string | null
-          photo_url: string | null
+          photo: string | null
           print_ready: boolean | null
           relationship: string | null
           updated_at: string
-          user_session_id: string
+          user_id: string | null
         }
         Insert: {
           back_image_url?: string | null
@@ -73,16 +74,17 @@ export type Database = {
           favorite_color?: string | null
           front_image_url?: string | null
           fun_fact?: string | null
+          guest_session_id?: string | null
           hobbies?: string | null
           id?: string
           image_position?: Json | null
           name: string
           order_id?: string | null
-          photo_url?: string | null
+          photo?: string | null
           print_ready?: boolean | null
           relationship?: string | null
           updated_at?: string
-          user_session_id: string
+          user_id?: string | null
         }
         Update: {
           back_image_url?: string | null
@@ -91,16 +93,17 @@ export type Database = {
           favorite_color?: string | null
           front_image_url?: string | null
           fun_fact?: string | null
+          guest_session_id?: string | null
           hobbies?: string | null
           id?: string
           image_position?: Json | null
           name?: string
           order_id?: string | null
-          photo_url?: string | null
+          photo?: string | null
           print_ready?: boolean | null
           relationship?: string | null
           updated_at?: string
-          user_session_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -228,6 +231,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      migrate_guest_cards_to_user: {
+        Args: { guest_session_id_param: string; user_id_param: string }
+        Returns: number
+      }
       update_order_status: {
         Args: {
           order_id: string
