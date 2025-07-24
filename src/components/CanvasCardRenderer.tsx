@@ -47,24 +47,70 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-// Text wrapping helper for canvas
+// Enhanced text wrapping helper for canvas with proper handling of edge cases
 const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
-  const words = text.split(' ');
+  if (!text || text.trim() === '') return [''];
+  
+  const words = text.trim().split(' ');
   const lines: string[] = [];
-  let currentLine = words[0];
+  let currentLine = '';
 
-  for (let i = 1; i < words.length; i++) {
-    const word = words[i];
-    const width = ctx.measureText(currentLine + ' ' + word).width;
-    if (width < maxWidth) {
-      currentLine += ' ' + word;
+  for (const word of words) {
+    const testLine = currentLine === '' ? word : currentLine + ' ' + word;
+    const width = ctx.measureText(testLine).width;
+    
+    if (width <= maxWidth) {
+      currentLine = testLine;
     } else {
-      lines.push(currentLine);
-      currentLine = word;
+      if (currentLine === '') {
+        // If single word is too wide, force it
+        lines.push(word);
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
     }
   }
-  lines.push(currentLine);
-  return lines;
+  
+  if (currentLine !== '') {
+    lines.push(currentLine);
+  }
+  
+  return lines.length > 0 ? lines : [''];
+};
+
+// Enhanced text drawing function with precise positioning
+const drawWrappedText = (
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  textAlign: CanvasTextAlign = 'center'
+): number => {
+  ctx.textAlign = textAlign;
+  const lines = wrapText(ctx, text, maxWidth);
+  
+  lines.forEach((line, index) => {
+    ctx.fillText(line, x, y + (index * lineHeight));
+  });
+  
+  return y + (lines.length * lineHeight);
+};
+
+// CSS to Canvas font size mapping (addresses DPI and font rendering differences)
+const mapCSSFontToCanvas = (cssSize: number, fontFamily: string, dpr: number): string => {
+  // Adjust for font family differences between CSS and Canvas
+  const fontAdjustment = fontFamily.includes('Bubblegum') ? 0.9 : 
+                        fontFamily.includes('Luckiest') ? 0.85 : 
+                        fontFamily.includes('Fredoka') ? 0.9 : 1.0;
+  
+  // DPI-aware scaling that matches browser rendering
+  const dpiAdjustment = Math.max(1, dpr * 0.75);
+  const finalSize = Math.round(cssSize * fontAdjustment * dpiAdjustment);
+  
+  return `${finalSize}px ${fontFamily}`;
 };
 
 // Wait for fonts to load
@@ -451,47 +497,59 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
 
       ctx.restore();
 
-      // Draw attributes with DPI-aware font sizing to match preview exactly
+      // Draw attributes with precise font sizing to match preview exactly  
       const fontFamily = getFontFamily(deckFont);
-      // Scale font sizes to match browser preview - base sizes multiplied by DPI factor
-      const dpiScale = Math.max(1, dpr * 0.8); // Adjust scaling factor for better consistency
-      const fontSize = (deckFont === 'bubblegum' ? 18 : 16) * dpiScale;
-      const titleFontSize = (deckFont === 'bubblegum' ? 22 : 18) * dpiScale;
       
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
+      // Use precise CSS-to-Canvas font mapping
+      const emojiFont = mapCSSFontToCanvas(20, 'Arial', dpr);
+      const titleFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 16 : 14, fontFamily, dpr);
+      const valueFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 14 : 12, fontFamily, dpr);
 
-      // Grid layout for attributes (2 columns)
-      let yOffset = 60;
-      const spacing = 80;
-      const gridCols = 2;
-      let col = 0;
-
-      // Helper function to draw attribute
+      // Content area dimensions
+      const contentPadding = cardPadding + 8; // Extra padding inside white content area
+      const contentWidth = previewWidth - (contentPadding * 2);
+      
+      // Precise layout matching HTML grid (2x2 + full-width fun fact)
+      const attributeWidth = (contentWidth / 2) - 16; // Half width minus gap
+      const startY = cardPadding + 40; // Start below content area padding
+      
+      // Track current Y position for proper spacing
+      let currentRow = 0;
+      let currentCol = 0;
+      const rowHeight = 90; // Increased spacing to prevent overlap
+      
+      // Helper function to draw attribute with precise positioning
       const drawAttribute = (emoji: string, title: string, value: string, color: string) => {
-        const x = col === 0 ? previewWidth * 0.3125 : previewWidth * 0.6875; // 30% and 70% of width
-        const y = yOffset;
+        // Calculate position based on grid layout
+        const xOffset = currentCol === 0 ? contentPadding + 16 : contentPadding + contentWidth/2 + 8;
+        const yOffset = startY + (currentRow * rowHeight);
+        
+        ctx.textAlign = 'center';
+        const centerX = xOffset + (attributeWidth / 2);
 
-        // Draw emoji
-        ctx.font = `24px Arial`;
+        // Draw emoji with proper font
+        ctx.font = emojiFont;
         ctx.fillStyle = '#000000';
-        ctx.fillText(emoji, x, y);
+        ctx.textBaseline = 'top';
+        ctx.fillText(emoji, centerX, yOffset);
 
-        // Draw title
-        ctx.font = `${titleFontSize}px ${fontFamily}`;
+        // Draw title with color and proper spacing
+        ctx.font = titleFont;
         ctx.fillStyle = color;
-        ctx.fillText(title, x, y + 32);
+        ctx.textBaseline = 'top';
+        drawWrappedText(ctx, title, centerX, yOffset + 26, attributeWidth, 18, 'center');
 
-        // Draw value
-        ctx.font = `${fontSize}px ${fontFamily}`;
+        // Draw value with wrapping support
+        ctx.font = valueFont;
         ctx.fillStyle = '#000000';
-        ctx.fillText(value, x, y + 56);
+        ctx.textBaseline = 'top';
+        drawWrappedText(ctx, value, centerX, yOffset + 48, attributeWidth, 16, 'center');
 
-        col++;
-        if (col >= gridCols) {
-          col = 0;
-          yOffset += spacing;
+        // Advance to next position
+        currentCol++;
+        if (currentCol >= 2) {
+          currentCol = 0;
+          currentRow++;
         }
       };
 
@@ -534,7 +592,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const funFactHeight = 100; // Increased height for proper spacing
         
         const funFactX = funFactMargin;
-        const funFactY = yOffset + 10; // Small gap after attributes
+        const funFactY = startY + (currentRow * rowHeight) + 20; // Position after attributes with gap
         
         // Draw background with exact Tailwind colors: bg-yellow-100/80
         ctx.fillStyle = 'rgba(254, 243, 199, 0.8)'; // #fef3c7 with 80% opacity
@@ -552,31 +610,26 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const contentStartY = funFactY + funFactPadding;
 
         // Fun fact emoji - positioned at top center with proper spacing
-        ctx.font = `20px Arial`;
+        ctx.font = mapCSSFontToCanvas(18, 'Arial', dpr);
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.fillText('✨', centerX, contentStartY);
 
         // Fun fact title - positioned below emoji with proper spacing
-        ctx.font = `${titleFontSize}px ${fontFamily}`;
+        ctx.font = titleFont;
         ctx.fillStyle = '#ef4444'; // red-500
         ctx.textBaseline = 'top';
-        ctx.fillText('Fun Fact', centerX, contentStartY + 28);
+        ctx.fillText('Fun Fact', centerX, contentStartY + 24);
 
         // Fun fact text - positioned below title with proper spacing
-        ctx.font = `${fontSize}px ${fontFamily}`;
+        ctx.font = valueFont;
         ctx.fillStyle = '#000000';
         ctx.textBaseline = 'top';
         
         // Handle text wrapping for longer fun facts - Remove truncation to match preview
         const maxWidth = funFactWidth - (funFactPadding * 2);
-        const lines = wrapText(ctx, card.funFact, maxWidth);
-        
-        // Draw multiple lines if needed
-        lines.forEach((line, index) => {
-          ctx.fillText(line, centerX, contentStartY + 56 + (index * (fontSize + 4)));
-        });
+        drawWrappedText(ctx, card.funFact, centerX, contentStartY + 50, maxWidth, 18, 'center');
       }
 
       // Convert to blob URL
