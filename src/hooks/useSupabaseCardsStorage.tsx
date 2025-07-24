@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useDraft } from './useDraft';
 
 export interface FamilyCard {
   id: string;
@@ -30,6 +31,9 @@ export const useSupabaseCardsStorage = () => {
   
   // Ref to track current loadedFromDraft value for async functions
   const loadedFromDraftRef = useRef(false);
+  
+  // Import draft functionality
+  const { getDraft, saveDraftToLocal } = useDraft();
 
   // Generate or get session ID for temporary storage
   const getSessionId = () => {
@@ -492,8 +496,19 @@ export const useSupabaseCardsStorage = () => {
       }
 
       // Remove from local state regardless of database result
-      setCards(prevCards => prevCards.filter(card => card.id !== cardId));
+      const updatedCards = cards.filter(card => card.id !== cardId);
+      setCards(updatedCards);
       console.log('✅ Card deleted from local state:', cardId);
+      
+      // Update draft in localStorage to persist the deletion
+      try {
+        const currentDraft = getDraft();
+        saveDraftToLocal(updatedCards, currentDraft.deckDesign);
+        console.log('💾 Draft updated after card deletion');
+      } catch (error) {
+        console.error('⚠️ Failed to update draft after deletion:', error);
+        // Don't fail the deletion if draft saving fails
+      }
       
       return true;
     } catch (error) {
