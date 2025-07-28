@@ -28,14 +28,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  let requestBody: string | null = null;
-  let sessionId: string | null = null;
-
   try {
-    // Read the request body once and store it
-    requestBody = await req.text();
-    const bodyData = JSON.parse(requestBody);
-    sessionId = bodyData.sessionId;
+    const { sessionId } = await req.json();
 
     if (!sessionId) {
       throw new Error("Session ID is required");
@@ -78,16 +72,28 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log(`Found ${cardIds.length} card IDs in order: ${cardIds.join(', ')}`);
 
-    // Use the cards data directly from the order instead of querying the database
-    // This ensures we have all the card information we need even if some cards are missing from the cards table
-    console.log(`Using cards data directly from order. Found ${cardsData.length} cards.`);
+    // Get actual card records from database using the card IDs
+    const { data: cards, error: cardsError } = await supabase
+      .from('cards')
+      .select('*')
+      .in('id', cardIds);
 
-    // Check which cards already have image URLs and are print ready
-    const alreadyProcessedCards = cardsData.filter(card => 
+    if (cardsError) {
+      throw new Error(`Error fetching cards: ${cardsError.message}`);
+    }
+
+    if (!cards || cards.length === 0) {
+      throw new Error(`No cards found with IDs: ${cardIds.join(', ')}`);
+    }
+
+    console.log(`Found ${cards.length} cards in database`);
+
+    // Check if cards are already processed
+    const alreadyProcessedCards = cards.filter(card => 
       card.front_image_url && card.back_image_url && card.print_ready
     );
 
-    const cardsToProcess = cardsData.filter(card => 
+    const cardsToProcess = cards.filter(card => 
       !card.front_image_url || !card.back_image_url || !card.print_ready
     );
 
@@ -100,14 +106,12 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         console.log(`Processing card: ${card.name} (${card.id})`);
         
-        // For now, use placeholder URLs. In a real implementation, you would:
-        // 1. Generate images using the card data
-        // 2. Upload them to Supabase Storage
-        // 3. Get public URLs
-        const frontImageUrl = card.front_image_url || `https://ngxvbmxhziirnxkycodx.supabase.co/storage/v1/object/public/card-renders/front-${card.id}.png`;
-        const backImageUrl = card.back_image_url || `https://ngxvbmxhziirnxkycodx.supabase.co/storage/v1/object/public/card-renders/back-${card.id}.png`;
+        // Simulate image generation (in real implementation, use CanvasCardRenderer)
+        // For now, we'll use existing photo_url or create placeholder URLs
+        const frontImageUrl = card.front_image_url || `https://placeholder-image-url/front-${card.id}.png`;
+        const backImageUrl = card.back_image_url || `https://placeholder-image-url/back-${card.id}.png`;
         
-        // Try to update the card in the database if it exists
+        // Update card with generated image URLs
         const { error: updateError } = await supabase
           .from('cards')
           .update({
@@ -118,7 +122,8 @@ const handler = async (req: Request): Promise<Response> => {
           .eq('id', card.id);
 
         if (updateError) {
-          console.log(`Note: Could not update card ${card.id} in database (this is okay if it's a guest card):`, updateError.message);
+          console.error(`Error updating card ${card.id}:`, updateError);
+          continue;
         }
 
         processedCards.push({
@@ -131,7 +136,6 @@ const handler = async (req: Request): Promise<Response> => {
         console.log(`✅ Card processed: ${card.name}`);
       } catch (error) {
         console.error(`Error processing card ${card.id}:`, error);
-        // Continue with other cards even if one fails
       }
     }
 
@@ -192,8 +196,12 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("Error in process-order-cards function:", error);
     
     // Try to mark order as failed if we have a sessionId
-    if (sessionId) {
-      try {
+    try {
+      const body = await req.text();
+      const parsedBody = JSON.parse(body);
+      const sessionId = parsedBody.sessionId;
+      
+      if (sessionId) {
         const supabase = createClient(
           Deno.env.get("SUPABASE_URL") ?? "",
           Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -203,9 +211,9 @@ const handler = async (req: Request): Promise<Response> => {
           .from('orders')
           .update({ processing_status: 'failed' })
           .eq('stripe_session_id', sessionId);
-      } catch (updateError) {
-        console.error("Error updating order status to failed:", updateError);
       }
+    } catch (updateError) {
+      console.error("Error updating order status to failed:", updateError);
     }
 
     return new Response(

@@ -1,7 +1,7 @@
+
 import React, { useRef, forwardRef } from 'react';
-import { FlippableCardPreview } from "@/components/FlippableCardPreview";
+import { CanvasCardRenderer, CanvasCardRendererRef } from "./CanvasCardRenderer";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
-import { useCardCapture } from "@/hooks/useCardCapture";
 
 interface CardImageGeneratorProps {
   card: FamilyCard;
@@ -22,9 +22,7 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
   deckFont,
   onImagesGenerated
 }, ref) => {
-  const frontCardRef = useRef<HTMLDivElement>(null);
-  const backCardRef = useRef<HTMLDivElement>(null);
-  const { captureCardAsDataUrl } = useCardCapture();
+  const canvasRendererRef = useRef<CanvasCardRendererRef>(null);
 
   // Expose generation method for external use
   React.useImperativeHandle(ref, () => ({
@@ -33,19 +31,20 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
         let frontImageUrl: string | null = null;
         let backImageUrl: string | null = null;
 
-        console.log('🎯 Generating images with html-to-image...');
-        
-        // Capture front side
-        if (frontCardRef.current) {
-          frontImageUrl = await captureCardAsDataUrl(frontCardRef.current);
-          console.log('✅ Front image generated:', !!frontImageUrl);
+        if (canvasRendererRef.current) {
+          console.log('🎯 Generating images with Canvas API...');
+          
+          frontImageUrl = await canvasRendererRef.current.generateFrontImage();
+          
+          if (isFlipCard) {
+            backImageUrl = await canvasRendererRef.current.generateBackImage();
+          }
         }
 
-        // Capture back side  
-        if (backCardRef.current) {
-          backImageUrl = await captureCardAsDataUrl(backCardRef.current);
-          console.log('✅ Back image generated:', !!backImageUrl);
-        }
+        console.log('🎯 Canvas generation result:', { 
+          frontImageUrl: !!frontImageUrl, 
+          backImageUrl: !!backImageUrl 
+        });
 
         if (onImagesGenerated) {
           onImagesGenerated(frontImageUrl || undefined, backImageUrl || undefined);
@@ -69,23 +68,12 @@ export const CardImageGenerator = forwardRef<CardImageGeneratorRef, CardImageGen
       left: '-2000px',
       top: '0'
     }}>
-      {/* Front card */}
-      <div ref={frontCardRef} style={{ position: 'absolute', top: 0, left: 0 }}>
-        <FlippableCardPreview
-          card={card}
-          deckTheme={deckTheme}
-          deckFont={deckFont}
-        />
-      </div>
-      
-      {/* Back card - we'll force it to show the back side */}
-      <div ref={backCardRef} style={{ position: 'absolute', top: 0, left: '400px' }}>
-        <FlippableCardPreview
-          card={card}
-          deckTheme={deckTheme}
-          deckFont={deckFont}
-        />
-      </div>
+      <CanvasCardRenderer
+        ref={canvasRendererRef}
+        card={card}
+        deckTheme={deckTheme}
+        deckFont={deckFont}
+      />
     </div>
   );
 });
