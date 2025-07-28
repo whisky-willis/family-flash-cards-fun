@@ -265,7 +265,7 @@ export const FlipCardPreview = forwardRef<FlipCardPreviewRef, FlipCardPreviewPro
                   
                   {card.funFact && card.funFact.trim() && (
                     <div className="col-span-2 text-center p-3 rounded-2xl border-2 bg-yellow-100/80 border-yellow-300">
-                      <div className="text-xl mb-1">✨</div>
+                      <div className="text-xl mb-1"></div>
                       <div className={`text-red-400 ${deckFont === 'bubblegum' ? 'text-base' : 'text-sm'} mb-1`}>Fun Fact</div>
                       <p className="text-sm leading-relaxed font-medium text-black break-words">{card.funFact}</p>
                     </div>
