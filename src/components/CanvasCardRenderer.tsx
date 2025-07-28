@@ -500,10 +500,10 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       // Draw attributes with precise font sizing to match preview exactly  
       const fontFamily = getFontFamily(deckFont);
       
-      // Use precise CSS-to-Canvas font mapping
+      // Use precise CSS-to-Canvas font mapping to match preview exactly
       const emojiFont = mapCSSFontToCanvas(20, 'Arial', dpr);
       const titleFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 16 : 14, fontFamily, dpr);
-      const valueFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 14 : 12, fontFamily, dpr);
+      const valueFont = mapCSSFontToCanvas(16, fontFamily, dpr); // text-base = 16px consistently
 
       // Content area dimensions matching HTML exactly
       const contentPadding = cardPadding + 16; // p-4 = 16px padding
@@ -614,27 +614,26 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const centerX = funFactX + (funFactWidth / 2);
         const contentStartY = funFactY + funFactPadding;
 
-        // Fun fact emoji - positioned at top center with proper spacing
-        ctx.font = mapCSSFontToCanvas(18, 'Arial', dpr);
+        // No emoji for fun fact to match preview
+        // (emoji removed to match FlipCardPreview)
+
+        // Fun fact title - positioned at top with proper spacing (no emoji above)
+        ctx.font = titleFont;
+        ctx.fillStyle = '#ef4444'; // red-500, text-red-400 
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('Fun Fact', centerX, contentStartY + 4); // mb-1 = 4px spacing
+
+        // Fun fact text - positioned below title with proper spacing (text-sm = 14px, leading-relaxed)
+        ctx.font = mapCSSFontToCanvas(14, fontFamily, dpr); // text-sm = 14px
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText('✨', centerX, contentStartY);
-
-        // Fun fact title - positioned below emoji with proper spacing
-        ctx.font = titleFont;
-        ctx.fillStyle = '#ef4444'; // red-500
-        ctx.textBaseline = 'top';
-        ctx.fillText('Fun Fact', centerX, contentStartY + 24);
-
-        // Fun fact text - positioned below title with proper spacing
-        ctx.font = valueFont;
-        ctx.fillStyle = '#000000';
-        ctx.textBaseline = 'top';
         
-        // Handle text wrapping for longer fun facts - Remove truncation to match preview
+        // Handle text wrapping for longer fun facts with proper line height (leading-relaxed = 1.625)
         const maxWidth = funFactWidth - (funFactPadding * 2);
-        drawWrappedText(ctx, card.funFact, centerX, contentStartY + 50, maxWidth, 18, 'center');
+        const lineHeight = 14 * 1.625; // leading-relaxed line height
+        drawWrappedText(ctx, card.funFact, centerX, contentStartY + 28, maxWidth, lineHeight, 'center'); // title + 4px + title height + 4px
       }
 
       // Convert to blob URL
