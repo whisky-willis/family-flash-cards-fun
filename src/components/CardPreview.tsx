@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,8 @@ export interface CardPreviewRef {
 
 export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card, onEdit, onDelete, showActions = true, deckTheme, deckFont }, ref) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const { captureCard, isCapturing } = useCardCapture();
+  const { captureCard, captureCardAsDataUrl, isCapturing } = useCardCapture();
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
 
   // Expose image generation methods via ref using html-to-image
   useImperativeHandle(ref, () => ({
@@ -35,14 +35,42 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
         return null;
       }
       
+      setIsGeneratingImages(true);
+      
       try {
         console.log('🎯 Using html-to-image for front image generation...');
-        const frontImageUrl = await captureCard(cardRef.current, `${card.name}-front`, { format: 'png' });
+        
+        // Find the FlippableCardPreview component and ensure it shows the front
+        const flippableCard = cardRef.current.querySelector('[style*="perspective"]');
+        if (flippableCard) {
+          // Force front view by removing any flip transformation
+          const cardContent = flippableCard.querySelector('[style*="transform"]') as HTMLElement;
+          if (cardContent) {
+            const originalTransform = cardContent.style.transform;
+            cardContent.style.transform = 'rotateY(0deg)';
+            
+            // Wait a moment for the transformation to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const frontImageUrl = await captureCardAsDataUrl(cardRef.current, { format: 'png' });
+            
+            // Restore original transform
+            cardContent.style.transform = originalTransform;
+            
+            console.log('✅ Front image generated:', !!frontImageUrl);
+            return frontImageUrl;
+          }
+        }
+        
+        // Fallback to capturing current state
+        const frontImageUrl = await captureCardAsDataUrl(cardRef.current, { format: 'png' });
         console.log('✅ Front image generated:', !!frontImageUrl);
         return frontImageUrl;
       } catch (error) {
         console.error('❌ Error generating front card image:', error);
         return null;
+      } finally {
+        setIsGeneratingImages(false);
       }
     },
     generateBackImage: async () => {
@@ -53,14 +81,41 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
         return null;
       }
       
+      setIsGeneratingImages(true);
+      
       try {
         console.log('🎯 Using html-to-image for back image generation...');
-        const backImageUrl = await captureCard(cardRef.current, `${card.name}-back`, { format: 'png' });
+        
+        // Find the FlippableCardPreview component and flip it to show the back
+        const flippableCard = cardRef.current.querySelector('[style*="perspective"]');
+        if (flippableCard) {
+          const cardContent = flippableCard.querySelector('[style*="transform"]') as HTMLElement;
+          if (cardContent) {
+            const originalTransform = cardContent.style.transform;
+            cardContent.style.transform = 'rotateY(180deg)';
+            
+            // Wait a moment for the transformation to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const backImageUrl = await captureCardAsDataUrl(cardRef.current, { format: 'png' });
+            
+            // Restore original transform
+            cardContent.style.transform = originalTransform;
+            
+            console.log('✅ Back image generated:', !!backImageUrl);
+            return backImageUrl;
+          }
+        }
+        
+        // Fallback to capturing current state
+        const backImageUrl = await captureCardAsDataUrl(cardRef.current, { format: 'png' });
         console.log('✅ Back image generated:', !!backImageUrl);
         return backImageUrl;
       } catch (error) {
         console.error('❌ Error generating back card image:', error);
         return null;
+      } finally {
+        setIsGeneratingImages(false);
       }
     }
   }));
@@ -98,11 +153,11 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
               variant="outline" 
               size="sm" 
               onClick={handleDownload}
-              disabled={isCapturing}
+              disabled={isCapturing || isGeneratingImages}
               className="flex-1 border-2 border-art-blue text-art-blue hover:bg-art-blue hover:text-white font-bold uppercase text-xs tracking-wide"
             >
               <Download className="h-3 w-3 mr-1" />
-              {isCapturing ? 'Saving...' : 'Download'}
+              {(isCapturing || isGeneratingImages) ? 'Saving...' : 'Download'}
             </Button>
             <Button 
               variant="outline" 

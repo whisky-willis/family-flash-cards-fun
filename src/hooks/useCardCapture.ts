@@ -13,21 +13,15 @@ export const useCardCapture = () => {
   const [isCapturing, setIsCapturing] = useState(false);
   const { toast } = useToast();
 
-  const captureCard = async (
-    element: HTMLElement, 
-    filename: string, 
+  // Capture card and return data URL without downloading
+  const captureCardAsDataUrl = async (
+    element: HTMLElement,
     options: CaptureOptions = {}
   ): Promise<string | null> => {
     if (!element) {
-      toast({
-        title: "Error",
-        description: "Card element not found",
-        variant: "destructive",
-      });
+      console.error('Card element not found');
       return null;
     }
-
-    setIsCapturing(true);
 
     try {
       const {
@@ -53,9 +47,39 @@ export const useCardCapture = () => {
         dataUrl = await toPng(element, captureOptions);
       }
 
+      return dataUrl;
+    } catch (error) {
+      console.error('Error capturing card:', error);
+      return null;
+    }
+  };
+
+  const captureCard = async (
+    element: HTMLElement, 
+    filename: string, 
+    options: CaptureOptions = {}
+  ): Promise<string | null> => {
+    if (!element) {
+      toast({
+        title: "Error",
+        description: "Card element not found",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    setIsCapturing(true);
+
+    try {
+      const dataUrl = await captureCardAsDataUrl(element, options);
+      
+      if (!dataUrl) {
+        throw new Error('Failed to generate image');
+      }
+
       // Create download link
       const link = document.createElement('a');
-      link.download = `${filename}.${format}`;
+      link.download = `${filename}.${options.format || 'png'}`;
       link.href = dataUrl;
       link.click();
 
@@ -111,6 +135,7 @@ export const useCardCapture = () => {
 
   return { 
     captureCard, 
+    captureCardAsDataUrl,
     captureBatch, 
     isCapturing 
   };
