@@ -2,10 +2,10 @@
 import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Users, Edit, Trash2, Eye } from "lucide-react";
+import { Heart, Users, Edit, Trash2, Eye, Download } from "lucide-react";
 import { FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { FlippableCardPreview } from "@/components/FlippableCardPreview";
-import { CanvasCardRenderer, CanvasCardRendererRef } from "@/components/CanvasCardRenderer";
+import { useCardCapture } from "@/hooks/useCardCapture";
 
 interface CardPreviewProps {
   card: FamilyCard;
@@ -22,21 +22,22 @@ export interface CardPreviewRef {
 }
 
 export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card, onEdit, onDelete, showActions = true, deckTheme, deckFont }, ref) => {
-  const canvasRendererRef = useRef<CanvasCardRendererRef>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { captureCard, isCapturing } = useCardCapture();
 
-  // Expose image generation methods via ref
+  // Expose image generation methods via ref using html-to-image
   useImperativeHandle(ref, () => ({
     generateFrontImage: async () => {
       console.log('🎯 generateFrontImage called for CardPreview');
       
-      if (!canvasRendererRef.current) {
-        console.error('❌ Canvas renderer not available');
+      if (!cardRef.current) {
+        console.error('❌ Card element not available');
         return null;
       }
       
       try {
-        console.log('🎯 Using Canvas API for front image generation...');
-        const frontImageUrl = await canvasRendererRef.current.generateFrontImage();
+        console.log('🎯 Using html-to-image for front image generation...');
+        const frontImageUrl = await captureCard(cardRef.current, `${card.name}-front`, { format: 'png' });
         console.log('✅ Front image generated:', !!frontImageUrl);
         return frontImageUrl;
       } catch (error) {
@@ -47,14 +48,14 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
     generateBackImage: async () => {
       console.log('🎯 generateBackImage called for CardPreview');
       
-      if (!canvasRendererRef.current) {
-        console.error('❌ Canvas renderer not available');
+      if (!cardRef.current) {
+        console.error('❌ Card element not available');
         return null;
       }
       
       try {
-        console.log('🎯 Using Canvas API for back image generation...');
-        const backImageUrl = await canvasRendererRef.current.generateBackImage();
+        console.log('🎯 Using html-to-image for back image generation...');
+        const backImageUrl = await captureCard(cardRef.current, `${card.name}-back`, { format: 'png' });
         console.log('✅ Back image generated:', !!backImageUrl);
         return backImageUrl;
       } catch (error) {
@@ -64,9 +65,15 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
     }
   }));
 
+  const handleDownload = async () => {
+    if (cardRef.current) {
+      await captureCard(cardRef.current, `${card.name}-kindred-card`);
+    }
+  };
+
   return (
     <div className="w-full max-w-sm mx-auto">
-      <div className="relative group">
+      <div className="relative group" ref={cardRef}>
         <div className="transition-transform duration-300 group-hover:scale-[1.02]">
           <FlippableCardPreview 
             card={card}
@@ -90,6 +97,16 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
             <Button 
               variant="outline" 
               size="sm" 
+              onClick={handleDownload}
+              disabled={isCapturing}
+              className="flex-1 border-2 border-art-blue text-art-blue hover:bg-art-blue hover:text-white font-bold uppercase text-xs tracking-wide"
+            >
+              <Download className="h-3 w-3 mr-1" />
+              {isCapturing ? 'Saving...' : 'Download'}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
               onClick={onDelete}
               className="flex-1 border-2 border-art-red text-art-red hover:bg-art-red hover:text-white font-bold uppercase text-xs tracking-wide"
             >
@@ -107,15 +124,6 @@ export const CardPreview = forwardRef<CardPreviewRef, CardPreviewProps>(({ card,
         )}
       </div>
 
-      {/* Hidden canvas renderer for image generation */}
-      <div style={{ display: 'none' }}>
-        <CanvasCardRenderer
-          ref={canvasRendererRef}
-          card={card}
-          deckTheme={deckTheme}
-          deckFont={deckFont}
-        />
-      </div>
     </div>
   );
 });
