@@ -505,59 +505,17 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const titleFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 16 : 14, fontFamily, dpr);
       const valueFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 14 : 12, fontFamily, dpr);
 
-      // Content area dimensions
-      const contentPadding = cardPadding + 8; // Extra padding inside white content area
+      // Content area dimensions matching HTML exactly
+      const contentPadding = cardPadding + 16; // p-4 = 16px padding
       const contentWidth = previewWidth - (contentPadding * 2);
+      const contentHeight = previewHeight - (contentPadding * 2);
       
-      // Precise layout matching HTML grid (2x2 + full-width fun fact)
-      const attributeWidth = (contentWidth / 2) - 16; // Half width minus gap
-      const startY = cardPadding + 40; // Start below content area padding
+      // Collect visible attributes first to calculate grid center position
+      const visibleAttributes: Array<{emoji: string, title: string, value: string, color: string}> = [];
       
-      // Track current Y position for proper spacing
-      let currentRow = 0;
-      let currentCol = 0;
-      const rowHeight = 90; // Increased spacing to prevent overlap
-      
-      // Helper function to draw attribute with precise positioning
-      const drawAttribute = (emoji: string, title: string, value: string, color: string) => {
-        // Calculate position based on grid layout
-        const xOffset = currentCol === 0 ? contentPadding + 16 : contentPadding + contentWidth/2 + 8;
-        const yOffset = startY + (currentRow * rowHeight);
-        
-        ctx.textAlign = 'center';
-        const centerX = xOffset + (attributeWidth / 2);
-
-        // Draw emoji with proper font
-        ctx.font = emojiFont;
-        ctx.fillStyle = '#000000';
-        ctx.textBaseline = 'top';
-        ctx.fillText(emoji, centerX, yOffset);
-
-        // Draw title with color and proper spacing
-        ctx.font = titleFont;
-        ctx.fillStyle = color;
-        ctx.textBaseline = 'top';
-        drawWrappedText(ctx, title, centerX, yOffset + 26, attributeWidth, 18, 'center');
-
-        // Draw value with wrapping support
-        ctx.font = valueFont;
-        ctx.fillStyle = '#000000';
-        ctx.textBaseline = 'top';
-        drawWrappedText(ctx, value, centerX, yOffset + 48, attributeWidth, 16, 'center');
-
-        // Advance to next position
-        currentCol++;
-        if (currentCol >= 2) {
-          currentCol = 0;
-          currentRow++;
-        }
-      };
-
-      // Draw attributes with exact colors from preview
       if (card.relationship?.trim()) {
-        drawAttribute('🏠', 'Where they live', card.relationship, '#60a5fa');
+        visibleAttributes.push({emoji: '🏠', title: 'Where they live', value: card.relationship, color: '#60a5fa'});
       }
-
       if (card.dateOfBirth) {
         const [year, month, day] = card.dateOfBirth.split('-').map(Number);
         const date = new Date(year, month - 1, day);
@@ -568,18 +526,64 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
                      : dayNum === 3 || dayNum === 23 ? 'rd'
                      : 'th';
         const formattedDate = `${monthName} ${dayNum}${suffix}`;
-        drawAttribute('🎂', 'Birthday', formattedDate, '#4ade80');
+        visibleAttributes.push({emoji: '🎂', title: 'Birthday', value: formattedDate, color: '#4ade80'});
       }
-
       if (card.favoriteColor?.trim()) {
-        drawAttribute('🎨', 'Favorite Color', card.favoriteColor, '#a855f7');
+        visibleAttributes.push({emoji: '🎨', title: 'Favorite Color', value: card.favoriteColor, color: '#a855f7'});
       }
-
       if (card.hobbies?.trim()) {
-        // Show only first hobby to match preview
         const firstHobby = card.hobbies.split(',')[0].trim();
-        drawAttribute('🌟', 'Hobbies', firstHobby, '#f97316');
+        visibleAttributes.push({emoji: '🌟', title: 'Hobbies', value: firstHobby, color: '#f97316'});
       }
+      
+      // CSS Grid layout with gap-3 (12px) and content-center
+      const gridGap = 12; // gap-3 = 12px
+      const cellWidth = (contentWidth - gridGap) / 2; // Two columns with gap
+      const gridRows = Math.ceil(visibleAttributes.length / 2);
+      const singleItemHeight = 70; // Height for emoji + title + value + spacing
+      const totalGridHeight = (gridRows * singleItemHeight) + ((gridRows - 1) * gridGap);
+      
+      // Center the grid vertically in available space (content-center behavior)
+      const funFactHeight = card.funFact?.trim() ? 100 : 0;
+      const funFactMargin = card.funFact?.trim() ? 16 : 0; // margin between grid and fun fact
+      const availableHeight = contentHeight - funFactHeight - funFactMargin;
+      const gridStartY = contentPadding + (availableHeight - totalGridHeight) / 2;
+      
+      // Helper function to draw attribute with precise CSS Grid positioning
+      const drawAttribute = (attributeData: {emoji: string, title: string, value: string, color: string}, index: number) => {
+        const row = Math.floor(index / 2);
+        const col = index % 2;
+        
+        // Calculate exact grid position
+        const cellX = contentPadding + (col * (cellWidth + gridGap));
+        const cellY = gridStartY + (row * (singleItemHeight + gridGap));
+        const centerX = cellX + (cellWidth / 2);
+        
+        ctx.textAlign = 'center';
+
+        // Draw emoji (text-xl = 20px)
+        ctx.font = emojiFont;
+        ctx.fillStyle = '#000000';
+        ctx.textBaseline = 'top';
+        ctx.fillText(attributeData.emoji, centerX, cellY);
+
+        // Draw title with mb-1 spacing (4px)
+        ctx.font = titleFont;
+        ctx.fillStyle = attributeData.color;
+        ctx.textBaseline = 'top';
+        ctx.fillText(attributeData.title, centerX, cellY + 24); // 20px emoji + 4px mb-1
+
+        // Draw value with mb-1 spacing (4px)
+        ctx.font = valueFont;
+        ctx.fillStyle = '#000000';
+        ctx.textBaseline = 'top';
+        drawWrappedText(ctx, attributeData.value, centerX, cellY + 48, cellWidth, 16, 'center'); // title + 4px + font size
+      };
+
+      // Draw all visible attributes using the grid layout
+      visibleAttributes.forEach((attributeData, index) => {
+        drawAttribute(attributeData, index);
+      });
 
       // Draw fun fact if available with exact DOM styling
       if (card.funFact?.trim()) {
@@ -592,7 +596,8 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const funFactHeight = 100; // Increased height for proper spacing
         
         const funFactX = funFactMargin;
-        const funFactY = startY + (currentRow * rowHeight) + 20; // Position after attributes with gap
+        // Position fun fact below the grid with proper spacing
+        const funFactY = gridStartY + totalGridHeight + funFactMargin;
         
         // Draw background with exact Tailwind colors: bg-yellow-100/80
         ctx.fillStyle = 'rgba(254, 243, 199, 0.8)'; // #fef3c7 with 80% opacity
