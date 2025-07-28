@@ -424,11 +424,14 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
   // Render back side of card
   const renderBackCard = async (): Promise<string | null> => {
     try {
-      console.log('🎯 Starting back card render with Canvas API...');
+      console.log('🎯 Starting back card render with Canvas API - v2 (no sparkle)...');
       
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
+      if (!ctx) {
+        console.error('❌ Could not get canvas context');
+        return null;
+      }
 
       // Get actual preview dimensions
       const { width: previewWidth, height: previewHeight } = getPreviewDimensions();
@@ -614,12 +617,12 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const centerX = funFactX + (funFactWidth / 2);
         const contentStartY = funFactY + funFactPadding;
 
-        // No emoji for fun fact to match preview
-        // (emoji removed to match FlipCardPreview)
+        // NO EMOJI for fun fact - this should match the preview exactly
+        console.log('🔍 Drawing Fun Fact without emoji...');
 
         // Fun fact title - positioned at top with proper spacing (no emoji above)
         ctx.font = titleFont;
-        ctx.fillStyle = '#ef4444'; // red-500, text-red-400 
+        ctx.fillStyle = '#f87171'; // text-red-400 exact color
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.fillText('Fun Fact', centerX, contentStartY + 4); // mb-1 = 4px spacing
