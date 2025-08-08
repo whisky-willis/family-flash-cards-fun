@@ -501,7 +501,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const fontFamily = getFontFamily(deckFont);
       
       // Apply additional back-side scaling
-      const BACK_FONT_SCALE = 0.64;
+      const BACK_FONT_SCALE = 1.0;
       const emojiSize = 20 * BACK_FONT_SCALE;
       const titleBase = deckFont === 'bubblegum' ? 16 : 14;
       const titleSize = titleBase * BACK_FONT_SCALE;
