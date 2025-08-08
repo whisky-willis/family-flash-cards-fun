@@ -284,7 +284,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
   // Render front side of card
   const renderFrontCard = async (): Promise<string | null> => {
     try {
-      console.log('🎯 Starting front card render with Canvas API...');
+      console.log('🎯 Starting front card render with Canvas API - v3...');
       
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -421,7 +421,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
   // Render back side of card
   const renderBackCard = async (): Promise<string | null> => {
     try {
-      console.log('🎯 Starting back card render with Canvas API - v2 (no sparkle)...');
+      console.log('🎯 Starting back card render with Canvas API - v3...');
       
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -501,7 +501,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const fontFamily = getFontFamily(deckFont);
       
       // Apply additional back-side scaling
-      const BACK_FONT_SCALE = 0.8;
+      const BACK_FONT_SCALE = 0.64;
       const emojiSize = 20 * BACK_FONT_SCALE;
       const titleBase = deckFont === 'bubblegum' ? 16 : 14;
       const titleSize = titleBase * BACK_FONT_SCALE;
@@ -552,7 +552,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const totalGridHeight = (gridRows * singleItemHeight) + ((gridRows - 1) * gridGap);
       
       // Center the grid vertically in available space (content-center behavior)
-      const funFactHeight = card.funFact?.trim() ? 100 : 0;
+      const funFactHeight = card.funFact?.trim() ? Math.round(100 * BACK_FONT_SCALE) : 0;
       const funFactMargin = card.funFact?.trim() ? 16 : 0; // margin between grid and fun fact
       const availableHeight = contentHeight - funFactHeight - funFactMargin;
       const gridStartY = contentPadding + (availableHeight - totalGridHeight) / 2;
@@ -604,7 +604,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         const funFactWidth = previewWidth - (funFactMargin * 2);
         
         // Calculate height based on content - need room for emoji, title, and text
-        const funFactHeight = 100; // Increased height for proper spacing
+        const funFactHeight = Math.round(100 * BACK_FONT_SCALE); // scaled height for proper spacing
         
         const funFactX = funFactMargin;
         // Position fun fact below the grid with proper spacing
