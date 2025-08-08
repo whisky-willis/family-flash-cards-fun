@@ -75,6 +75,22 @@ export const useSupabaseCardsStorage = () => {
     return name.toLowerCase().replace(/[^a-z0-9]/g, '');
   };
 
+  // Extract storage path from public URL for deletion
+  const extractStoragePath = (publicUrl: string): string | null => {
+    try {
+      const url = new URL(publicUrl);
+      const marker = '/object/public/card-renders/';
+      const idx = url.pathname.indexOf(marker);
+      if (idx !== -1) {
+        return url.pathname.substring(idx + marker.length);
+      }
+      const parts = url.pathname.split(marker);
+      return parts.length === 2 ? parts[1] : null;
+    } catch {
+      return null;
+    }
+  };
+
   // Upload image to Supabase Storage
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
@@ -120,7 +136,8 @@ export const useSupabaseCardsStorage = () => {
       const sessionId = getSessionId();
       const userFolder = userId || sessionId;
       const fileBaseName = cardName ? sanitizeCardName(cardName) : cardId;
-      const fileName = `${userFolder}/${fileBaseName}_${side}.png`;
+      const timestamp = Date.now();
+      const fileName = `${userFolder}/${fileBaseName}_${side}_${timestamp}.png`;
       
       console.log(`🎯 Uploading ${side} image for card ${cardId}, blob size:`, imageBlob.size);
       console.log(`📁 Using filename: ${fileName}`);
@@ -128,8 +145,8 @@ export const useSupabaseCardsStorage = () => {
       const { data, error } = await supabase.storage
         .from('card-renders')
         .upload(fileName, imageBlob, {
-          cacheControl: '3600',
-          upsert: true
+          cacheControl: '31536000',
+          upsert: false
         });
 
       if (error) {
@@ -184,6 +201,11 @@ export const useSupabaseCardsStorage = () => {
       console.log('🎯 Received URLs:', { frontImageUrl: !!frontImageUrl, backImageUrl: !!backImageUrl });
       
       const updateData: any = {};
+      
+      // Capture previous image URLs for cleanup after successful upload
+      const existingCard = cards.find(c => c.id === cardId);
+      const previousFrontUrl = existingCard?.front_image_url;
+      const previousBackUrl = existingCard?.back_image_url;
       
       if (frontImageUrl) {
         console.log('🎯 Processing front image...');
@@ -253,6 +275,30 @@ export const useSupabaseCardsStorage = () => {
                 : card
             )
           );
+        }
+        
+        // Cleanup previous render files if replaced
+        try {
+          const pathsToRemove: string[] = [];
+          if (previousFrontUrl && updateData.front_image_url && previousFrontUrl !== updateData.front_image_url) {
+            const p = extractStoragePath(previousFrontUrl);
+            if (p) pathsToRemove.push(p);
+          }
+          if (previousBackUrl && updateData.back_image_url && previousBackUrl !== updateData.back_image_url) {
+            const p = extractStoragePath(previousBackUrl);
+            if (p) pathsToRemove.push(p);
+          }
+          if (pathsToRemove.length > 0) {
+            console.log('🧹 Removing previous render files:', pathsToRemove);
+            const { error: removeError } = await supabase.storage.from('card-renders').remove(pathsToRemove);
+            if (removeError) {
+              console.warn('⚠️ Failed to remove previous files:', removeError);
+            } else {
+              console.log('🧹 Previous render files removed successfully');
+            }
+          }
+        } catch (cleanupErr) {
+          console.warn('⚠️ Cleanup error:', cleanupErr);
         }
         
         return { ...updateData, success: true };

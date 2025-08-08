@@ -55,6 +55,7 @@ function groupCardsBySession(cards: Card[]): Record<string, Card[]> {
 function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderData): string {
   const sessionCount = Object.keys(cardGroups).length;
   const totalCards = Object.values(cardGroups).flat().length;
+  const cacheBuster = Date.now();
   
   const sessionHTML = Object.entries(cardGroups).map(([sessionId, cards]) => {
     const cardList = cards.map(card => `
@@ -62,14 +63,14 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
         <h4 style="margin: 0 0 5px 0; color: #333;">${card.name}</h4>
         <p style="margin: 5px 0; color: #666;">
           <strong>Images:</strong><br>
-          Front: ✓ <a href="${card.front_image_url}" style="color: #2754C5;">View Image</a><br>
-          Back: ✓ <a href="${card.back_image_url}" style="color: #2754C5;">View Image</a>
+          Front: ✓ <a href="${card.front_image_url ? `${card.front_image_url}?v=${cacheBuster}` : ''}" style="color: #2754C5;">View Image</a><br>
+          Back: ✓ <a href="${card.back_image_url ? `${card.back_image_url}?v=${cacheBuster}` : ''}" style="color: #2754C5;">View Image</a>
         </p>
         ${card.front_image_url || card.back_image_url ? `
         <div style="margin: 10px 0; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #2754C5;">
           <p style="margin: 0; font-size: 12px; color: #555;"><strong>Image URLs:</strong></p>
-          ${card.front_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Front:</strong> ${card.front_image_url}</p>` : ''}
-          ${card.back_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Back:</strong> ${card.back_image_url}</p>` : ''}
+          ${card.front_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Front:</strong> ${card.front_image_url}?v=${cacheBuster}</p>` : ''}
+          ${card.back_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Back:</strong> ${card.back_image_url}?v=${cacheBuster}</p>` : ''}
         </div>` : ''}
       </div>
     `).join('');
