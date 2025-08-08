@@ -144,6 +144,19 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('✅ All cards already processed, using existing data');
     }
 
+    // Link cards to this order and detach from guest session
+    const { data: linkedCards, error: linkError } = await supabase
+      .from('cards')
+      .update({ order_id: orderData.id, guest_session_id: null })
+      .in('id', cardIds)
+      .select('id');
+
+    if (linkError) {
+      console.error('Error linking cards to order:', linkError);
+    } else {
+      console.log(`🔗 Linked ${linkedCards?.length ?? 0} cards to order ${orderData.id} and cleared guest sessions`);
+    }
+
     // Update order with processed cards data
     const { error: orderCardsUpdateError } = await supabase
       .from('orders')

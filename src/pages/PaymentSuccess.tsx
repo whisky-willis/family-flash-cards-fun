@@ -31,6 +31,17 @@ const PaymentSuccess = () => {
           console.log('Order cards processed successfully:', data);
           setProcessingStatus('completed');
           setProcessingMessage('Your cards have been processed and order confirmation sent!');
+
+          // Clear local guest session and draft data after successful processing
+          try {
+            localStorage.removeItem('card_session_id');
+            localStorage.removeItem('last_session_check');
+            localStorage.removeItem('kindred-cards-draft');
+            localStorage.removeItem('kindred-cards-guest-session');
+            console.log('🧹 Cleared guest session and draft data after purchase');
+          } catch (e) {
+            console.warn('Could not clear local storage:', e);
+          }
         }
       } catch (error) {
         console.error('Error processing order cards:', error);
@@ -153,7 +164,18 @@ const PaymentSuccess = () => {
 
         <div className="text-center mt-8 space-y-4">
           <Button 
-            onClick={() => navigate('/create')}
+            onClick={() => {
+              try {
+                localStorage.removeItem('card_session_id');
+                localStorage.removeItem('last_session_check');
+                localStorage.removeItem('kindred-cards-draft');
+                localStorage.removeItem('kindred-cards-guest-session');
+                console.log('🧹 Cleared guest session and draft data before creating more cards');
+              } catch (e) {
+                console.warn('Could not clear local storage on button click:', e);
+              }
+              navigate('/create');
+            }}
             className="bg-pink-500 hover:bg-pink-600"
             disabled={processingStatus === 'processing'}
           >
