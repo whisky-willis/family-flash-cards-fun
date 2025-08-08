@@ -99,17 +99,17 @@ const drawWrappedText = (
   return y + (lines.length * lineHeight);
 };
 
-// CSS to Canvas font size mapping (addresses DPI and font rendering differences)
+// CSS to Canvas font size mapping (avoid double DPI scaling; ctx.scale handles DPR)
 const mapCSSFontToCanvas = (cssSize: number, fontFamily: string, dpr: number): string => {
   // Adjust for font family differences between CSS and Canvas
-  const fontAdjustment = fontFamily.includes('Bubblegum') ? 0.9 : 
-                        fontFamily.includes('Luckiest') ? 0.85 : 
-                        fontFamily.includes('Fredoka') ? 0.9 : 1.0;
-  
-  // DPI-aware scaling that matches browser rendering
-  const dpiAdjustment = Math.max(1, dpr * 0.75);
-  const finalSize = Math.round(cssSize * fontAdjustment * dpiAdjustment);
-  
+  const fontAdjustment = fontFamily.includes('Bubblegum') ? 0.9 :
+                         fontFamily.includes('Luckiest') ? 0.85 :
+                         fontFamily.includes('Fredoka') ? 0.9 : 1.0;
+
+  // Do NOT multiply by dpr here; ctx.scale(dpr, dpr) already applied
+  void dpr; // avoid unused param warning
+  const finalSize = Math.round(cssSize * fontAdjustment);
+
   return `${finalSize}px ${fontFamily}`;
 };
 
@@ -370,15 +370,12 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         }
       }
 
-      // Draw name with DPI-aware text styling to match preview exactly
+      // Draw name with CSS-equivalent font sizing (avoid double DPR scaling)
       if (card.name) {
         const fontFamily = getFontFamily(deckFont);
-        // Scale font size based on DPI and font type to match browser preview
-        const dpiScale = Math.max(1, dpr * 0.8);
-        const baseFontSize = deckFont === 'bubblegum' ? 44 : 36; // Larger for bubblegum to match preview
-        const fontSize = baseFontSize * dpiScale;
-        
-        ctx.font = `${fontSize}px ${fontFamily}`;
+        // Use Tailwind's text-3xl ≈ 30px; mapCSSFontToCanvas adjusts per font family
+        ctx.font = mapCSSFontToCanvas(30, fontFamily, dpr);
+        console.log('📝 Name ctx.font:', ctx.font, 'dpr:', dpr);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
