@@ -500,11 +500,19 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       // Draw attributes with precise font sizing to match preview exactly  
       const fontFamily = getFontFamily(deckFont);
       
-      // Use precise CSS-to-Canvas font mapping to match preview exactly
-      const emojiFont = mapCSSFontToCanvas(20, 'Arial', dpr);
-      const titleFont = mapCSSFontToCanvas(deckFont === 'bubblegum' ? 16 : 14, fontFamily, dpr);
-      const valueFont = mapCSSFontToCanvas(16, fontFamily, dpr); // text-base = 16px consistently
+      // Apply additional back-side scaling
+      const BACK_FONT_SCALE = 0.8;
+      const emojiSize = 20 * BACK_FONT_SCALE;
+      const titleBase = deckFont === 'bubblegum' ? 16 : 14;
+      const titleSize = titleBase * BACK_FONT_SCALE;
+      const valueSize = 16 * BACK_FONT_SCALE;
+      const funFactSize = 14 * BACK_FONT_SCALE;
 
+      // Use precise CSS-to-Canvas font mapping to match preview exactly
+      const emojiFont = mapCSSFontToCanvas(emojiSize, 'Arial', dpr);
+      const titleFont = mapCSSFontToCanvas(titleSize, fontFamily, dpr);
+      const valueFont = mapCSSFontToCanvas(valueSize, fontFamily, dpr); // text-base scaled
+      console.log('🔎 Back font sizes:', { dpr, emojiSize, titleSize, valueSize, funFactSize, fontFamily });
       // Content area dimensions matching HTML exactly
       const contentPadding = cardPadding + 16; // p-4 = 16px padding
       const contentWidth = previewWidth - (contentPadding * 2);
@@ -540,7 +548,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       const gridGap = 12; // gap-3 = 12px
       const cellWidth = (contentWidth - gridGap) / 2; // Two columns with gap
       const gridRows = Math.ceil(visibleAttributes.length / 2);
-      const singleItemHeight = 70; // Height for emoji + title + value + spacing
+      const singleItemHeight = Math.round(70 * BACK_FONT_SCALE); // scaled for tighter layout
       const totalGridHeight = (gridRows * singleItemHeight) + ((gridRows - 1) * gridGap);
       
       // Center the grid vertically in available space (content-center behavior)
@@ -561,7 +569,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         
         ctx.textAlign = 'center';
 
-        // Draw emoji (text-xl = 20px)
+        // Draw emoji (text-xl scaled)
         ctx.font = emojiFont;
         ctx.fillStyle = '#000000';
         ctx.textBaseline = 'top';
@@ -571,13 +579,16 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         ctx.font = titleFont;
         ctx.fillStyle = attributeData.color;
         ctx.textBaseline = 'top';
-        ctx.fillText(attributeData.title, centerX, cellY + 24); // 20px emoji + 4px mb-1
+        const titleY = cellY + Math.round(emojiSize + 4);
+        ctx.fillText(attributeData.title, centerX, titleY);
 
         // Draw value with mb-1 spacing (4px)
         ctx.font = valueFont;
         ctx.fillStyle = '#000000';
         ctx.textBaseline = 'top';
-        drawWrappedText(ctx, attributeData.value, centerX, cellY + 48, cellWidth, 16, 'center'); // title + 4px + font size
+        const valueY = titleY + Math.round(titleSize + 4);
+        const valueLineHeight = Math.max(12, Math.round(valueSize * 1.2));
+        drawWrappedText(ctx, attributeData.value, centerX, valueY, cellWidth, valueLineHeight, 'center');
       };
 
       // Draw all visible attributes using the grid layout
@@ -624,16 +635,18 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
         ctx.textBaseline = 'top';
         ctx.fillText('Fun Fact', centerX, contentStartY + 4); // mb-1 = 4px spacing
 
-        // Fun fact text - positioned below title with proper spacing (text-sm = 14px, leading-relaxed)
-        ctx.font = mapCSSFontToCanvas(14, fontFamily, dpr); // text-sm = 14px
+        // Fun fact text - positioned below title with proper spacing
+        ctx.font = mapCSSFontToCanvas(funFactSize, fontFamily, dpr);
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         
-        // Handle text wrapping for longer fun facts with proper line height (leading-relaxed = 1.625)
+        // Handle text wrapping with scaled line height (leading-relaxed = 1.625)
         const maxWidth = funFactWidth - (funFactPadding * 2);
-        const lineHeight = 14 * 1.625; // leading-relaxed line height
-        drawWrappedText(ctx, card.funFact, centerX, contentStartY + 28, maxWidth, lineHeight, 'center'); // title + 4px + title height + 4px
+        const funFactLineHeight = funFactSize * 1.625; // scaled line height
+        const funFactTextY = contentStartY + 4 + Math.round(titleSize) + 4; // below title
+        console.log('🔎 Fun Fact font:', { funFactSize, funFactLineHeight, funFactTextY });
+        drawWrappedText(ctx, card.funFact, centerX, funFactTextY, maxWidth, funFactLineHeight, 'center');
       }
 
       // Convert to blob URL
