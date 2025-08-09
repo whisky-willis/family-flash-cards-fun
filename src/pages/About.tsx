@@ -106,16 +106,16 @@ const About = () => {
 
 
           <section aria-labelledby="intro" className="text-lg leading-relaxed text-foreground/80 font-medium">
-            <div className="grid gap-8 md:grid-cols-2 md:items-start">
+            <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
               <div className="space-y-6">
                 <p><strong>Hi! We&apos;re Nick and Baileigh, and we&apos;re the proud parents behind Kindred Cards.</strong></p>
                 <p>We&apos;re a British family living our New York adventure. In 2022, we took a leap of faith and moved from the UK to New York, planning to stay for just two years. What started as an exciting opportunity has turned into an incredible three-year journey.</p>
                 <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our American adventure. But as new parents living an ocean away from home, we quickly realized we faced a unique challenge that many modern families know all too well.</p>
               </div>
-              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
-                <AspectRatio ratio={4/3}>
-                  <img src="/lovable-uploads/21d308a1-9d43-4011-addf-cc7b1284bf3e.png" alt="Family photo of Nick, Baileigh, and George — Kindred Cards" className="w-full h-full object-cover" loading="lazy" decoding="async" />
-                </AspectRatio>
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
+                <div className="relative w-full h-64 md:h-full">
+                  <img src="/lovable-uploads/21d308a1-9d43-4011-addf-cc7b1284bf3e.png" alt="Family photo of Nick, Baileigh, and George — Kindred Cards" className="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+                </div>
                 <figcaption className="sr-only">Family photo</figcaption>
               </figure>
             </div>
@@ -123,11 +123,11 @@ const About = () => {
 
           <section aria-labelledby="why" className="mt-10 text-lg leading-relaxed text-foreground/80 font-medium">
             <h2 id="why" className="text-3xl lg:text-4xl font-black text-foreground">Why We Created Kindred Cards</h2>
-            <div className="grid gap-8 md:grid-cols-2 md:items-start">
-              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
-                <AspectRatio ratio={4/3}>
-                  <img src="/placeholder.svg" alt="Helping kids know family from afar — placeholder image" className="w-full h-full object-cover" loading="lazy" />
-                </AspectRatio>
+            <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
+                <div className="relative w-full h-64 md:h-full">
+                  <img src="/placeholder.svg" alt="Helping kids know family from afar — placeholder image" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                </div>
                 <figcaption className="sr-only">Why we created Kindred Cards</figcaption>
               </figure>
               <div className="space-y-6">
@@ -140,15 +140,15 @@ const About = () => {
 
           <section aria-labelledby="mission" className="mt-10 text-lg leading-relaxed text-foreground/80 font-medium">
             <h2 id="mission" className="text-3xl lg:text-4xl font-black text-foreground">Our Mission</h2>
-            <div className="grid gap-8 md:grid-cols-2 md:items-start">
+            <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
               <div className="space-y-6">
                 <p>We believe every child deserves to know their family story, no matter how far apart they may be. Kindred Cards transforms the challenge of distance into an opportunity for deeper connection, turning family learning into playtime and creating lasting bonds that span continents.</p>
                 <p>From our family to yours,<br /><strong>Nick, Baileigh &amp; George</strong></p>
               </div>
-              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
-                <AspectRatio ratio={4/3}>
-                  <img src="/placeholder.svg" alt="Kindred Cards mission — connection through play placeholder" className="w-full h-full object-cover" loading="lazy" />
-                </AspectRatio>
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
+                <div className="relative w-full h-64 md:h-full">
+                  <img src="/placeholder.svg" alt="Kindred Cards mission — connection through play placeholder" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                </div>
                 <figcaption className="sr-only">Our mission</figcaption>
               </figure>
             </div>
