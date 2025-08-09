@@ -103,7 +103,7 @@ const About = () => {
           </section>
 
           <section aria-labelledby="why" className="mt-10 text-lg leading-relaxed text-foreground/80 font-medium">
-            <h2 id="why" className="text-3xl lg:text-4xl font-black text-foreground">Why We Created Kindred Cards</h2>
+            <h2 id="why" className="text-3xl lg:text-4xl font-black text-foreground mb-8">Why We Created Kindred Cards</h2>
             <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
               <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
                 <div className="relative w-full h-64 md:h-full">
