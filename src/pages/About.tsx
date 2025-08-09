@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -102,6 +103,29 @@ const About = () => {
               About Us
             </h1>
           </header>
+
+          <section aria-label="Photo placeholders" className="mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
+                <AspectRatio ratio={4/3}>
+                  <img src="/placeholder.svg" alt="Family photo placeholder for Kindred Cards" className="w-full h-full object-cover" loading="lazy" />
+                </AspectRatio>
+                <figcaption className="sr-only">Family photo placeholder</figcaption>
+              </figure>
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
+                <AspectRatio ratio={4/3}>
+                  <img src="/placeholder.svg" alt="New York adventure placeholder image" className="w-full h-full object-cover" loading="lazy" />
+                </AspectRatio>
+                <figcaption className="sr-only">New York adventure placeholder</figcaption>
+              </figure>
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
+                <AspectRatio ratio={4/3}>
+                  <img src="/placeholder.svg" alt="Parents and baby placeholder image" className="w-full h-full object-cover" loading="lazy" />
+                </AspectRatio>
+                <figcaption className="sr-only">Parents and baby placeholder</figcaption>
+              </figure>
+            </div>
+          </section>
 
           <section aria-labelledby="intro" className="space-y-6 text-lg leading-relaxed text-foreground/80 font-medium">
             <p><strong>Hi! We&apos;re Nick and Baileigh, and we&apos;re the proud parents behind Kindred Cards.</strong></p>
