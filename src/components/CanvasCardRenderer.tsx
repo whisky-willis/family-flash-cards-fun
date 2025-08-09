@@ -374,7 +374,7 @@ export const CanvasCardRenderer = forwardRef<CanvasCardRendererRef, CanvasCardRe
       if (card.name) {
         const fontFamily = getFontFamily(deckFont);
         // Use Tailwind's text-3xl ≈ 30px; mapCSSFontToCanvas adjusts per font family
-        ctx.font = mapCSSFontToCanvas(30, fontFamily, dpr);
+        ctx.font = mapCSSFontToCanvas(36, fontFamily, dpr);
         console.log('📝 Name ctx.font:', ctx.font, 'dpr:', dpr);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
