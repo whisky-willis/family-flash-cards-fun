@@ -104,46 +104,54 @@ const About = () => {
             </h1>
           </header>
 
-          <section aria-label="Photo placeholders" className="mb-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <section aria-labelledby="intro" className="text-lg leading-relaxed text-foreground/80 font-medium">
+            <div className="grid gap-8 md:grid-cols-2 md:items-start">
+              <div className="space-y-6">
+                <p><strong>Hi! We&apos;re Nick and Baileigh, and we&apos;re the proud parents behind Kindred Cards.</strong></p>
+                <p>We&apos;re a British family living our New York adventure. In 2022, we took a leap of faith and moved from the UK to New York, planning to stay for just two years. What started as an exciting opportunity has turned into an incredible three-year journey.</p>
+                <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our American adventure. But as new parents living an ocean away from home, we quickly realized we faced a unique challenge that many modern families know all too well.</p>
+              </div>
               <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
                 <AspectRatio ratio={4/3}>
-                  <img src="/placeholder.svg" alt="Family photo placeholder for Kindred Cards" className="w-full h-full object-cover" loading="lazy" />
+                  <img src="/placeholder.svg" alt="Nick, Baileigh, and George — family photo placeholder" className="w-full h-full object-cover" loading="lazy" />
                 </AspectRatio>
-                <figcaption className="sr-only">Family photo placeholder</figcaption>
-              </figure>
-              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
-                <AspectRatio ratio={4/3}>
-                  <img src="/placeholder.svg" alt="New York adventure placeholder image" className="w-full h-full object-cover" loading="lazy" />
-                </AspectRatio>
-                <figcaption className="sr-only">New York adventure placeholder</figcaption>
-              </figure>
-              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
-                <AspectRatio ratio={4/3}>
-                  <img src="/placeholder.svg" alt="Parents and baby placeholder image" className="w-full h-full object-cover" loading="lazy" />
-                </AspectRatio>
-                <figcaption className="sr-only">Parents and baby placeholder</figcaption>
+                <figcaption className="sr-only">Family photo</figcaption>
               </figure>
             </div>
           </section>
 
-          <section aria-labelledby="intro" className="space-y-6 text-lg leading-relaxed text-foreground/80 font-medium">
-            <p><strong>Hi! We&apos;re Nick and Baileigh, and we&apos;re the proud parents behind Kindred Cards.</strong></p>
-            <p>We&apos;re a British family living our New York adventure. In 2022, we took a leap of faith and moved from the UK to New York, planning to stay for just two years. What started as an exciting opportunity has turned into an incredible three-year journey.</p>
-            <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our American adventure. But as new parents living an ocean away from home, we quickly realized we faced a unique challenge that many modern families know all too well.</p>
-          </section>
-
-          <section aria-labelledby="why" className="mt-10 space-y-6 text-lg leading-relaxed text-foreground/80 font-medium">
+          <section aria-labelledby="why" className="mt-10 text-lg leading-relaxed text-foreground/80 font-medium">
             <h2 id="why" className="text-3xl lg:text-4xl font-black text-foreground">Why We Created Kindred Cards</h2>
-            <p>As new parents living an ocean away from home, we faced a challenge that many modern families know all too well: how do you help your child truly know their family and friends when distance keeps you apart?</p>
-            <p>While FaceTime calls and occasional visits are wonderful, we wanted George to understand that his grandparents, aunts, uncles, and family friends are real people with stories, personalities, and love to share—not just faces on a screen.</p>
-            <p>That&apos;s when the idea for Kindred Cards was born. We wanted to create something educational and engaging that would help George learn about his family back home in a way that encourages storytelling, builds connections, and supports his development.</p>
+            <div className="grid gap-8 md:grid-cols-2 md:items-start">
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
+                <AspectRatio ratio={4/3}>
+                  <img src="/placeholder.svg" alt="Helping kids know family from afar — placeholder image" className="w-full h-full object-cover" loading="lazy" />
+                </AspectRatio>
+                <figcaption className="sr-only">Why we created Kindred Cards</figcaption>
+              </figure>
+              <div className="space-y-6">
+                <p>As new parents living an ocean away from home, we faced a challenge that many modern families know all too well: how do you help your child truly know their family and friends when distance keeps you apart?</p>
+                <p>While FaceTime calls and occasional visits are wonderful, we wanted George to understand that his grandparents, aunts, uncles, and family friends are real people with stories, personalities, and love to share—not just faces on a screen.</p>
+                <p>That&apos;s when the idea for Kindred Cards was born. We wanted to create something educational and engaging that would help George learn about his family back home in a way that encourages storytelling, builds connections, and supports his development.</p>
+              </div>
+            </div>
           </section>
 
-          <section aria-labelledby="mission" className="mt-10 space-y-6 text-lg leading-relaxed text-foreground/80 font-medium">
+          <section aria-labelledby="mission" className="mt-10 text-lg leading-relaxed text-foreground/80 font-medium">
             <h2 id="mission" className="text-3xl lg:text-4xl font-black text-foreground">Our Mission</h2>
-            <p>We believe every child deserves to know their family story, no matter how far apart they may be. Kindred Cards transforms the challenge of distance into an opportunity for deeper connection, turning family learning into playtime and creating lasting bonds that span continents.</p>
-            <p>From our family to yours,<br /><strong>Nick, Baileigh &amp; George</strong></p>
+            <div className="grid gap-8 md:grid-cols-2 md:items-start">
+              <div className="space-y-6">
+                <p>We believe every child deserves to know their family story, no matter how far apart they may be. Kindred Cards transforms the challenge of distance into an opportunity for deeper connection, turning family learning into playtime and creating lasting bonds that span continents.</p>
+                <p>From our family to yours,<br /><strong>Nick, Baileigh &amp; George</strong></p>
+              </div>
+              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
+                <AspectRatio ratio={4/3}>
+                  <img src="/placeholder.svg" alt="Kindred Cards mission — connection through play placeholder" className="w-full h-full object-cover" loading="lazy" />
+                </AspectRatio>
+                <figcaption className="sr-only">Our mission</figcaption>
+              </figure>
+            </div>
           </section>
         </main>
       </div>
