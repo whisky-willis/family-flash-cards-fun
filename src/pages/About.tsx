@@ -114,7 +114,7 @@ const About = () => {
               </div>
               <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted">
                 <AspectRatio ratio={4/3}>
-                  <img src="/placeholder.svg" alt="Nick, Baileigh, and George — family photo placeholder" className="w-full h-full object-cover" loading="lazy" />
+                  <img src="/lovable-uploads/21d308a1-9d43-4011-addf-cc7b1284bf3e.png" alt="Family photo of Nick, Baileigh, and George — Kindred Cards" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 </AspectRatio>
                 <figcaption className="sr-only">Family photo</figcaption>
               </figure>
