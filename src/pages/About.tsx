@@ -1,22 +1,20 @@
-
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { SignInModal } from "@/components/SignInModal";
 import { useEffect, useState } from "react";
-
 const About = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const [showSignInModal, setShowSignInModal] = useState(false);
 
   // SEO: set title, description, canonical
   useEffect(() => {
     const title = "About Us | Kindred Cards";
     document.title = title;
-
     const metaDescContent = "About Kindred Cards: our family story, why we created it, and our mission to help kids connect with loved ones across distances.";
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
@@ -25,7 +23,6 @@ const About = () => {
       document.head.appendChild(meta);
     }
     meta.content = metaDescContent.slice(0, 160);
-
     const canonicalHref = `${window.location.origin}/about`;
     let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!link) {
@@ -35,9 +32,7 @@ const About = () => {
     }
     link.href = canonicalHref;
   }, []);
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+  return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Organic background shapes inspired by Art Center */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-art-pink rounded-full filter blur-xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
@@ -57,19 +52,11 @@ const About = () => {
           <div className="flex justify-between items-center h-16 md:justify-between">
             <div className="flex items-center space-x-8 flex-1 md:flex-initial">
               <div className="flex items-center space-x-3">
-                <img 
-                  src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png" 
-                  alt="Kindred Cards" 
-                  className="h-12 w-32 object-cover object-center cursor-pointer" 
-                  onClick={() => navigate('/')}
-                />
+                <img src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png" alt="Kindred Cards" className="h-12 w-32 object-cover object-center cursor-pointer" onClick={() => navigate('/')} />
               </div>
               <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
                 <span className="text-primary font-bold cursor-pointer">About</span>
-                <span 
-                  className="text-foreground/70 hover:text-foreground cursor-pointer" 
-                  onClick={() => navigate('/#card-examples')}
-                >
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/#card-examples')}>
                   Examples
                 </span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
@@ -79,15 +66,11 @@ const About = () => {
               <Button onClick={() => navigate('/create')} size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                 Create Cards
               </Button>
-              {user ? (
-                <Button onClick={() => navigate('/profile')} variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
+              {user ? <Button onClick={() => navigate('/profile')} variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                   Profile
-                </Button>
-              ) : (
-                <Button onClick={() => setShowSignInModal(true)} variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
+                </Button> : <Button onClick={() => setShowSignInModal(true)} variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                   Sign In
-                </Button>
-              )}
+                </Button>}
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">
                 0
               </div>
@@ -99,9 +82,7 @@ const About = () => {
       <div className="container mx-auto px-4 py-12 relative z-10">
         <main role="main" className="max-w-4xl mx-auto">
           <header className="text-center mb-12">
-            <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-6 leading-tight">
-              About Us
-            </h1>
+            <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-6 leading-tight">Our Story</h1>
           </header>
 
 
@@ -156,12 +137,7 @@ const About = () => {
         </main>
       </div>
       
-      <SignInModal 
-        open={showSignInModal} 
-        onOpenChange={setShowSignInModal} 
-      />
-    </div>
-  );
+      <SignInModal open={showSignInModal} onOpenChange={setShowSignInModal} />
+    </div>;
 };
-
 export default About;
