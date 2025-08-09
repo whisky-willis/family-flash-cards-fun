@@ -373,6 +373,29 @@ export const useSupabaseCardsStorage = () => {
       if (user) {
         // Load authenticated user's cards
         console.log('🔑 Loading cards for authenticated user:', user.id);
+
+        // Check if the user has any collections; if none, don't load standalone cards
+        try {
+          const { count, error: collectionsError } = await supabase
+            .from('card_collections')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id);
+
+          if (collectionsError) {
+            console.warn('⚠️ Could not check collections count, proceeding to load cards:', collectionsError);
+          } else if ((count ?? 0) === 0) {
+            console.log('🛑 No collections found for user - skipping card load and returning empty state');
+            const currentLoadedFromDraft = loadedFromDraftRef.current;
+            if (!currentLoadedFromDraft || forceRefresh) {
+              setCards([]);
+            }
+            setIsInitialized(true);
+            return;
+          }
+        } catch (e) {
+          console.warn('⚠️ Exception while checking collections count, proceeding:', e);
+        }
+
         query = query.eq('user_id', user.id);
       } else {
         // Load guest session cards
