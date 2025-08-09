@@ -120,18 +120,10 @@ const About = () => {
           </section>
 
           <section aria-labelledby="mission" className="mt-10 text-lg leading-relaxed text-foreground/80 font-medium">
-            <h2 id="mission" className="text-3xl lg:text-4xl font-black text-foreground">Our Mission</h2>
-            <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
-              <div className="space-y-6">
-                <p>We believe every child deserves to know their family story, no matter how far apart they may be. Kindred Cards transforms the challenge of distance into an opportunity for deeper connection, turning family learning into playtime and creating lasting bonds that span continents.</p>
-                <p>From our family to yours,<br /><strong>Nick, Baileigh &amp; George</strong></p>
-              </div>
-              <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
-                <div className="relative w-full h-64 md:h-full">
-                  <img src="/placeholder.svg" alt="Kindred Cards mission — connection through play placeholder" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-                </div>
-                <figcaption className="sr-only">Our mission</figcaption>
-              </figure>
+            <h2 id="mission" className="text-3xl lg:text-4xl font-black text-foreground text-center mb-8">Our Mission</h2>
+            <div className="max-w-3xl mx-auto space-y-6 text-center">
+              <p>We believe every child deserves to know their family story, no matter how far apart they may be. Kindred Cards transforms the challenge of distance into an opportunity for deeper connection, turning family learning into playtime and creating lasting bonds that span continents.</p>
+              <p>From our family to yours,<br /><strong>Nick, Baileigh &amp; George</strong></p>
             </div>
           </section>
         </main>
