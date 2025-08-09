@@ -107,7 +107,7 @@ const About = () => {
             <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
               <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
                 <div className="relative w-full h-64 md:h-full">
-                  <img src="/lovable-uploads/87b03f89-babe-484c-a200-32b26137e241.png" alt="Grandparent carrying child on a country path — family connection" className="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+                  <img src="/lovable-uploads/87b03f89-babe-484c-a200-32b26137e241.png" alt="Grandparent carrying child on a country path — family connection" className="absolute inset-0 w-full h-full object-cover scale-110" loading="lazy" decoding="async" />
                 </div>
                 <figcaption className="sr-only">Why we created Kindred Cards</figcaption>
               </figure>
