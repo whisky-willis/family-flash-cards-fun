@@ -38,7 +38,13 @@ Deno.serve(async (req) => {
     const headers = Object.fromEntries(req.headers)
 
     // Verify webhook signature from Supabase Auth Email Hooks
-    const wh = new Webhook(hookSecret)
+    let wh: Webhook;
+    try {
+      wh = new Webhook(hookSecret);
+    } catch (e) {
+      console.warn('send-email: hook secret not base64, using btoa fallback');
+      wh = new Webhook(btoa(hookSecret));
+    }
     const {
       user,
       email_data: { token, token_hash, redirect_to, email_action_type },
