@@ -17,7 +17,7 @@ interface MagicLinkEmailProps {
   email_action_type: string
   redirect_to: string
   token_hash: string
-  token: string
+  brand_logo_url?: string
 }
 
 const styles = {
@@ -63,20 +63,28 @@ const styles = {
     color: '#0f172a',
     fontFamily: 'monospace',
   } as React.CSSProperties,
-  footer: {
-    color: '#64748b',
-    fontSize: '12px',
-    lineHeight: '20px',
-    marginTop: '16px',
-  } as React.CSSProperties,
+footer: {
+  color: '#64748b',
+  fontSize: '12px',
+  lineHeight: '20px',
+  marginTop: '16px',
+} as React.CSSProperties,
+logoSection: {
+  textAlign: 'center',
+  marginBottom: '12px',
+} as React.CSSProperties,
+logo: {
+  display: 'block',
+  margin: '0 auto 8px',
+} as React.CSSProperties,
 }
 
 export const MagicLinkEmail = ({
-  token,
   supabase_url,
   email_action_type,
   redirect_to,
   token_hash,
+  brand_logo_url,
 }: MagicLinkEmailProps) => {
   const actionTextMap: Record<string, string> = {
     magiclink: 'Log in to Kindred Cards',
@@ -98,7 +106,12 @@ export const MagicLinkEmail = ({
       <Preview>{actionText}</Preview>
       <Body style={styles.main}>
         <Container style={styles.container}>
-          <Heading style={styles.h1}>Kindred Cards</Heading>
+<Section style={styles.logoSection}>
+  {brand_logo_url ? (
+    <img src={brand_logo_url} alt="Kindred Cards logo" width="120" height="40" style={styles.logo} />
+  ) : null}
+  <Heading style={styles.h1}>Kindred Cards</Heading>
+</Section>
           <Text style={styles.sub}>{actionText}</Text>
 
           <Section>
@@ -109,8 +122,6 @@ export const MagicLinkEmail = ({
 
           <Hr />
 
-          <Text>If the button doesn’t work, copy and paste this temporary code:</Text>
-          <code style={styles.code}>{token}</code>
 
           <Text style={styles.footer}>
             If you didn’t request this email, you can safely ignore it.

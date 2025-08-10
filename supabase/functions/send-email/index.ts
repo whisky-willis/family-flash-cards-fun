@@ -66,15 +66,23 @@ Deno.serve(async (req) => {
 
     const subject = subjectMap[email_action_type] || 'Your Kindred Cards link'
 
-    const html = await renderAsync(
-      React.createElement(MagicLinkEmail, {
-        supabase_url: supabaseUrl,
-        token,
-        token_hash,
-        redirect_to,
-        email_action_type,
-      })
-    )
+const brandLogoUrl = (() => {
+  try {
+    return new URL('/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png', redirect_to).toString();
+  } catch {
+    return undefined;
+  }
+})();
+
+const html = await renderAsync(
+  React.createElement(MagicLinkEmail, {
+    supabase_url: supabaseUrl,
+    token_hash,
+    redirect_to,
+    email_action_type,
+    brand_logo_url: brandLogoUrl,
+  })
+)
 
     const fromAddress = 'Kindred Cards <onboarding@resend.dev>'
 
