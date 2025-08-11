@@ -91,7 +91,7 @@ const About = () => {
               <div className="space-y-6">
                 <p><strong>Hi! We&apos;re Nick and Baileigh, and we&apos;re the proud parents behind Kindred Cards.</strong></p>
                 <p>In 2022, we took a leap of faith and moved from the UK to New York,  kicking off our American adventure.</p>
-                <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our American adventure. But as new parents living an ocean away from home, we quickly realized we faced a unique challenge that many modern families know all too well.</p>
+                <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our journey. But as new parents living an ocean away from home, we quickly realized we faced a challenge that many modern families know all too well.</p>
               </div>
               <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
                 <div className="relative w-full h-64 md:h-full">
