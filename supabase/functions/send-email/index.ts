@@ -66,19 +66,43 @@ Deno.serve(async (req) => {
 
     const subject = subjectMap[email_action_type] || 'Your Kindred Cards link'
 
-const brandLogoUrl = (() => {
+const appOrigin = 'https://kindred-cards.com'
+
+const defaultPathMap: Record<string, string> = {
+  magiclink: '/profile',
+  signup: '/create',
+  recovery: '/profile',
+  email_change: '/profile',
+  invite: '/profile',
+}
+
+const safeRedirectTo = (() => {
   try {
-    return new URL('/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png', redirect_to).toString();
+    const fallback = appOrigin + (defaultPathMap[email_action_type] || '/')
+    const base = redirect_to || fallback
+    const url = new URL(base)
+    return appOrigin + url.pathname + url.search + url.hash
   } catch {
-    return undefined;
+    return appOrigin + (defaultPathMap[email_action_type] || '/')
   }
-})();
+})()
+
+console.log('send-email redirect override', {
+  email_action_type,
+  original_redirect_to: redirect_to,
+  safeRedirectTo,
+})
+
+const brandLogoUrl = new URL(
+  '/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png',
+  appOrigin
+).toString()
 
 const html = await renderAsync(
   React.createElement(MagicLinkEmail, {
     supabase_url: supabaseUrl,
     token_hash,
-    redirect_to,
+    redirect_to: safeRedirectTo,
     email_action_type,
     brand_logo_url: brandLogoUrl,
   })
