@@ -111,7 +111,7 @@ const About = () => {
                 </div>
                 <figcaption className="sr-only">Why we created Kindred Cards</figcaption>
               </figure>
-              <div className="space-y-6">
+              <div className="space-y-6 -mt-4 md:-mt-6">
                 <p>As new parents living an ocean away from home, we faced a challenge that many modern families know all too well: how do you help your child truly know their family and friends when distance keeps you apart?</p>
                 <p>While FaceTime calls and occasional visits are wonderful, we wanted George to understand that his grandparents, aunts, uncles, and family friends are real people with stories, personalities, and love to share—not just faces on a screen.</p>
                 <p>That&apos;s when the idea for Kindred Cards was born. We wanted to create something educational and engaging that would help George learn about his family back home in a way that encourages storytelling, builds connections, and supports his development.</p>
