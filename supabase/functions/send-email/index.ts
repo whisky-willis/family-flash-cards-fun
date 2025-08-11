@@ -108,7 +108,7 @@ const html = await renderAsync(
   })
 )
 
-    const fromAddress = 'Kindred Cards <onboarding@resend.dev>'
+    const fromAddress = 'Kindred Cards <noreply@kindred-cards.com>'
 
     const { error } = await resend.emails.send({
       from: fromAddress,
