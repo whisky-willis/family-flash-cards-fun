@@ -311,8 +311,8 @@ const CreateCards = () => {
       return; // Don't proceed if image generation failed
     }
 
-    // Wait for cards to be refreshed with new image URLs
-    await refreshCards();
+    // Wait for cards to be refreshed with new image URLs from the database
+    await refreshCards(true);
     
     // Navigate to order page
     navigate('/order', { 

@@ -28,8 +28,12 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let parsedBody: any = null;
+  let sessionId: string | null = null;
+
   try {
-    const { sessionId } = await req.json();
+    parsedBody = await req.json();
+    sessionId = parsedBody.sessionId;
 
     if (!sessionId) {
       throw new Error("Session ID is required");
@@ -73,7 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Found ${cardIds.length} card IDs in order: ${cardIds.join(', ')}`);
 
     // Get actual card records from database using the card IDs
-    const { data: cards, error: cardsError } = await supabase
+    const { data: dbCards, error: cardsError } = await supabase
       .from('cards')
       .select('*')
       .in('id', cardIds);
@@ -82,18 +86,58 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Error fetching cards: ${cardsError.message}`);
     }
 
-    if (!cards || cards.length === 0) {
-      throw new Error(`No cards found with IDs: ${cardIds.join(', ')}`);
+    let cardsToWorkWith = dbCards ?? [];
+    // Insert any missing cards based on order.cards_data
+    const existingIds = new Set((cardsToWorkWith ?? []).map((c: any) => c.id));
+    const missingIds = cardIds.filter((id: string) => !existingIds.has(id));
+
+    if (missingIds.length > 0) {
+      console.log(`⚠️ Missing ${missingIds.length} cards in DB. Inserting from order data...`);
+      const inserts = missingIds.map((id: string) => {
+        const src = cardsData.find((c: any) => c.id === id) as Card | undefined;
+        return {
+          id: id,
+          name: src?.name ?? 'Unnamed',
+          relationship: src?.relationship ?? null,
+          date_of_birth: src?.date_of_birth ?? null,
+          favorite_color: src?.favorite_color ?? null,
+          hobbies: src?.hobbies ?? null,
+          fun_fact: src?.fun_fact ?? null,
+          photo: (src as any)?.photo ?? src?.photo_url ?? null,
+          image_position: src?.image_position ?? { x: 0, y: 0, scale: 1 },
+          front_image_url: (src as any)?.front_image_url ?? null,
+          back_image_url: (src as any)?.back_image_url ?? null,
+          print_ready: Boolean((src as any)?.front_image_url && (src as any)?.back_image_url) || false,
+          user_id: orderData.user_id ?? null,
+          order_id: orderData.id
+        };
+      });
+
+      const { data: inserted, error: insertError } = await supabase
+        .from('cards')
+        .insert(inserts)
+        .select('*');
+
+      if (insertError) {
+        console.error('Error inserting missing cards:', insertError);
+        // Continue with whatever cards we have
+      } else {
+        cardsToWorkWith = [...cardsToWorkWith, ...(inserted ?? [])];
+        console.log(`✅ Inserted ${inserted?.length ?? 0} missing cards`);
+      }
     }
 
-    console.log(`Found ${cards.length} cards in database`);
+    if (!cardsToWorkWith || cardsToWorkWith.length === 0) {
+      throw new Error(`No cards found or inserted for IDs: ${cardIds.join(', ')}`);
+    }
 
+    console.log(`Found ${cardsToWorkWith.length} cards to process`);
     // Check if cards are already processed
-    const alreadyProcessedCards = cards.filter(card => 
+    const alreadyProcessedCards = cardsToWorkWith.filter(card => 
       card.front_image_url && card.back_image_url && card.print_ready
     );
 
-    const cardsToProcess = cards.filter(card => 
+    const cardsToProcess = cardsToWorkWith.filter(card => 
       !card.front_image_url || !card.back_image_url || !card.print_ready
     );
 
@@ -208,18 +252,13 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in process-order-cards function:", error);
     
-    // Try to mark order as failed if we have a sessionId
+    // Try to mark order as failed if we have a sessionId parsed earlier
     try {
-      const body = await req.text();
-      const parsedBody = JSON.parse(body);
-      const sessionId = parsedBody.sessionId;
-      
       if (sessionId) {
         const supabase = createClient(
           Deno.env.get("SUPABASE_URL") ?? "",
           Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
         );
-        
         await supabase
           .from('orders')
           .update({ processing_status: 'failed' })
