@@ -43,6 +43,7 @@ const styles = {
     color: '#475569',
     fontSize: '14px',
     margin: '0 0 24px 0',
+    textAlign: 'center',
   } as React.CSSProperties,
   button: {
     display: 'inline-block',
@@ -79,6 +80,10 @@ logoSection: {
   width: '100%',
   maxWidth: '160px',
   height: 'auto',
+} as React.CSSProperties,
+ctaSection: {
+  textAlign: 'center',
+  margin: '16px 0',
 } as React.CSSProperties,
 }
 
@@ -117,7 +122,7 @@ export const MagicLinkEmail = ({
 </Section>
           <Text style={styles.sub}>{actionText}</Text>
 
-          <Section>
+          <Section style={styles.ctaSection}>
             <Link href={linkHref} target="_blank" style={styles.button}>
               {actionText}
             </Link>
