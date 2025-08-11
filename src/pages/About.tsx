@@ -91,7 +91,7 @@ const About = () => {
               <div className="space-y-6">
                 <p><strong>Hi! We&apos;re Nick and Baileigh, and we&apos;re the proud parents behind Kindred Cards.</strong></p>
                 <p>In 2022, we took a leap of faith and moved from the UK to New York,  kicking off our American adventure.</p>
-                <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our journey. But as new parents living an ocean away from home, we quickly realized we faced a challenge that many modern families know all too well.</p>
+                <p>In July 2024, our world changed forever when George arrived—born right here in New York. Watching him grow and discover the world around him has been the most amazing part of our American adventure. But as new parents living an ocean away from home, we quickly realized we faced a unique challenge that many modern families know all too well.</p>
               </div>
               <figure className="rounded-2xl overflow-hidden shadow-2xl bg-muted md:h-full">
                 <div className="relative w-full h-64 md:h-full">
@@ -112,7 +112,7 @@ const About = () => {
                 <figcaption className="sr-only">Why we created Kindred Cards</figcaption>
               </figure>
               <div className="space-y-6">
-                
+                <p>As new parents living an ocean away from home, we faced a challenge that many modern families know all too well: how do you help your child truly know their family and friends when distance keeps you apart?</p>
                 <p>While FaceTime calls and occasional visits are wonderful, we wanted George to understand that his grandparents, aunts, uncles, and family friends are real people with stories, personalities, and love to share—not just faces on a screen.</p>
                 <p>That&apos;s when the idea for Kindred Cards was born. We wanted to create something educational and engaging that would help George learn about his family back home in a way that encourages storytelling, builds connections, and supports his development.</p>
               </div>
