@@ -73,9 +73,12 @@ logoSection: {
   textAlign: 'center',
   marginBottom: '12px',
 } as React.CSSProperties,
-logo: {
+  logo: {
   display: 'block',
   margin: '0 auto 8px',
+  width: '100%',
+  maxWidth: '160px',
+  height: 'auto',
 } as React.CSSProperties,
 }
 
@@ -108,7 +111,7 @@ export const MagicLinkEmail = ({
         <Container style={styles.container}>
 <Section style={styles.logoSection}>
   {brand_logo_url ? (
-    <img src={brand_logo_url} alt="Kindred Cards logo" width="120" height="40" style={styles.logo} />
+    <img src={brand_logo_url} alt="Kindred Cards logo" width="160" style={styles.logo} />
   ) : null}
   <Heading style={styles.h1}>Kindred Cards</Heading>
 </Section>
