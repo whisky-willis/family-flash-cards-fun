@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useDraft } from './useDraft';
 import { useAuth } from './useAuth';
-
+import { validateFileUpload } from '@/lib/security';
 export interface FamilyCard {
   id: string;
   name: string;
@@ -94,6 +94,13 @@ export const useSupabaseCardsStorage = () => {
   // Upload image to Supabase Storage
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
+      // Client-side validation before upload (defense-in-depth)
+      const validation = validateFileUpload(file);
+      if (!validation.valid) {
+        toast.error(`Invalid file: ${validation.error}`);
+        return null;
+      }
+
       const sessionId = getSessionId();
       const fileExt = file.name.split('.').pop();
       const fileName = `${sessionId}/${Date.now()}.${fileExt}`;

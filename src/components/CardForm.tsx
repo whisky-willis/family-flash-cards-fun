@@ -151,7 +151,7 @@ export const CardForm = ({ initialData = {}, onSubmit, onCancel, onPreviewChange
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file before processing
+    // Validate file before processing (UI-level)
     const validation = validateFileUpload(file);
     if (!validation.valid) {
       toast.error(`Invalid File: ${validation.error}`);

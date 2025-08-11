@@ -400,6 +400,7 @@ const CreateCards = () => {
   };
 
   const handleUploadImage = async (file: File): Promise<string | null> => {
+    // Redundant validation happens in the hook as well
     return await uploadImage(file);
   };
 
