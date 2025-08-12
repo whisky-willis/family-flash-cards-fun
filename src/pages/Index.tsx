@@ -21,21 +21,29 @@ const Index = () => {
   useEffect(() => {
     const currentName = names[currentNameIndex];
     let charIndex = 0;
+    let timeoutId: number | undefined;
     setDisplayedText('');
     setIsTyping(true);
-    const typeInterval = setInterval(() => {
+
+    const typeInterval = window.setInterval(() => {
       if (charIndex <= currentName.length) {
         setDisplayedText(currentName.slice(0, charIndex));
         charIndex++;
       } else {
-        clearInterval(typeInterval);
+        window.clearInterval(typeInterval);
         setIsTyping(false);
-        setTimeout(() => {
+        timeoutId = window.setTimeout(() => {
           setCurrentNameIndex(prevIndex => (prevIndex + 1) % names.length);
         }, 1500 + currentName.length * 100);
       }
     }, 100);
-    return () => clearInterval(typeInterval);
+
+    return () => {
+      window.clearInterval(typeInterval);
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
   }, [currentNameIndex]);
   return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Organic background shapes inspired by Art Center */}
