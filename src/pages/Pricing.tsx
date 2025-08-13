@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
 const Pricing = () => {
   const navigate = useNavigate();
 
@@ -9,9 +8,7 @@ const Pricing = () => {
   useEffect(() => {
     const title = "Pricing | Kindred Cards – $3.99 or 4 for $14.99";
     document.title = title;
-
-    const metaDescContent =
-      "Card pricing: $3.99 per card or 4-card bundle for $14.99. Create custom family learning cards.";
+    const metaDescContent = "Card pricing: $3.99 per card or 4-card bundle for $14.99. Create custom family learning cards.";
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement("meta");
@@ -19,7 +16,6 @@ const Pricing = () => {
       document.head.appendChild(meta);
     }
     meta.content = metaDescContent.slice(0, 160);
-
     const canonicalHref = `${window.location.origin}/pricing`;
     let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!link) {
@@ -37,34 +33,31 @@ const Pricing = () => {
       "@type": "Product",
       name: "Kindred Cards – Custom Family Learning Cards",
       description: metaDescContent,
-      brand: { "@type": "Brand", name: "Kindred Cards" },
-      offers: [
-        {
-          "@type": "Offer",
-          price: "3.99",
-          priceCurrency: "USD",
-          url: canonicalHref,
-          availability: "https://schema.org/InStock"
-        },
-        {
-          "@type": "Offer",
-          name: "4-card bundle",
-          price: "14.99",
-          priceCurrency: "USD",
-          url: canonicalHref,
-          availability: "https://schema.org/InStock"
-        }
-      ]
+      brand: {
+        "@type": "Brand",
+        name: "Kindred Cards"
+      },
+      offers: [{
+        "@type": "Offer",
+        price: "3.99",
+        priceCurrency: "USD",
+        url: canonicalHref,
+        availability: "https://schema.org/InStock"
+      }, {
+        "@type": "Offer",
+        name: "4-card bundle",
+        price: "14.99",
+        priceCurrency: "USD",
+        url: canonicalHref,
+        availability: "https://schema.org/InStock"
+      }]
     });
     document.head.appendChild(script);
-
     return () => {
       document.head.removeChild(script);
     };
   }, []);
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+  return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background accents */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-art-pink rounded-full blur-xl opacity-30 -translate-x-1/2 -translate-y-1/2" />
@@ -77,12 +70,7 @@ const Pricing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img
-                src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png"
-                alt="Kindred Cards logo"
-                className="h-12 w-32 object-cover object-center cursor-pointer"
-                onClick={() => navigate("/")}
-              />
+              <img src="/lovable-uploads/5128289b-d7c7-4d2c-9975-2651dcb38ae0.png" alt="Kindred Cards logo" className="h-12 w-32 object-cover object-center cursor-pointer" onClick={() => navigate("/")} />
             </div>
             <div className="hidden md:flex space-x-6 text-sm font-medium uppercase tracking-wide">
               <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/about')}>About</span>
@@ -100,9 +88,7 @@ const Pricing = () => {
       <main role="main" className="relative z-10">
         {/* Header */}
         <header className="text-center mt-10 px-6">
-          <h1 className="text-5xl lg:text-6xl font-black text-foreground leading-tight">
-            Card Pricing: $3.99 or 4 for $14.99
-          </h1>
+          <h1 className="text-5xl lg:text-6xl font-black text-foreground leading-tight">Our Pricing</h1>
           <p className="mt-4 text-lg text-foreground/80 font-medium max-w-2xl mx-auto">
             Simple, transparent pricing. Create beautiful custom family learning cards.
           </p>
@@ -153,8 +139,6 @@ const Pricing = () => {
           <p className="text-foreground/70">Need more than 4? Add as many as you like at checkout.</p>
         </section>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Pricing;
