@@ -1,10 +1,27 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const corsBaseHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  let allowOrigin = "*";
+  if (origin && allowedOrigins.length > 0) {
+    allowOrigin = allowedOrigins.includes(origin) ? origin : "";
+  } else if (origin) {
+    allowOrigin = origin;
+  }
+  const headers: Record<string, string> = { ...corsBaseHeaders };
+  if (allowOrigin) headers["Access-Control-Allow-Origin"] = allowOrigin;
+  return headers;
 };
 
 interface Card {
@@ -25,7 +42,8 @@ interface Card {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    const origin = req.headers.get("origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
   }
 
   let parsedBody: any = null;
@@ -40,6 +58,40 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`Processing cards for order session: ${sessionId}`);
+
+    // Enforce origin allowlist if configured
+    const origin = req.headers.get("origin");
+    if (origin && allowedOrigins.length > 0 && !allowedOrigins.includes(origin)) {
+      return new Response(JSON.stringify({ error: "Origin not allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(null) },
+      });
+    }
+
+    // Verify Stripe payment status before processing
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-10-16",
+    });
+    let checkoutSession;
+    try {
+      checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
+    } catch (e) {
+      console.error("Stripe session retrieval failed:", e);
+      return new Response(JSON.stringify({ error: "Payment verification failed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(origin) },
+      });
+    }
+    if (!checkoutSession || checkoutSession.payment_status !== "paid" || checkoutSession.status !== "complete") {
+      console.warn("Payment not completed for session:", sessionId, {
+        status: checkoutSession?.status,
+        payment_status: checkoutSession?.payment_status,
+      });
+      return new Response(JSON.stringify({ error: "Payment not completed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(origin) },
+      });
+    }
 
     // Initialize Supabase client
     const supabase = createClient(
@@ -245,7 +297,7 @@ const handler = async (req: Request): Promise<Response> => {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        ...corsHeaders,
+        ...getCorsHeaders(origin),
       },
     });
 
@@ -272,7 +324,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(req.headers.get("origin")) },
       }
     );
   }

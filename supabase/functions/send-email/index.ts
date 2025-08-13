@@ -8,21 +8,37 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const corsBaseHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  let allowOrigin = '*';
+  if (origin && allowedOrigins.length > 0) {
+    allowOrigin = allowedOrigins.includes(origin) ? origin : '';
+  } else if (origin) {
+    allowOrigin = origin;
+  }
+  const headers: Record<string, string> = { ...corsBaseHeaders };
+  if (allowOrigin) headers['Access-Control-Allow-Origin'] = allowOrigin;
+  return headers;
+};
 
 Deno.serve(async (req) => {
   // CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) })
   }
 
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: { 'Content-Type': 'application/json', ...getCorsHeaders(req.headers.get('origin')) },
     })
   }
 
@@ -123,13 +139,13 @@ const html = await renderAsync(
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: { 'Content-Type': 'application/json', ...getCorsHeaders(req.headers.get('origin')) },
     })
   } catch (error: any) {
     console.error('send-email error:', error)
     return new Response(
       JSON.stringify({ error: error?.message || 'Unknown error' }),
-      { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      { status: 400, headers: { 'Content-Type': 'application/json', ...getCorsHeaders(req.headers.get('origin')) } }
     )
   }
 })

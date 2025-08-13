@@ -6,9 +6,25 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const resend = new Resend(resendApiKey);
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const corsBaseHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  let allowOrigin = "*";
+  if (origin && allowedOrigins.length > 0) {
+    allowOrigin = allowedOrigins.includes(origin) ? origin : "";
+  } else if (origin) {
+    allowOrigin = origin;
+  }
+  const headers: Record<string, string> = { ...corsBaseHeaders };
+  if (allowOrigin) headers["Access-Control-Allow-Origin"] = allowOrigin;
+  return headers;
 };
 
 interface Card {
@@ -51,6 +67,31 @@ function groupCardsBySession(cards: Card[]): Record<string, Card[]> {
   }, {} as Record<string, Card[]>);
 }
 
+// Basic HTML escape to prevent injection
+function escapeHtml(input: any): string {
+  const str = String(input ?? "");
+  return str.replace(/[&<>"'`=\/]/g, (s) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;',
+  } as Record<string,string>)[s] || s);
+}
+
+function isSafeHttpUrl(u?: string): string {
+  try {
+    if (!u) return "";
+    const url = new URL(u);
+    return (url.protocol === 'https:' || url.protocol === 'http:') ? u : "";
+  } catch {
+    return "";
+  }
+}
+
 // Function to generate email HTML with session grouping
 function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderData): string {
   const sessionCount = Object.keys(cardGroups).length;
@@ -58,27 +99,31 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
   const cacheBuster = Date.now();
   
   const sessionHTML = Object.entries(cardGroups).map(([sessionId, cards]) => {
-    const cardList = cards.map(card => `
+    const cardList = cards.map(card => {
+      const front = isSafeHttpUrl(card.front_image_url || "");
+      const back = isSafeHttpUrl(card.back_image_url || "");
+      return `
       <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
-        <h4 style="margin: 0 0 5px 0; color: #333;">${card.name}</h4>
+        <h4 style="margin: 0 0 5px 0; color: #333;">${escapeHtml(card.name)}</h4>
         <p style="margin: 5px 0; color: #666;">
           <strong>Images:</strong><br>
-          Front: ✓ <a href="${card.front_image_url ? `${card.front_image_url}?v=${cacheBuster}` : ''}" style="color: #2754C5;">View Image</a><br>
-          Back: ✓ <a href="${card.back_image_url ? `${card.back_image_url}?v=${cacheBuster}` : ''}" style="color: #2754C5;">View Image</a>
+          Front: ✓ <a href="${front ? `${front}?v=${cacheBuster}` : '#'}" style="color: #2754C5;">View Image</a><br>
+          Back: ✓ <a href="${back ? `${back}?v=${cacheBuster}` : '#'}" style="color: #2754C5;">View Image</a>
         </p>
-        ${card.front_image_url || card.back_image_url ? `
+        ${(front || back) ? `
         <div style="margin: 10px 0; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #2754C5;">
           <p style="margin: 0; font-size: 12px; color: #555;"><strong>Image URLs:</strong></p>
-          ${card.front_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Front:</strong> ${card.front_image_url}?v=${cacheBuster}</p>` : ''}
-          ${card.back_image_url ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Back:</strong> ${card.back_image_url}?v=${cacheBuster}</p>` : ''}
+          ${front ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Front:</strong> ${escapeHtml(`${front}?v=${cacheBuster}`)}</p>` : ''}
+          ${back ? `<p style="margin: 2px 0; font-size: 11px; word-break: break-all;"><strong>Back:</strong> ${escapeHtml(`${back}?v=${cacheBuster}`)}</p>` : ''}
         </div>` : ''}
       </div>
-    `).join('');
+      `;
+    }).join('');
     
     return `
       <div style="margin-bottom: 30px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; background-color: #f5f5f5;">
         <h3 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">
-          Session: ${sessionId.slice(-8)} (${cards.length} cards)
+          Session: ${escapeHtml(sessionId.slice(-8))} (${cards.length} cards)
         </h3>
         ${cardList}
       </div>
@@ -91,12 +136,12 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
       
       <div style="background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
         <h2 style="color: #34495e; margin-top: 0;">Order Summary</h2>
-        <p><strong>Customer:</strong> ${orderData.customer_name || 'Not provided'}</p>
-        <p><strong>Email:</strong> ${orderData.customer_email || 'Not provided'}</p>
+        <p><strong>Customer:</strong> ${escapeHtml(orderData.customer_name || 'Not provided')}</p>
+        <p><strong>Email:</strong> ${escapeHtml(orderData.customer_email || 'Not provided')}</p>
         <p><strong>Total Cards:</strong> ${totalCards}</p>
         <p><strong>Sessions:</strong> ${sessionCount}</p>
-        <p><strong>Order Total:</strong> $${(orderData.total_amount / 100).toFixed(2)}</p>
-        ${orderData.special_instructions ? `<p><strong>Special Instructions:</strong> ${orderData.special_instructions}</p>` : ''}
+        <p><strong>Order Total:</strong> $${((orderData.total_amount || 0) / 100).toFixed(2)}</p>
+        ${orderData.special_instructions ? `<p><strong>Special Instructions:</strong> ${escapeHtml(orderData.special_instructions)}</p>` : ''}
       </div>
       
       <h2 style="color: #34495e;">Cards by Session</h2>
@@ -116,14 +161,14 @@ function generateEmailHTML(cardGroups: Record<string, Card[]>, orderData: OrderD
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) });
   }
 
   // Check if Resend API key is configured
   if (!resendApiKey) {
     console.error("RESEND_API_KEY environment variable is not configured");
     return new Response(JSON.stringify({ error: "Email service not configured" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 500,
     });
   }
@@ -184,9 +229,9 @@ const handler = async (req: Request): Promise<Response> => {
       cards_data: cards
     });
 
-    // Get the recipient name from deck design in order details
     const recipientName = orderData.order_details?.deckDesign?.recipientName;
-    const emailSubject = recipientName ? `New Kindred Cards Order - for ${recipientName}` : 'New Kindred Cards Order';
+    const sanitizeSubject = (s: string) => String(s || '').replace(/[\r\n]/g, '').slice(0, 200);
+    const emailSubject = recipientName ? sanitizeSubject(`New Kindred Cards Order - for ${recipientName}`) : 'New Kindred Cards Order';
 
     // Send email
     const emailResponse = await resend.emails.send({
@@ -212,7 +257,7 @@ const handler = async (req: Request): Promise<Response> => {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        ...corsHeaders,
+        ...getCorsHeaders(req.headers.get('origin')),
       },
     });
   } catch (error: any) {
@@ -221,7 +266,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(req.headers.get('origin')) },
       }
     );
   }

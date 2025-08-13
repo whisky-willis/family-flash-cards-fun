@@ -3,9 +3,25 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const corsBaseHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  let allowOrigin = "*";
+  if (origin && allowedOrigins.length > 0) {
+    allowOrigin = allowedOrigins.includes(origin) ? origin : "";
+  } else if (origin) {
+    allowOrigin = origin;
+  }
+  const headers: Record<string, string> = { ...corsBaseHeaders };
+  if (allowOrigin) headers["Access-Control-Allow-Origin"] = allowOrigin;
+  return headers;
 };
 
 // Rate limiting map
@@ -31,16 +47,24 @@ const checkRateLimit = (clientIp: string, maxRequests: number = 5, windowMs: num
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) });
   }
 
   try {
-    // Rate limiting
+    // Rate limiting and origin allowlist
+    const origin = req.headers.get('origin');
+    if (origin && allowedOrigins.length > 0 && !allowedOrigins.includes(origin)) {
+      return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
+        status: 403,
+        headers: { ...getCorsHeaders(null), 'Content-Type': 'application/json' }
+      });
+    }
+
     const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
     if (!checkRateLimit(clientIp)) {
       return new Response(
         JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 429, headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -50,7 +74,7 @@ serve(async (req) => {
     if (!cards || !Array.isArray(cards) || cards.length === 0) {
       return new Response(
         JSON.stringify({ error: 'Invalid cards data provided' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -67,7 +91,7 @@ serve(async (req) => {
     if (!emailRegex.test(customerEmail)) {
       return new Response(
         JSON.stringify({ error: 'Invalid email format' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -154,7 +178,7 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(origin), "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
@@ -165,7 +189,7 @@ serve(async (req) => {
       : 'An error occurred while processing your request';
     
     return new Response(JSON.stringify({ error: sanitizedError }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 500,
     });
   }

@@ -4,21 +4,37 @@ import { Resend } from "npm:resend@2.0.0";
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const resend = new Resend(resendApiKey);
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const corsBaseHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  let allowOrigin = "*";
+  if (origin && allowedOrigins.length > 0) {
+    allowOrigin = allowedOrigins.includes(origin) ? origin : "";
+  } else if (origin) {
+    allowOrigin = origin;
+  }
+  const headers: Record<string, string> = { ...corsBaseHeaders };
+  if (allowOrigin) headers["Access-Control-Allow-Origin"] = allowOrigin;
+  return headers;
 };
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) });
   }
 
   // Check if Resend API key is configured
   if (!resendApiKey) {
     console.error("RESEND_API_KEY environment variable is not configured");
     return new Response(JSON.stringify({ error: "Email service not configured" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 500,
     });
   }
@@ -56,7 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        ...corsHeaders,
+        ...getCorsHeaders(req.headers.get('origin')),
       },
     });
   } catch (error: any) {
@@ -65,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(req.headers.get('origin')) },
       }
     );
   }
