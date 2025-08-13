@@ -253,6 +253,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      get_guest_session_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_request_header: {
+        Args: { _name: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _user_id: string

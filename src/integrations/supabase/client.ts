@@ -13,5 +13,27 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  global: {
+    fetch: (url, options: RequestInit = {}) => {
+      try {
+        const key = 'kindred-cards-guest-session';
+        let sessionId = localStorage.getItem(key);
+        if (!sessionId) {
+          const array = new Uint8Array(16);
+          crypto.getRandomValues(array);
+          const randomString = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+          sessionId = `guest_${Date.now()}_${randomString}`;
+          localStorage.setItem(key, sessionId);
+        }
+
+        const headers = new Headers(options.headers as HeadersInit | undefined);
+        headers.set('x-guest-session-id', sessionId);
+
+        return fetch(url, { ...options, headers });
+      } catch {
+        return fetch(url, options);
+      }
+    },
+  },
 });
