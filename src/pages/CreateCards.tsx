@@ -444,7 +444,7 @@ const CreateCards = () => {
               <div className="hidden lg:flex space-x-6 text-sm font-medium uppercase tracking-wide">
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">About</span>
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer">Examples</span>
-                <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/pricing')}>Pricing</span>
               </div>
             </div>
             <div className="flex items-center justify-between sm:justify-center md:justify-end sm:space-x-3 md:space-x-4 gap-2 sm:gap-0 md:gap-3">

@@ -59,7 +59,7 @@ const About = () => {
                 <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/#card-examples')}>
                   Examples
                 </span>
-                <span className="text-foreground/70 hover:text-foreground cursor-pointer">Pricing</span>
+                <span className="text-foreground/70 hover:text-foreground cursor-pointer" onClick={() => navigate('/pricing')}>Pricing</span>
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
