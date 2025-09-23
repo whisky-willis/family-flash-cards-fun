@@ -29,9 +29,17 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
 
         const headers = new Headers(options.headers as HeadersInit | undefined);
         headers.set('x-guest-session-id', sessionId);
+        
+        // Ensure proper content type for REST API requests
+        if (!headers.get('content-type') && url.includes('/rest/v1/')) {
+          headers.set('content-type', 'application/json');
+        }
 
+        console.log('🔗 Supabase request with guest session:', { url: url.split('?')[0], sessionId });
+        
         return fetch(url, { ...options, headers });
-      } catch {
+      } catch (error) {
+        console.error('❌ Error in supabase client fetch:', error);
         return fetch(url, options);
       }
     },
