@@ -30,12 +30,21 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
         const headers = new Headers(options.headers as HeadersInit | undefined);
         headers.set('x-guest-session-id', sessionId);
         
+        // Ensure API key and Authorization headers are present for all Supabase requests
+        if (!headers.has('apikey')) {
+          headers.set('apikey', SUPABASE_PUBLISHABLE_KEY);
+        }
+        if (!headers.has('Authorization')) {
+          headers.set('Authorization', `Bearer ${SUPABASE_PUBLISHABLE_KEY}`);
+        }
+        
         // Ensure proper content type for REST API requests
-        if (!headers.get('content-type') && url.includes('/rest/v1/')) {
+        const urlStr = typeof url === 'string' ? url : String(url);
+        if (!headers.get('content-type') && urlStr.includes('/rest/v1/')) {
           headers.set('content-type', 'application/json');
         }
 
-        console.log('🔗 Supabase request with guest session:', { url: url.split('?')[0], sessionId });
+        console.log('🔗 Supabase request with guest session:', { url: urlStr.split('?')[0], sessionId, hasAuth: headers.has('Authorization'), hasApiKey: headers.has('apikey') });
         
         return fetch(url, { ...options, headers });
       } catch (error) {
