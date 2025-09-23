@@ -14,13 +14,22 @@ const corsBaseHeaders = {
 
 const getCorsHeaders = (origin: string | null) => {
   let allowOrigin = "*";
+  
+  // If we have specific allowed origins and the origin is provided
   if (origin && allowedOrigins.length > 0) {
-    allowOrigin = allowedOrigins.includes(origin) ? origin : "";
+    allowOrigin = allowedOrigins.includes(origin) ? origin : "*"; // Fallback to * instead of empty string
   } else if (origin) {
     allowOrigin = origin;
   }
-  const headers: Record<string, string> = { ...corsBaseHeaders };
-  if (allowOrigin) headers["Access-Control-Allow-Origin"] = allowOrigin;
+  
+  const headers: Record<string, string> = { 
+    ...corsBaseHeaders,
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Credentials": "true"
+  };
+  
+  console.log(`CORS Headers for origin ${origin}:`, headers);
   return headers;
 };
 
@@ -45,15 +54,24 @@ const checkRateLimit = (clientIp: string, maxRequests: number = 5, windowMs: num
 };
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  console.log(`Incoming request: ${req.method} from origin: ${origin}`);
+  console.log(`ALLOWED_ORIGINS env:`, Deno.env.get("ALLOWED_ORIGINS"));
+  console.log(`Allowed origins array:`, allowedOrigins);
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: getCorsHeaders(req.headers.get('origin')) });
+    console.log("Handling OPTIONS request");
+    return new Response(null, { 
+      headers: getCorsHeaders(origin),
+      status: 200 
+    });
   }
 
   try {
-    // Rate limiting and origin allowlist
-    const origin = req.headers.get('origin');
+    // Simplified origin check - only block if explicitly configured and not in list
     if (origin && allowedOrigins.length > 0 && !allowedOrigins.includes(origin)) {
+      console.log(`Origin ${origin} not in allowed list:`, allowedOrigins);
       return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
         status: 403,
         headers: { ...getCorsHeaders(null), 'Content-Type': 'application/json' }
@@ -82,7 +100,7 @@ serve(async (req) => {
     if (!customerEmail || typeof customerEmail !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Valid customer email is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...getCorsHeaders(origin), 'Content-Type': 'application/json' } }
       );
     }
 
