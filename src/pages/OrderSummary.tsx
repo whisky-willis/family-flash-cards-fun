@@ -41,6 +41,12 @@ const OrderSummary = () => {
       return;
     }
 
+    console.log('💳 Starting payment process...', {
+      cardCount: cards.length,
+      totalCost,
+      customerEmail: orderDetails.email
+    });
+
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
@@ -52,6 +58,9 @@ const OrderSummary = () => {
       };
       localStorage.setItem('orderDetails', JSON.stringify(essentialOrderData));
       
+      console.log('💳 Invoking create-payment function...');
+      const startTime = Date.now();
+      
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: { 
           cards, 
@@ -62,19 +71,47 @@ const OrderSummary = () => {
         }
       });
 
-      if (error) throw error;
+      const duration = Date.now() - startTime;
+      console.log('💳 Function call completed:', { duration: `${duration}ms`, hasError: !!error, hasData: !!data });
+
+      if (error) {
+        console.error('💳 Function error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
 
       if (data?.url) {
+        console.log('💳 Checkout URL received, redirecting to Stripe...');
         // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
+        console.error('💳 No checkout URL in response:', data);
         throw new Error("No checkout URL received");
       }
-    } catch (error) {
-      console.error("Payment error:", error);
+    } catch (error: any) {
+      console.error("💳 Payment error details:", {
+        name: error?.name,
+        message: error?.message,
+        cause: error?.cause,
+        stack: error?.stack?.split('\n')[0] // Just the first line of stack
+      });
+      
+      let errorMessage = "There was an error processing your payment. Please try again.";
+      
+      // Provide more specific error messages
+      if (error?.message?.includes('Failed to fetch')) {
+        errorMessage = "Network connection error. Please check your internet connection and try again.";
+      } else if (error?.message?.includes('not allowed')) {
+        errorMessage = "Payment service temporarily unavailable. Please try again in a few moments.";
+      }
+      
       toast({
         title: "Payment Error",
-        description: "There was an error processing your payment. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     }

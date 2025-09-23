@@ -17,7 +17,15 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   global: {
     fetch: (url, options: RequestInit = {}) => {
       try {
-        // Use the same session key and format as useGuestSession
+        const urlStr = typeof url === 'string' ? url : String(url);
+        
+        // Skip custom fetch wrapper for function invocations to prevent interference
+        if (urlStr.includes('/functions/v1/')) {
+          console.log('🔗 Bypassing custom fetch for function invocation:', urlStr.split('?')[0]);
+          return fetch(url, options);
+        }
+        
+        // Use the same session key and format as useGuestSession for REST API calls only
         const key = 'kindred-cards-guest-session';
         let sessionId = localStorage.getItem(key);
         if (!sessionId) {
@@ -42,12 +50,11 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
         }
         
         // Ensure proper content type for REST API requests
-        const urlStr = typeof url === 'string' ? url : String(url);
         if (!headers.get('content-type') && urlStr.includes('/rest/v1/')) {
           headers.set('content-type', 'application/json');
         }
 
-        console.log('🔗 Supabase request with guest session:', { url: urlStr.split('?')[0], sessionId, hasAuth: headers.has('Authorization'), hasApiKey: headers.has('apikey') });
+        console.log('🔗 Supabase REST request with guest session:', { url: urlStr.split('?')[0], sessionId, hasAuth: headers.has('Authorization'), hasApiKey: headers.has('apikey') });
         
         return fetch(url, { ...options, headers });
       } catch (error) {
