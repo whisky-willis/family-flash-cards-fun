@@ -38,33 +38,21 @@ export const useSupabaseCardsStorage = () => {
   // Import draft functionality
   const { getDraft, saveDraftToLocal, clearDraft } = useDraft();
 
-  // Generate or get session ID for temporary storage with proper isolation
+  // Generate or get session ID using the unified guest session system
   const getSessionId = () => {
-    let sessionId = localStorage.getItem('card_session_id');
-    const lastSessionCheck = localStorage.getItem('last_session_check');
-    const now = Date.now();
+    const key = 'kindred-cards-guest-session';
+    let sessionId = localStorage.getItem(key);
     
-    // Check if session is older than 1 hour or if it's from a different browser session
-    const sessionAge = lastSessionCheck ? now - parseInt(lastSessionCheck) : Infinity;
-    const isOldSession = sessionAge > 3600000; // 1 hour
-    
-    if (!sessionId || isOldSession) {
-      // Generate new session ID with better uniqueness
-      sessionId = `session_${now}_${Math.random().toString(36).substr(2, 9)}${performance.now().toString(36).substr(2, 5)}`;
-      localStorage.setItem('card_session_id', sessionId);
-      localStorage.setItem('last_session_check', now.toString());
-      console.log('🆔 Generated new session ID:', sessionId);
-      
-      // Clear any old session data
-      const oldDraft = localStorage.getItem('kindred-cards-draft');
-      if (oldDraft && isOldSession) {
-        console.log('🧹 Clearing old session draft data');
-        localStorage.removeItem('kindred-cards-draft');
-      }
+    if (!sessionId) {
+      const timestamp = Date.now();
+      const array = new Uint8Array(16);
+      crypto.getRandomValues(array);
+      const randomString = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+      sessionId = `guest_${timestamp}_${randomString}`;
+      localStorage.setItem(key, sessionId);
+      console.log('🆔 useSupabaseCardsStorage: Generated new guest session:', sessionId);
     } else {
-      // Update last check time for existing session
-      localStorage.setItem('last_session_check', now.toString());
-      console.log('🆔 Using existing session ID:', sessionId);
+      console.log('🆔 useSupabaseCardsStorage: Using existing guest session:', sessionId);
     }
     
     return sessionId;

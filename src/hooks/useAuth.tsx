@@ -77,6 +77,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Clear all sensitive data from localStorage on logout
     localStorage.removeItem('kindred-cards-draft');
     localStorage.removeItem('kindred-cards-guest-session');
+    localStorage.removeItem('card_session_id'); // Clear old session key
+    localStorage.removeItem('last_session_check'); // Clear old session check
     // Clear any other potentially sensitive data
     const keysToRemove = Object.keys(localStorage).filter(key => 
       key.startsWith('kindred-cards-') || key.startsWith('supabase-')

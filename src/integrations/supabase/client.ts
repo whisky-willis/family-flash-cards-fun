@@ -17,14 +17,17 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   global: {
     fetch: (url, options: RequestInit = {}) => {
       try {
+        // Use the same session key and format as useGuestSession
         const key = 'kindred-cards-guest-session';
         let sessionId = localStorage.getItem(key);
         if (!sessionId) {
+          const timestamp = Date.now();
           const array = new Uint8Array(16);
           crypto.getRandomValues(array);
-          const randomString = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
-          sessionId = `guest_${Date.now()}_${randomString}`;
+          const randomString = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+          sessionId = `guest_${timestamp}_${randomString}`;
           localStorage.setItem(key, sessionId);
+          console.log('🔗 Supabase client: Generated new guest session:', sessionId);
         }
 
         const headers = new Headers(options.headers as HeadersInit | undefined);
