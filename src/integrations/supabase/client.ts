@@ -2,8 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://ngxvbmxhziirnxkycodx.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neHZibXhoemlpcm54a3ljb2R4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjQ1NzYsImV4cCI6MjA2NzMwMDU3Nn0.DejDxucc9ba4injVdpsn9QwQxTLFnDeJ0tF4BrorKN8";
+const SUPABASE_URL = "https://cpkhdwugpnedkdaehvve.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwa2hkd3VncG5lZGtkYWVodnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzNTI1MDksImV4cCI6MjA4MzkyODUwOX0.2w6m1wWbUWQVT3aG02klvJnJE9ekP3_990m43zuYs7E";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
@@ -13,54 +13,5 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  },
-  global: {
-    fetch: (url, options: RequestInit = {}) => {
-      try {
-        const urlStr = typeof url === 'string' ? url : String(url);
-        
-        // Skip custom fetch wrapper for function invocations to prevent interference
-        if (urlStr.includes('/functions/v1/')) {
-          console.log('🔗 Bypassing custom fetch for function invocation:', urlStr.split('?')[0]);
-          return fetch(url, options);
-        }
-        
-        // Use the same session key and format as useGuestSession for REST API calls only
-        const key = 'kindred-cards-guest-session';
-        let sessionId = localStorage.getItem(key);
-        if (!sessionId) {
-          const timestamp = Date.now();
-          const array = new Uint8Array(16);
-          crypto.getRandomValues(array);
-          const randomString = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-          sessionId = `guest_${timestamp}_${randomString}`;
-          localStorage.setItem(key, sessionId);
-          console.log('🔗 Supabase client: Generated new guest session:', sessionId);
-        }
-
-        const headers = new Headers(options.headers as HeadersInit | undefined);
-        headers.set('x-guest-session-id', sessionId);
-        
-        // Ensure API key and Authorization headers are present for all Supabase requests
-        if (!headers.has('apikey')) {
-          headers.set('apikey', SUPABASE_PUBLISHABLE_KEY);
-        }
-        if (!headers.has('Authorization')) {
-          headers.set('Authorization', `Bearer ${SUPABASE_PUBLISHABLE_KEY}`);
-        }
-        
-        // Ensure proper content type for REST API requests
-        if (!headers.get('content-type') && urlStr.includes('/rest/v1/')) {
-          headers.set('content-type', 'application/json');
-        }
-
-        console.log('🔗 Supabase REST request with guest session:', { url: urlStr.split('?')[0], sessionId, hasAuth: headers.has('Authorization'), hasApiKey: headers.has('apikey') });
-        
-        return fetch(url, { ...options, headers });
-      } catch (error) {
-        console.error('❌ Error in supabase client fetch:', error);
-        return fetch(url, options);
-      }
-    },
-  },
+  }
 });

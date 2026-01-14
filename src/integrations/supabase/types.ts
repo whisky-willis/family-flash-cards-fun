@@ -7,10 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
@@ -249,27 +249,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_old_guest_sessions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      get_guest_session_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_request_header: {
-        Args: { _name: string }
-        Returns: string
-      }
+      cleanup_old_guest_sessions: { Args: never; Returns: undefined }
+      get_guest_session_id: { Args: never; Returns: string }
+      get_request_header: { Args: { _name: string }; Returns: string }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
       log_security_event: {
-        Args: { event_type: string; user_id_param?: string; details?: Json }
+        Args: { details?: Json; event_type: string; user_id_param?: string }
         Returns: undefined
       }
       migrate_guest_cards_to_user: {
@@ -278,9 +269,9 @@ export type Database = {
       }
       update_order_status: {
         Args: {
-          order_id: string
-          new_payment_status?: string
           new_fulfillment_status?: string
+          new_payment_status?: string
+          order_id: string
         }
         Returns: boolean
       }
