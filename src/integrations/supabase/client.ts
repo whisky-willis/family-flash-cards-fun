@@ -5,6 +5,31 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://cpkhdwugpnedkdaehvve.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwa2hkd3VncG5lZGtkYWVodnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzNTI1MDksImV4cCI6MjA4MzkyODUwOX0.2w6m1wWbUWQVT3aG02klvJnJE9ekP3_990m43zuYs7E";
 
+const GUEST_SESSION_KEY = 'kindred-cards-guest-session';
+
+// Get guest session ID for unauthenticated users
+const getGuestSessionId = (): string | null => {
+  if (typeof localStorage === 'undefined') return null;
+  return localStorage.getItem(GUEST_SESSION_KEY);
+};
+
+// Custom fetch that adds guest session header for RLS policies
+const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  const guestSessionId = getGuestSessionId();
+  
+  // Only add guest session header for REST API calls, not edge function invocations
+  const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  const isEdgeFunctionCall = url.includes('/functions/v1/');
+  
+  if (guestSessionId && !isEdgeFunctionCall) {
+    const headers = new Headers(init?.headers);
+    headers.set('x-guest-session-id', guestSessionId);
+    return fetch(input, { ...init, headers });
+  }
+  
+  return fetch(input, init);
+};
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
@@ -13,5 +38,8 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  global: {
+    fetch: customFetch,
+  },
 });
