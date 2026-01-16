@@ -35,7 +35,7 @@ const CreateCards = () => {
   } = useSupabaseCardsStorage();
 
   // Draft management
-  const { getDraft, clearDraft } = useDraft();
+  const { getDraft, clearDraft, saveDeckDesign } = useDraft();
   
   const [currentCard, setCurrentCard] = useState<Partial<FamilyCard>>({});
   const [previewCard, setPreviewCard] = useState<Partial<FamilyCard>>({});
@@ -92,6 +92,18 @@ const CreateCards = () => {
     // Mark draft as loaded
     draftLoadedRef.current = true;
   }, []); // Empty dependency array - only run once on mount
+
+  // Auto-save deck design when it changes
+  useEffect(() => {
+    // Only save after initial draft load to avoid overwriting with empty values
+    if (draftLoadedRef.current && (recipientName || deckTheme || deckFont)) {
+      saveDeckDesign({
+        recipientName,
+        theme: deckTheme,
+        font: deckFont
+      });
+    }
+  }, [recipientName, deckTheme, deckFont, saveDeckDesign]);
 
   // Refs for CardImageGenerator components
   const imageGeneratorRefs = useRef<Map<string, CardImageGeneratorRef>>(new Map());
