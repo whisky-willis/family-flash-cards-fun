@@ -251,6 +251,7 @@ export type Database = {
     Functions: {
       cleanup_old_guest_sessions: { Args: never; Returns: undefined }
       get_guest_session_id: { Args: never; Returns: string }
+      get_path_session_id: { Args: { path: string }; Returns: string }
       get_request_header: { Args: { _name: string }; Returns: string }
       has_role: {
         Args: {
