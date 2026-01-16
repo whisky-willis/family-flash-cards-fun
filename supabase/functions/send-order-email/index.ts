@@ -233,10 +233,12 @@ const handler = async (req: Request): Promise<Response> => {
     const sanitizeSubject = (s: string) => String(s || '').replace(/[\r\n]/g, '').slice(0, 200);
     const emailSubject = recipientName ? sanitizeSubject(`New Kindred Cards Order - for ${recipientName}`) : 'New Kindred Cards Order';
 
-    // Send email
+    // Send email to both customer and admin
+    const recipients = [orderData.customer_email, "nick.g.willis@gmail.com"].filter(Boolean);
+
     const emailResponse = await resend.emails.send({
       from: "Kindred Cards <orders@kindred-cards.com>",
-      to: ["nick.g.willis@gmail.com"],
+      to: recipients,
       subject: emailSubject,
       html: emailHtml,
     });
