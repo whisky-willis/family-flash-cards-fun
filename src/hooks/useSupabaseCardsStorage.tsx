@@ -89,9 +89,10 @@ export const useSupabaseCardsStorage = () => {
         return null;
       }
 
-      const sessionId = getSessionId();
+      // Use user ID for authenticated users, guest session ID otherwise
+      const folderPath = user ? user.id : getSessionId();
       const fileExt = file.name.split('.').pop();
-      const fileName = `${sessionId}/${Date.now()}.${fileExt}`;
+      const fileName = `${folderPath}/${Date.now()}.${fileExt}`;
       
       const { data, error } = await supabase.storage
         .from('card-images')
@@ -121,15 +122,15 @@ export const useSupabaseCardsStorage = () => {
 
   // Upload generated card image to storage
   const uploadCardRender = async (
-    imageBlob: Blob, 
-    cardId: string, 
+    imageBlob: Blob,
+    cardId: string,
     side: 'front' | 'back',
     cardName?: string,
     userId?: string
   ): Promise<string | null> => {
     try {
-      const sessionId = getSessionId();
-      const userFolder = userId || sessionId;
+      // Use provided userId, or authenticated user ID, or guest session ID
+      const userFolder = userId || (user ? user.id : getSessionId());
       const fileBaseName = cardName ? sanitizeCardName(cardName) : cardId;
       const timestamp = Date.now();
       const fileName = `${userFolder}/${fileBaseName}_${side}_${timestamp}.png`;
