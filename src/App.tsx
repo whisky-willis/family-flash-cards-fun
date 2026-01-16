@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import CreateCards from "./pages/CreateCards";
+import CreateCardsTest from "./pages/CreateCardsTest";
 import OrderSummary from "./pages/OrderSummary";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
@@ -28,6 +29,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/create" element={<CreateCards />} />
+          <Route path="/create-test" element={<CreateCardsTest />} />
           <Route path="/order" element={<OrderSummary />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancel" element={<PaymentCancel />} />
