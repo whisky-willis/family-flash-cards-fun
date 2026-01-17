@@ -30,26 +30,31 @@ const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Resp
 
   // Add guest session header to all REST API calls
   // RLS policies will use auth.uid() if user is authenticated, or fall back to this header
-  let newHeaders: HeadersInit;
+  // Always use Headers object for consistent handling
+  const headers = new Headers();
 
-  if (init.headers instanceof Headers) {
-    const headers = new Headers(init.headers);
-    headers.set('x-guest-session-id', guestSessionId);
-    newHeaders = headers;
-  } else if (Array.isArray(init.headers)) {
-    newHeaders = [...init.headers, ['x-guest-session-id', guestSessionId]];
-  } else if (init.headers && typeof init.headers === 'object') {
-    newHeaders = {
-      ...init.headers,
-      'x-guest-session-id': guestSessionId
-    };
-  } else {
-    // No existing headers
-    newHeaders = { 'x-guest-session-id': guestSessionId };
+  // Copy existing headers
+  if (init.headers) {
+    if (init.headers instanceof Headers) {
+      init.headers.forEach((value, key) => {
+        headers.set(key, value);
+      });
+    } else if (Array.isArray(init.headers)) {
+      init.headers.forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+    } else if (typeof init.headers === 'object') {
+      Object.entries(init.headers).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+    }
   }
 
-  console.log('🔑 customFetch: Adding guest session header:', guestSessionId);
-  return fetch(input, { ...init, headers: newHeaders });
+  // Add guest session header
+  headers.set('x-guest-session-id', guestSessionId);
+
+  console.log('🔑 customFetch: Adding guest session header:', guestSessionId, '| Auth:', headers.get('Authorization')?.substring(0, 20) || 'none');
+  return fetch(input, { ...init, headers });
 };
 
 // Import the supabase client like this:
