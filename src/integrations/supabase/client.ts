@@ -14,7 +14,7 @@ const getGuestSessionId = (): string | null => {
 };
 
 // Custom fetch that adds guest session header for RLS policies
-const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const guestSessionId = getGuestSessionId();
 
   // Only add guest session header for REST API calls, not edge function invocations or storage
@@ -23,18 +23,20 @@ const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Resp
   const isStorageCall = url.includes('/storage/v1/');
 
   // Don't modify storage or edge function calls - let Supabase handle auth
-  if (isEdgeFunctionCall || isStorageCall) {
+  if (isEdgeFunctionCall || isStorageCall || !guestSessionId) {
     return fetch(input, init);
   }
 
-  // For REST API calls, add guest session header if available
-  if (guestSessionId && init?.headers) {
-    const existingHeaders = init.headers as Record<string, string>;
-    const newHeaders = {
-      ...existingHeaders,
-      'x-guest-session-id': guestSessionId
-    };
-    return fetch(input, { ...init, headers: newHeaders });
+  // For REST API calls, add guest session header while preserving all existing headers
+  if (init) {
+    const newInit = { ...init };
+
+    // Convert headers to a new Headers object to safely add our header
+    const headers = new Headers(init.headers);
+    headers.set('x-guest-session-id', guestSessionId);
+    newInit.headers = headers;
+
+    return fetch(input, newInit);
   }
 
   return fetch(input, init);
