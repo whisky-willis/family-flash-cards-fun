@@ -13,33 +13,36 @@ const getGuestSessionId = (): string | null => {
   return localStorage.getItem(GUEST_SESSION_KEY);
 };
 
-// Custom fetch that adds guest session header for RLS policies
-const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-  const guestSessionId = getGuestSessionId();
+// Custom fetch that adds guest session header for RLS policies (guest users only)
+const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  // Only add guest session header for REST API calls when there's no auth token
+  // Check if Authorization header exists - if so, user is authenticated, don't modify
+  const hasAuthHeader = init?.headers && (
+    (init.headers instanceof Headers && init.headers.has('Authorization')) ||
+    (typeof init.headers === 'object' && 'Authorization' in init.headers)
+  );
 
-  // Only add guest session header for REST API calls, not edge function invocations or storage
-  const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-  const isEdgeFunctionCall = url.includes('/functions/v1/');
-  const isStorageCall = url.includes('/storage/v1/');
-
-  // Don't modify storage or edge function calls - let Supabase handle auth
-  if (isEdgeFunctionCall || isStorageCall || !guestSessionId) {
+  if (hasAuthHeader) {
+    // User is authenticated, don't modify the request
     return fetch(input, init);
   }
 
-  // For REST API calls, add guest session header while preserving all existing headers
-  if (init) {
-    const newInit = { ...init };
-
-    // Convert headers to a new Headers object to safely add our header
-    const headers = new Headers(init.headers);
-    headers.set('x-guest-session-id', guestSessionId);
-    newInit.headers = headers;
-
-    return fetch(input, newInit);
+  const guestSessionId = getGuestSessionId();
+  if (!guestSessionId) {
+    return fetch(input, init);
   }
 
-  return fetch(input, init);
+  // Only add guest header for REST API calls (not storage or edge functions)
+  const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  if (url.includes('/functions/v1/') || url.includes('/storage/v1/')) {
+    return fetch(input, init);
+  }
+
+  // Add guest session header for unauthenticated REST API calls
+  const headers = new Headers(init?.headers);
+  headers.set('x-guest-session-id', guestSessionId);
+
+  return fetch(input, { ...init, headers });
 };
 
 // Import the supabase client like this:
