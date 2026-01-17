@@ -44,10 +44,28 @@ const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Resp
 
   // Add guest session header for unauthenticated REST API calls
   // Preserve all existing headers (including apikey)
-  const headers = new Headers(init.headers);
-  headers.set('x-guest-session-id', guestSessionId);
+  let newHeaders: HeadersInit;
 
-  return fetch(input, { ...init, headers });
+  if (init.headers instanceof Headers) {
+    // Clone the Headers object and add our header
+    const headers = new Headers(init.headers);
+    headers.set('x-guest-session-id', guestSessionId);
+    newHeaders = headers;
+  } else if (Array.isArray(init.headers)) {
+    // Headers as array of tuples
+    newHeaders = [...init.headers, ['x-guest-session-id', guestSessionId]];
+  } else if (typeof init.headers === 'object') {
+    // Headers as plain object
+    newHeaders = {
+      ...init.headers,
+      'x-guest-session-id': guestSessionId
+    };
+  } else {
+    newHeaders = { 'x-guest-session-id': guestSessionId };
+  }
+
+  console.log('🔑 customFetch: Adding guest session header:', guestSessionId);
+  return fetch(input, { ...init, headers: newHeaders });
 };
 
 // Import the supabase client like this:
