@@ -13,26 +13,12 @@ const getGuestSessionId = (): string | null => {
   return localStorage.getItem(GUEST_SESSION_KEY);
 };
 
-// Custom fetch that adds guest session header for RLS policies (guest users only)
+// Custom fetch that adds guest session header for RLS policies
 const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-  // Don't modify if no init or no headers - Supabase needs those
-  if (!init || !init.headers) {
-    return fetch(input, init);
-  }
-
-  // Check if Authorization header exists - if so, user is authenticated, don't modify
-  const hasAuthHeader = (
-    (init.headers instanceof Headers && init.headers.has('Authorization')) ||
-    (typeof init.headers === 'object' && 'Authorization' in init.headers)
-  );
-
-  if (hasAuthHeader) {
-    // User is authenticated, don't modify the request
-    return fetch(input, init);
-  }
-
   const guestSessionId = getGuestSessionId();
-  if (!guestSessionId) {
+
+  // No guest session or no init - pass through unchanged
+  if (!guestSessionId || !init) {
     return fetch(input, init);
   }
 
@@ -42,25 +28,23 @@ const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Resp
     return fetch(input, init);
   }
 
-  // Add guest session header for unauthenticated REST API calls
-  // Preserve all existing headers (including apikey)
+  // Add guest session header to all REST API calls
+  // RLS policies will use auth.uid() if user is authenticated, or fall back to this header
   let newHeaders: HeadersInit;
 
   if (init.headers instanceof Headers) {
-    // Clone the Headers object and add our header
     const headers = new Headers(init.headers);
     headers.set('x-guest-session-id', guestSessionId);
     newHeaders = headers;
   } else if (Array.isArray(init.headers)) {
-    // Headers as array of tuples
     newHeaders = [...init.headers, ['x-guest-session-id', guestSessionId]];
-  } else if (typeof init.headers === 'object') {
-    // Headers as plain object
+  } else if (init.headers && typeof init.headers === 'object') {
     newHeaders = {
       ...init.headers,
       'x-guest-session-id': guestSessionId
     };
   } else {
+    // No existing headers
     newHeaders = { 'x-guest-session-id': guestSessionId };
   }
 
