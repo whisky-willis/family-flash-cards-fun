@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, Image as ImageIcon, Save, ArrowLeft, Loader2 } from "lucide-react";
+import { Heart, Users, Image as ImageIcon, Save, ArrowLeft, Loader2, Cloud, CloudOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CardForm } from "@/components/CardForm";
 import { FlipCardPreview } from "@/components/FlipCardPreview";
@@ -14,6 +14,9 @@ import { AuthModal } from "@/components/AuthModal";
 import { useSupabaseCardsStorage, FamilyCard } from "@/hooks/useSupabaseCardsStorage";
 import { ImageGenerationProgressModal } from "@/components/ImageGenerationProgressModal";
 import { useDraft } from "@/hooks/useDraft";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { SavePromptBanner } from "@/components/SavePromptBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 const CreateCards = () => {
@@ -53,6 +56,33 @@ const CreateCards = () => {
 
   // Use ref to track if draft has been loaded to prevent multiple loads
   const draftLoadedRef = useRef(false);
+  const autoRestoreAttemptedRef = useRef(false);
+
+  // Auto-save for authenticated users
+  const {
+    lastSaved,
+    hasUnsavedChanges,
+    isSaving: isAutoSaving,
+    isRestoring,
+    loadActiveDraft,
+    saveActiveDraft,
+    clearActiveDraft,
+    saveAsCollection
+  } = useAutoSave({
+    cards,
+    deckDesign: {
+      recipientName,
+      theme: deckTheme,
+      font: deckFont
+    },
+    enabled: !!user
+  });
+
+  // Unsaved changes warning
+  useUnsavedChangesWarning({
+    hasUnsavedChanges: hasUnsavedChanges && cards.length > 0,
+    message: 'You have unsaved cards. Are you sure you want to leave?'
+  });
 
   // Load draft data on component mount - only run once
   useEffect(() => {
@@ -92,6 +122,42 @@ const CreateCards = () => {
     // Mark draft as loaded
     draftLoadedRef.current = true;
   }, []); // Empty dependency array - only run once on mount
+
+  // Auto-restore for authenticated users - load their active draft from database
+  useEffect(() => {
+    if (!user || autoRestoreAttemptedRef.current || !draftLoadedRef.current) return;
+
+    const attemptAutoRestore = async () => {
+      autoRestoreAttemptedRef.current = true;
+
+      // Only auto-restore if there's no local draft already loaded
+      if (cards.length > 0) {
+        console.log('Skipping auto-restore - local draft already has cards');
+        return;
+      }
+
+      const restored = await loadActiveDraft();
+      if (restored && restored.cards.length > 0) {
+        console.log('Auto-restoring', restored.cards.length, 'cards for authenticated user');
+        setInitialCards(restored.cards);
+
+        if (restored.deckDesign) {
+          if (restored.deckDesign.recipientName) setRecipientName(restored.deckDesign.recipientName);
+          if (restored.deckDesign.theme) setDeckTheme(restored.deckDesign.theme);
+          if (restored.deckDesign.font) setDeckFont(restored.deckDesign.font);
+        }
+
+        toast({
+          title: "Welcome back!",
+          description: `Restored ${restored.cards.length} card${restored.cards.length === 1 ? '' : 's'} from your last session.`,
+        });
+      }
+    };
+
+    // Small delay to ensure draft loading completes first
+    const timer = setTimeout(attemptAutoRestore, 500);
+    return () => clearTimeout(timer);
+  }, [user, cards.length, loadActiveDraft, setInitialCards, toast]);
 
   // Auto-save deck design when it changes
   useEffect(() => {
@@ -348,41 +414,25 @@ const CreateCards = () => {
       });
       return;
     }
-    
+
     // Check if user is authenticated
     if (!user) {
       // Show auth modal for unauthenticated users
       setShowAuthModal(true);
       return;
     }
-    
+
     // User is authenticated - save collection to database
     setIsSaving(true);
-    
+
     try {
       // Generate collection name
       const collectionName = recipientName ? `${recipientName}'s Cards` : 'My Card Collection';
-      
-      // Prepare deck design data
-      const deckDesign = {
-        recipientName,
-        theme: deckTheme,
-        font: deckFont
-      };
-      
-      // Save to card_collections table
-      const { error } = await supabase
-        .from('card_collections')
-        .insert({
-          user_id: user.id,
-          name: collectionName,
-          description: `Collection created with ${cards.length} cards`,
-          cards: cards as any,
-          deck_design: deckDesign as any
-        });
-      
-      if (error) {
-        console.error('Error saving collection:', error);
+
+      // Use saveAsCollection which also clears the active draft
+      const success = await saveAsCollection(collectionName);
+
+      if (!success) {
         toast({
           title: "Save Failed",
           description: "Failed to save your collection. Please try again.",
@@ -390,15 +440,15 @@ const CreateCards = () => {
         });
         return;
       }
-      
-      // Clear draft after successful save
+
+      // Clear local draft after successful save
       clearDraft();
-      
+
       toast({
         title: "Collection Saved!",
-        description: `"${collectionName}" has been saved to your account.`,
+        description: `"${collectionName}" has been saved to your account. View it on your profile.`,
       });
-      
+
     } catch (error) {
       console.error('Error saving collection:', error);
       toast({
@@ -515,6 +565,36 @@ const CreateCards = () => {
             Design your deck style, then add photos and details for each family member or friend
           </p>
         </div>
+
+        {/* Save Prompt Banner for Guest Users */}
+        {!user && cards.length > 0 && (
+          <SavePromptBanner
+            cardCount={cards.length}
+            onCreateAccount={() => setShowAuthModal(true)}
+          />
+        )}
+
+        {/* Auto-save Status for Authenticated Users */}
+        {user && cards.length > 0 && (
+          <div className="flex items-center justify-center gap-2 mb-6 text-sm text-muted-foreground">
+            {isAutoSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <Cloud className="h-4 w-4 text-green-500" />
+                <span>Saved {lastSaved.toLocaleTimeString()}</span>
+              </>
+            ) : hasUnsavedChanges ? (
+              <>
+                <CloudOff className="h-4 w-4 text-amber-500" />
+                <span>Unsaved changes</span>
+              </>
+            ) : null}
+          </div>
+        )}
 
         {/* Image Generation Progress */}
         {isGeneratingImages && (
