@@ -16,17 +16,21 @@ const getGuestSessionId = (): string | null => {
 // Custom fetch that adds guest session header for RLS policies
 const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const guestSessionId = getGuestSessionId();
-  
+
   // Only add guest session header for REST API calls, not edge function invocations
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
   const isEdgeFunctionCall = url.includes('/functions/v1/');
-  
-  if (guestSessionId && !isEdgeFunctionCall) {
-    const headers = new Headers(init?.headers);
-    headers.set('x-guest-session-id', guestSessionId);
-    return fetch(input, { ...init, headers });
+
+  if (guestSessionId && !isEdgeFunctionCall && init?.headers) {
+    // Preserve existing headers (including Authorization) and add guest session
+    const existingHeaders = init.headers as Record<string, string>;
+    const newHeaders = {
+      ...existingHeaders,
+      'x-guest-session-id': guestSessionId
+    };
+    return fetch(input, { ...init, headers: newHeaders });
   }
-  
+
   return fetch(input, init);
 };
 
