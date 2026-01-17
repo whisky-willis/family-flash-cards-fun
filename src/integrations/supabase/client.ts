@@ -17,12 +17,18 @@ const getGuestSessionId = (): string | null => {
 const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const guestSessionId = getGuestSessionId();
 
-  // Only add guest session header for REST API calls, not edge function invocations
+  // Only add guest session header for REST API calls, not edge function invocations or storage
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
   const isEdgeFunctionCall = url.includes('/functions/v1/');
+  const isStorageCall = url.includes('/storage/v1/');
 
-  if (guestSessionId && !isEdgeFunctionCall && init?.headers) {
-    // Preserve existing headers (including Authorization) and add guest session
+  // Don't modify storage or edge function calls - let Supabase handle auth
+  if (isEdgeFunctionCall || isStorageCall) {
+    return fetch(input, init);
+  }
+
+  // For REST API calls, add guest session header if available
+  if (guestSessionId && init?.headers) {
     const existingHeaders = init.headers as Record<string, string>;
     const newHeaders = {
       ...existingHeaders,
