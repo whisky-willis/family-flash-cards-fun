@@ -15,9 +15,13 @@ const getGuestSessionId = (): string | null => {
 
 // Custom fetch that adds guest session header for RLS policies (guest users only)
 const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-  // Only add guest session header for REST API calls when there's no auth token
+  // Don't modify if no init or no headers - Supabase needs those
+  if (!init || !init.headers) {
+    return fetch(input, init);
+  }
+
   // Check if Authorization header exists - if so, user is authenticated, don't modify
-  const hasAuthHeader = init?.headers && (
+  const hasAuthHeader = (
     (init.headers instanceof Headers && init.headers.has('Authorization')) ||
     (typeof init.headers === 'object' && 'Authorization' in init.headers)
   );
@@ -39,7 +43,8 @@ const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Resp
   }
 
   // Add guest session header for unauthenticated REST API calls
-  const headers = new Headers(init?.headers);
+  // Preserve all existing headers (including apikey)
+  const headers = new Headers(init.headers);
   headers.set('x-guest-session-id', guestSessionId);
 
   return fetch(input, { ...init, headers });
